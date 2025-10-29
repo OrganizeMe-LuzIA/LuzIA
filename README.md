@@ -4,4 +4,4 @@ Repósitorio para armazenar os avanços do projeto (SEMPRE DEEM PULL REQUEST ANT
 ## Requisitos
 - Python 3.14
 - Git
-- 
+- Mongo DB
