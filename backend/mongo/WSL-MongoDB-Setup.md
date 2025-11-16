@@ -193,6 +193,27 @@ mongosh "mongodb://admin:SENHA_SEGURA@localhost:27017/admin"
 - O script `init.js` é idempotente (usa `createIfNotExists`), pode ser executado várias vezes sem conflito.
 - Após rodar, confirme coleções e índices conforme necessidade.
 
+## 11) Configuração do .env para o Projeto
+
+O arquivo `.env` é essencial para configurar as variáveis de ambiente do seu projeto. Crie um arquivo `.env` na raiz do diretório `backend` com as seguintes variáveis:
+
+```bash
+# Configurações do MongoDB
+MONGO_URI=mongodb://localhost:27017
+MONGO_DB_NAME=LuzIA
+
+# Configurações da API
+API_PORT=8000
+JWT_SECRET=seu_segredo_jwt_aqui
+JWT_EXPIRE_MINUTES=120
+
+# Configurações do Twilio (para WhatsApp)
+TWILIO_ACCOUNT_SID=sua_conta_sid
+TWILIO_AUTH_TOKEN=seu_auth_token
+TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886  # Número do Twilio Sandbox
+
+# Outras configurações
+NODE_ENV=development
 ---
 
 Pronto! Com isso, o MongoDB está instalado e configurado no WSL, e seu banco `LuzIA` pode ser inicializado diretamente com o `init.js` do projeto.
