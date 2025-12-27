@@ -1,33 +1,48 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-import os
+from app.config import settings
 from typing import Optional
+import logging
 
-# Variável global para armazenar a conexão com o MongoDB
-_client: Optional[AsyncIOMotorClient] = None
+logger = logging.getLogger(__name__)
 
-def get_client() -> AsyncIOMotorClient:
-    """
-    Retorna uma instância do cliente MongoDB, criando uma nova se necessário.
-    """
-    global _client
-    if _client is None:
-        mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-        _client = AsyncIOMotorClient(mongo_uri)
-    return _client
+class Database:
+    client: Optional[AsyncIOMotorClient] = None
+
+db = Database()
 
 async def get_db():
     """
-    Retorna o banco de dados configurado.
+    Dependency injection for FastAPI routes.
     """
-    client = get_client()
-    db_name = os.getenv("MONGO_DB_NAME", "LuzIA")
-    return client[db_name]
+    if db.client is None:
+        raise RuntimeError("Database client is not initialized.")
+    return db.client[settings.MONGO_DB_NAME]
 
-async def close_db():
+async def connect_to_mongo():
     """
-    Fecha a conexão com o MongoDB.
+    Initialize MongoDB connection.
+    To be called during app startup.
     """
-    global _client
-    if _client:
-        _client.close()
-        _client = None
+    try:
+        db.client = AsyncIOMotorClient(
+            settings.MONGO_URI,
+            maxPoolSize=settings.MONGO_MAX_POOL_SIZE,
+            minPoolSize=settings.MONGO_MIN_POOL_SIZE,
+            serverSelectionTimeoutMS=settings.MONGO_TIMEOUT_MS
+        )
+        # Verify connection
+        await db.client.admin.command('ping')
+        logger.info("Connected to MongoDB.")
+    except Exception as e:
+        logger.error(f"Could not connect to MongoDB: {e}")
+        raise
+
+async def close_mongo_connection():
+    """
+    Close MongoDB connection.
+    To be called during app shutdown.
+    """
+    if db.client:
+        db.client.close()
+        db.client = None
+        logger.info("MongoDB connection closed.")
