@@ -34,3 +34,10 @@ Thumbs.db
 
 # MongoDB
 /data/db/
+
+# Python Cache 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
