@@ -11,6 +11,15 @@ class UserState(BaseModel):
     statusChat: str = "INATIVO" # INATIVO, EM_CURSO, FINALIZADO
     dataInicio: Optional[datetime] = None
 
+class Organizacao(BaseModel):
+    cnpj: str
+    nome: str
+
+class Setor(BaseModel):
+    idOrganizacao: Any # MongoDB ObjectId
+    nome: str
+    descricao: Optional[str] = None
+
 class Usuario(BaseModel):
     telefone: str
     idOrganizacao: Any # MongoDB ObjectId
@@ -53,3 +62,35 @@ class Respostas(BaseModel):
     idQuestionario: Any
     data: datetime = Field(default_factory=datetime.utcnow)
     respostas: List[RespostaItem]
+
+class DiagnosticoDimensao(BaseModel):
+    dominio: str
+    dimensao: str
+    pontuacao: float
+    classificacao: str
+    itens: Optional[List[Dict[str, Any]]] = None
+
+class Diagnostico(BaseModel):
+    anonId: str
+    idQuestionario: Any
+    resultadoGlobal: str
+    pontuacaoGlobal: float
+    dimensoes: List[DiagnosticoDimensao]
+    dataAnalise: datetime = Field(default_factory=datetime.utcnow)
+
+class RelatorioMetricas(BaseModel):
+    mediaRiscoGlobal: float
+    indiceProtecao: float
+    totalRespondentes: int
+
+class Relatorio(BaseModel):
+    idQuestionario: Any
+    idOrganizacao: Optional[Any] = None
+    idSetor: Optional[Any] = None
+    tipoRelatorio: str # organizacional, setorial, individual
+    geradoPor: str
+    dataGeracao: datetime = Field(default_factory=datetime.utcnow)
+    metricas: RelatorioMetricas
+    dominios: List[Dict[str, Any]]
+    recomendacoes: List[str] = Field(default_factory=list)
+    observacoes: Optional[str] = None
