@@ -29,9 +29,9 @@ def test_usuario_model_invalid_status():
         "anonId": "anon123",
         "status": "status_que_nao_existe"
     }
-    user = Usuario(**user_data)
-    assert user.status == "status_que_nao_existe" 
-    # Observação: Isso aponta uma falha na lógica de negócio do código Python vs Banco (que tem enum).
+    # Agora esperamos ValidationError devido a validacao estrita do enum
+    with pytest.raises(ValidationError):
+        Usuario(**user_data)
 
 def test_questionario_model_validation():
     """Testa validação básica de questionário."""

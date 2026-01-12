@@ -139,3 +139,37 @@ class RespostasRepo:
         except InvalidId:
             logger.warning(f"ID de questionário inválido: {id_questionario}")
             return False
+
+    async def save_all_answers(
+        self, anon_id: str, id_questionario: str, respostas: List[Dict[str, Any]]
+    ) -> bool:
+        """
+        Salva (sobrescreve) todas as respostas de uma sessão.
+        Útil para envio em lote via API REST.
+
+        Args:
+            anon_id: ID anônimo do respondente.
+            id_questionario: ID do questionário.
+            respostas: Lista de dicionários {"idPergunta": "...", "valor": 0}.
+
+        Returns:
+            True se a operação foi bem-sucedida.
+        """
+        try:
+            db = await get_db()
+            q_id = self._ensure_object_id(id_questionario)
+
+            result = await db[self.collection_name].update_one(
+                {"anonId": anon_id, "idQuestionario": q_id},
+                {
+                    "$set": {
+                        "respostas": respostas,
+                        "data": datetime.utcnow()
+                    }
+                },
+                upsert=True
+            )
+            return result.acknowledged
+        except InvalidId:
+            logger.warning(f"ID de questionário inválido: {id_questionario}")
+            return False

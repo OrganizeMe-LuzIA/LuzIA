@@ -144,6 +144,24 @@
           ]
         },
         {
+          "name": "idSetor",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "objectId",
+          "GUID": "34d9dd42-2234-4e61-9eab-059fbf8da62d",
+          "required": false,
+          "error": {}
+        },
+        {
+          "name": "metadata",
+          "hackoladeMeta": {},
+          "isActivated": true,
+          "type": "object",
+          "GUID": "METADATA-GUID-PLACEHOLDER",
+          "required": false,
+          "error": {}
+        },
+        {
           "name": "respondido",
           "hackoladeMeta": {},
           "isActivated": true,
@@ -620,188 +638,192 @@
       }
     },
     {
-      "collectionName": "relatorios", 
-      "type": "object", 
-      "properties": [ 
-        { 
-          "name": "idQuestionario", 
-          "type": "objectId", 
+      "collectionName": "relatorios",
+      "type": "object",
+      "properties": [
+        {
+          "name": "idQuestionario",
+          "type": "objectId",
           "required": true,
           "GUID": "a1b2c3d4-e5f6-4a5b-9c8d-1e2f3a4b5c6d",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "idOrganizacao", 
-          "type": "objectId", 
+        },
+        {
+          "name": "idOrganizacao",
+          "type": "objectId",
           "required": false,
           "GUID": "b2c3d4e5-f6a7-5b6c-0d1e-2f3a4b5c6d7e",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "idSetor", 
-          "type": "objectId", 
+        },
+        {
+          "name": "idSetor",
+          "type": "objectId",
           "required": false,
           "GUID": "c3d4e5f6-a7b8-6c7d-1e2f-3a4b5c6d7e8f",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "anonId", 
-          "type": "string", 
+        },
+        {
+          "name": "anonId",
+          "type": "string",
           "required": false,
           "GUID": "d4e5f6a7-b8c9-7d8e-2f3a-4b5c6d7e8f9a",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "tipoRelatorio", 
-          "type": "string", 
-          "enum": ["organizacional", "setorial", "individual"], 
+        },
+        {
+          "name": "tipoRelatorio",
+          "type": "string",
+          "enum": [
+            "organizacional",
+            "setorial",
+            "individual"
+          ],
           "required": true,
           "GUID": "e5f6a7b8-c9d0-8e9f-3a4b-5c6d7e8f9a0b",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "geradoPor", 
+        },
+        {
+          "name": "geradoPor",
           "type": "string",
           "GUID": "f6a7b8c9-d0e1-9f0a-4b5c-6d7e8f9a0b1c",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "dataGeracao", 
-          "type": "date", 
+        },
+        {
+          "name": "dataGeracao",
+          "type": "date",
           "required": true,
           "GUID": "a7b8c9d0-e1f2-0a1b-5c6d-7e8f9a0b1c2d",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "metricas", 
-          "type": "object", 
-          "properties": [ 
-            { 
-              "name": "mediaRiscoGlobal", 
+        },
+        {
+          "name": "metricas",
+          "type": "object",
+          "properties": [
+            {
+              "name": "mediaRiscoGlobal",
               "type": "numeric",
               "GUID": "b8c9d0e1-f2a3-1b2c-6d7e-8f9a0b1c2d3e",
               "hackoladeMeta": {},
               "isActivated": true
-            }, 
-            { 
-              "name": "indiceProtecao", 
+            },
+            {
+              "name": "indiceProtecao",
               "type": "numeric",
               "GUID": "c9d0e1f2-a3b4-2c3d-7e8f-9a0b1c2d3e4f",
               "hackoladeMeta": {},
               "isActivated": true
-            }, 
-            { 
-              "name": "totalRespondentes", 
+            },
+            {
+              "name": "totalRespondentes",
               "type": "numeric",
               "GUID": "d0e1f2a3-b4c5-3d4e-8f9a-0b1c2d3e4f5a",
               "hackoladeMeta": {},
               "isActivated": true
-            } 
+            }
           ],
           "GUID": "e1f2a3b4-c5d6-4e5f-9a0b-1c2d3e4f5a6b",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "dominios", 
-          "type": "array", 
-          "properties": [ 
-            { 
-              "type": "object", 
-              "properties": [ 
-                { 
-                  "name": "nome", 
+        },
+        {
+          "name": "dominios",
+          "type": "array",
+          "properties": [
+            {
+              "type": "object",
+              "properties": [
+                {
+                  "name": "nome",
                   "type": "string",
                   "GUID": "f2a3b4c5-d6e7-5f6a-0b1c-2d3e4f5a6b7c",
                   "hackoladeMeta": {},
                   "isActivated": true
-                }, 
-                { 
-                  "name": "media", 
+                },
+                {
+                  "name": "media",
                   "type": "numeric",
                   "GUID": "a3b4c5d6-e7f8-6a7b-1c2d-3e4f5a6b7c8d",
                   "hackoladeMeta": {},
                   "isActivated": true
-                }, 
-                { 
-                  "name": "nivelRisco", 
+                },
+                {
+                  "name": "nivelRisco",
                   "type": "string",
                   "GUID": "b4c5d6e7-f8a9-7b8c-2d3e-4f5a6b7c8d9e",
                   "hackoladeMeta": {},
                   "isActivated": true
-                }, 
-                { 
-                  "name": "dimensoes", 
-                  "type": "array", 
-                  "properties": [ 
-                    { 
-                      "name": "nome", 
+                },
+                {
+                  "name": "dimensoes",
+                  "type": "array",
+                  "properties": [
+                    {
+                      "name": "nome",
                       "type": "string",
                       "GUID": "c5d6e7f8-a9b0-8c9d-3e4f-5a6b7c8d9e0f",
                       "hackoladeMeta": {},
                       "isActivated": true
-                    }, 
-                    { 
-                      "name": "media", 
+                    },
+                    {
+                      "name": "media",
                       "type": "numeric",
                       "GUID": "d6e7f8a9-b0c1-9d0e-4f5a-6b7c8d9e0f1a",
                       "hackoladeMeta": {},
                       "isActivated": true
-                    }, 
-                    { 
-                      "name": "nivelRisco", 
+                    },
+                    {
+                      "name": "nivelRisco",
                       "type": "string",
                       "GUID": "e7f8a9b0-c1d2-0e1f-5a6b-7c8d9e0f1a2b",
                       "hackoladeMeta": {},
                       "isActivated": true
-                    } 
+                    }
                   ],
                   "GUID": "f8a9b0c1-d2e3-1f2a-6b7c-8d9e0f1a2b3c",
                   "hackoladeMeta": {},
                   "isActivated": true
-                } 
+                }
               ],
               "GUID": "a9b0c1d2-e3f4-2a3b-7c8d-9e0f1a2b3c4d",
               "hackoladeMeta": {},
               "isActivated": true,
               "arrayItem": true
-            } 
+            }
           ],
           "GUID": "b0c1d2e3-f4a5-3b4c-8d9e-0f1a2b3c4d5e",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "recomendacoes", 
-          "type": "array", 
-          "properties": [ 
-            { 
-              "type": "string", 
+        },
+        {
+          "name": "recomendacoes",
+          "type": "array",
+          "properties": [
+            {
+              "type": "string",
               "arrayItem": true,
               "GUID": "c1d2e3f4-a5b6-4c5d-9e0f-1a2b3c4d5e6f",
               "hackoladeMeta": {},
               "isActivated": true
-            } 
+            }
           ],
           "GUID": "d2e3f4a5-b6c7-5d6e-0f1a-2b3c4d5e6f7a",
           "hackoladeMeta": {},
           "isActivated": true
-        }, 
-        { 
-          "name": "observacoes", 
+        },
+        {
+          "name": "observacoes",
           "type": "string",
           "GUID": "e3f4a5b6-c7d8-6e7f-1a2b-3c4d5e6f7a8b",
           "hackoladeMeta": {},
           "isActivated": true
-        } 
-      ], 
+        }
+      ],
       "definitions": {
         "type": "definitions",
         "properties": [],
@@ -809,9 +831,9 @@
       },
       "isActivated": true,
       "additionalProperties": false,
-      "validationLevel": "Moderate", 
-      "validationAction": "Warn", 
-      "storageEngineName": "WiredTiger", 
+      "validationLevel": "Moderate",
+      "validationAction": "Warn",
+      "storageEngineName": "WiredTiger",
       "collectionUsers": [],
       "indexes": [],
       "collation": {},

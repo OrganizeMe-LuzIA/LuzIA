@@ -20,17 +20,24 @@ class Setor(BaseModel):
     nome: str
     descricao: Optional[str] = None
 
+from enum import Enum
+
+class StatusEnum(str, Enum):
+    ATIVO = "ativo"
+    INATIVO = "inativo"
+    AGUARDANDO_CONFIRMACAO = "aguardando_confirmacao"
+
 class Usuario(BaseModel):
     telefone: str
     idOrganizacao: Any # MongoDB ObjectId
     idSetor: Optional[Any] = None
-    status: str = "aguardando_confirmacao" # Matches enum in DB
+    status: StatusEnum = StatusEnum.AGUARDANDO_CONFIRMACAO
     respondido: bool = False
     anonId: str
     dataCadastro: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
     
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, use_enum_values=True)
 
 class Pergunta(BaseModel):
     idQuestionario: Any

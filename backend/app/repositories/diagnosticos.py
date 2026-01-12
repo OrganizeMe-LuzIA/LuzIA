@@ -113,3 +113,34 @@ class DiagnosticosRepo:
         except InvalidId:
             logger.warning(f"ID de diagnóstico inválido: {diagnostico_id}")
             return None
+
+    async def find_by_anon_ids(
+        self, anon_ids: List[str], questionario_id: str
+    ) -> List[Dict[str, Any]]:
+        """
+        Busca diagnósticos para uma lista de IDs anônimos e um questionário.
+        Útil para relatórios consolidados.
+        
+        Args:
+            anon_ids: Lista de strings (anonId).
+            questionario_id: ID do questionário.
+            
+        Returns:
+            Lista de diagnósticos (somente o mais recente por usuário se necessário, 
+            mas aqui trazemos todos e o service filtra).
+            Para simplificar, trazemos o último de cada user usando sort/limit ou let service handle.
+            Aqui: trazemos todos por data desc.
+        """
+        try:
+            db = await get_db()
+            q_id = ObjectId(questionario_id)
+            
+            cursor = db[self.collection_name].find({
+                "anonId": {"$in": anon_ids},
+                "idQuestionario": q_id
+            }).sort("dataAnalise", -1)
+            
+            return await cursor.to_list(length=2000)
+        except InvalidId:
+            logger.warning(f"ID inválido: {questionario_id}")
+            return []
