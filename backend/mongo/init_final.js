@@ -239,10 +239,21 @@ createIfNotExists("perguntas", {
           "bsonType": "bool",
           "description": "Indica se a pergunta está ativa e deve ser exibida",
           "default": true
+        },
+        "multipla": {
+        "bsonType": "bool",
+        "description": "Se true, permite múltiplas alternativas (ex: 1,3,5)",
+        "default": false
+        },
+        "ordem": {
+          "bsonType": "int",
+          "minimum": 1,
+          "description": "Ordem de exibição da pergunta no questionário",
+          "default": 1
         }
       },
       "additionalProperties": false,
-      "required": ["idQuestionario", "idPergunta", "texto", "tipo", "escala"]
+      "required": ["idQuestionario", "idPergunta", "texto", "tipo", "escala", "ordem"]
     }
   },
   "validationLevel": "moderate",
@@ -266,7 +277,13 @@ createIfNotExists("respostas", {
           "items": {
             "bsonType": "object",
             "properties": {
-              "valor": { "bsonType": "int", "maximum": 4, "minimum": 0 },
+              "valor": {
+                "description": "Resposta (1 a 5) ou múltiplas respostas (ex: [1,3,5])",
+                "oneOf": [
+                  { "bsonType": "int", "minimum": 1, "maximum": 5 },
+                  { "bsonType": "array", "items": { "bsonType": "int", "minimum": 1, "maximum": 5 } }
+                ]
+              },
               "idPergunta": { "bsonType": "string" }
             },
             "additionalProperties": false,
