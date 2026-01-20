@@ -1,177 +1,144 @@
 <template>
-  <v-app>
-    <!-- App Bar -->
-    <v-app-bar color="surface" elevation="1">
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
-      
-      <v-toolbar-title>
-        <v-icon icon="mdi-brain" color="primary" class="mr-2" />
-        LuzIA Dashboard
-      </v-toolbar-title>
+  <div>
+    <v-row>
+      <v-col cols="12">
+        <h1 class="text-h4 font-weight-bold mb-4">Dashboard</h1>
+      </v-col>
+    </v-row>
 
-      <v-spacer />
+    <!-- Métricas Principais -->
+    <v-row>
+      <v-col cols="12" sm="6" md="3">
+        <v-card elevation="3">
+          <v-card-text>
+            <div class="d-flex align-center">
+              <v-icon size="40" color="primary" class="mr-4">
+                mdi-clipboard-check
+              </v-icon>
+              <div>
+                <div class="text-caption text-grey">Total de Questionários</div>
+                <div class="text-h4 font-weight-bold">
+                  {{ metrics.totalQuestionarios }}
+                </div>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
 
-      <v-btn icon>
-        <v-icon>mdi-bell</v-icon>
-      </v-btn>
+      <v-col cols="12" sm="6" md="3">
+        <v-card elevation="3">
+          <v-card-text>
+            <div class="d-flex align-center">
+              <v-icon size="40" color="success" class="mr-4">
+                mdi-chart-line
+              </v-icon>
+              <div>
+                <div class="text-caption text-grey">Taxa de Resposta</div>
+                <div class="text-h4 font-weight-bold">
+                  {{ metrics.taxaResposta }}%
+                </div>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
 
-      <v-menu>
-        <template #activator="{ props }">
-          <v-btn icon v-bind="props">
-            <v-icon>mdi-account-circle</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item @click="handleLogout">
-            <template #prepend>
-              <v-icon>mdi-logout</v-icon>
-            </template>
-            <v-list-item-title>Sair</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-app-bar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card elevation="3">
+          <v-card-text>
+            <div class="d-flex align-center">
+              <v-icon size="40" color="warning" class="mr-4">
+                mdi-alert-circle
+              </v-icon>
+              <div>
+                <div class="text-caption text-grey">Nível Médio de Risco</div>
+                <div class="text-h4 font-weight-bold">
+                  {{ metrics.nivelMedioRisco.toFixed(1) }}
+                </div>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
 
-    <!-- Navigation Drawer -->
-    <v-navigation-drawer v-model="drawer" temporary>
-      <v-list>
-        <v-list-item
-          prepend-icon="mdi-view-dashboard"
-          title="Dashboard"
-          to="/dashboard"
-        />
-        <v-list-item
-          prepend-icon="mdi-clipboard-text"
-          title="Questionários"
-          to="/questionarios"
-        />
-        
-        <v-divider class="my-2" />
-        
-        <v-list-subheader>Administração</v-list-subheader>
-        <v-list-item
-          prepend-icon="mdi-office-building"
-          title="Organizações"
-          to="/organizacoes"
-        />
-        <v-list-item
-          prepend-icon="mdi-file-document"
-          title="Relatórios"
-          to="/relatorios"
-        />
-      </v-list>
-    </v-navigation-drawer>
+      <v-col cols="12" sm="6" md="3">
+        <v-card elevation="3">
+          <v-card-text>
+            <div class="d-flex align-center">
+              <v-icon size="40" color="info" class="mr-4">
+                mdi-shield-check
+              </v-icon>
+              <div>
+                <div class="text-caption text-grey">Índice de Proteção</div>
+                <div class="text-h4 font-weight-bold">
+                  {{ metrics.indiceProtecao.toFixed(1) }}
+                </div>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
 
-    <!-- Main Content -->
-    <v-main>
-      <v-container fluid>
-        <h1 class="text-h4 mb-6">Dashboard</h1>
+    <!-- Gráficos -->
+    <v-row class="mt-4">
+      <v-col cols="12" md="6">
+        <v-card elevation="3">
+          <v-card-title>Evolução Temporal</v-card-title>
+          <v-card-text>
+            <Line :data="evolutionChartData" :options="lineChartOptions" />
+          </v-card-text>
+        </v-card>
+      </v-col>
 
-        <!-- Métricas Principais -->
-        <v-row>
-          <v-col cols="12" sm="6" md="3">
-            <v-card>
-              <v-card-text>
-                <div class="text-overline mb-1">Total Questionários</div>
-                <div class="text-h4">{{ metrics.totalQuestionarios }}</div>
-              </v-card-text>
-            </v-card>
-          </v-col>
+      <v-col cols="12" md="6">
+        <v-card elevation="3">
+          <v-card-title>Comparativo por Setor</v-card-title>
+          <v-card-text>
+            <Bar :data="setoresChartData" :options="barChartOptions" />
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
 
-          <v-col cols="12" sm="6" md="3">
-            <v-card>
-              <v-card-text>
-                <div class="text-overline mb-1">Taxa de Resposta</div>
-                <div class="text-h4">{{ metrics.taxaResposta }}%</div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" sm="6" md="3">
-            <v-card>
-              <v-card-text>
-                <div class="text-overline mb-1">Nível Médio de Risco</div>
-                <div class="text-h4">{{ metrics.nivelMedioRisco }}</div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" sm="6" md="3">
-            <v-card>
-              <v-card-text>
-                <div class="text-overline mb-1">Índice de Proteção</div>
-                <div class="text-h4">{{ metrics.indiceProtecao }}</div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-        <!-- Gráficos -->
-        <v-row class="mt-4">
-          <v-col cols="12" md="8">
-            <v-card>
-              <v-card-title>Evolução Temporal</v-card-title>
-              <v-card-text>
-                <Line :data="evolutionData" :options="chartOptions" />
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" md="4">
-            <v-card>
-              <v-card-title>Distribuição de Risco</v-card-title>
-              <v-card-text>
-                <Doughnut :data="riskDistribution" :options="doughnutOptions" />
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-        <v-row class="mt-4">
-          <v-col cols="12">
-            <v-card>
-              <v-card-title>Comparativo por Setor</v-card-title>
-              <v-card-text>
-                <Bar :data="sectorComparison" :options="chartOptions" />
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-        <!-- Tabela de Relatórios Recentes -->
-        <v-row class="mt-4">
-          <v-col cols="12">
-            <v-card>
-              <v-card-title>Relatórios Recentes</v-card-title>
-              <v-card-text>
-                <v-data-table
-                  :headers="tableHeaders"
-                  :items="recentReports"
-                  item-key="id"
+    <!-- Tabela de Relatórios Recentes -->
+    <v-row class="mt-4">
+      <v-col cols="12">
+        <v-card elevation="3">
+          <v-card-title>Relatórios Recentes</v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="tableHeaders"
+              :items="relatorios"
+              :items-per-page="5"
+              class="elevation-0"
+            >
+              <template v-slot:item.risco="{ item }">
+                <v-chip
+                  :color="getRiscoColor(item.risco)"
+                  small
+                  text-color="white"
                 >
-                  <template #item.riskLevel="{ item }">
-                    <v-chip
-                      :color="getRiskColor(item.riskLevel)"
-                      size="small"
-                    >
-                      {{ item.riskLevel }}
-                    </v-chip>
-                  </template>
-                </v-data-table>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+                  {{ item.risco.toFixed(1) }}
+                </v-chip>
+              </template>
+              <template v-slot:item.status="{ item }">
+                <v-chip color="success" small>
+                  {{ item.status }}
+                </v-chip>
+              </template>
+            </v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { Line, Bar, Doughnut } from 'vue-chartjs'
+import { Line, Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -179,79 +146,121 @@ import {
   PointElement,
   LineElement,
   BarElement,
-  ArcElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js'
-import { mockDashboardData } from '@/mocks/dashboard'
 
-// Register Chart.js components
+import {
+  mockDashboardMetrics,
+  mockEvolution,
+  mockSetoresComparativo,
+  mockRelatoriosRecentes,
+} from '@/mocks/dashboard'
+
+// Registrar componentes Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
   BarElement,
-  ArcElement,
   Title,
   Tooltip,
   Legend
 )
 
-const router = useRouter()
-const authStore = useAuthStore()
+// Dados reativos
+const metrics = ref(mockDashboardMetrics)
+const relatorios = ref(mockRelatoriosRecentes)
 
-const drawer = ref(false)
+// Headers da tabela
+const tableHeaders = [
+  { title: 'Tipo', key: 'tipo' },
+  { title: 'Organização', key: 'organizacao' },
+  { title: 'Setor', key: 'setor' },
+  { title: 'Data', key: 'data' },
+  { title: 'Risco', key: 'risco' },
+  { title: 'Status', key: 'status' },
+]
 
-// Mock Data
-const metrics = ref(mockDashboardData.metrics)
-const evolutionData = ref(mockDashboardData.evolutionData)
-const sectorComparison = ref(mockDashboardData.sectorComparison)
-const riskDistribution = ref(mockDashboardData.riskDistribution)
-const recentReports = ref(mockDashboardData.recentReports)
+// Dados do gráfico de evolução
+const evolutionChartData = {
+  labels: mockEvolution.map((d) => d.mes),
+  datasets: [
+    {
+      label: 'Risco',
+      data: mockEvolution.map((d) => d.risco),
+      borderColor: '#f59e0b',
+      backgroundColor: 'rgba(245, 158, 11, 0.1)',
+      tension: 0.4,
+    },
+    {
+      label: 'Proteção',
+      data: mockEvolution.map((d) => d.protecao),
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+      tension: 0.4,
+    },
+  ],
+}
 
-const chartOptions = {
+// Dados do gráfico de setores
+const setoresChartData = {
+  labels: mockSetoresComparativo.map((d) => d.setor),
+  datasets: [
+    {
+      label: 'Nível de Risco',
+      data: mockSetoresComparativo.map((d) => d.risco),
+      backgroundColor: [
+        'rgba(99, 102, 241, 0.8)',
+        'rgba(139, 92, 246, 0.8)',
+        'rgba(236, 72, 153, 0.8)',
+        'rgba(245, 158, 11, 0.8)',
+        'rgba(239, 68, 68, 0.8)',
+      ],
+    },
+  ],
+}
+
+// Opções dos gráficos
+const lineChartOptions = {
   responsive: true,
-  maintainAspectRatio: false,
+  maintainAspectRatio: true,
   plugins: {
     legend: {
-      display: true,
+      position: 'top',
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      max: 5,
     },
   },
 }
 
-const doughnutOptions = {
+const barChartOptions = {
   responsive: true,
-  maintainAspectRatio: false,
+  maintainAspectRatio: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      max: 5,
+    },
+  },
 }
 
-const tableHeaders = [
-  { title: 'Organização', key: 'organization' },
-  { title: 'Setor', key: 'sector' },
-  { title: 'Data', key: 'date' },
-  { title: 'Tipo', key: 'type' },
-  { title: 'Nível de Risco', key: 'riskLevel' },
-]
-
-function getRiskColor(level) {
-  const colors = {
-    Baixo: 'success',
-    Médio: 'warning',
-    Alto: 'error',
-    Crítico: 'error',
-  }
-  return colors[level] || 'grey'
-}
-
-function handleLogout() {
-  authStore.logout()
-  router.push('/login')
+// Função auxiliar para cor de risco
+function getRiscoColor(risco) {
+  if (risco < 2) return 'success'
+  if (risco < 3) return 'info'
+  if (risco < 4) return 'warning'
+  return 'error'
 }
 </script>
-
-<style scoped>
-.v-card-text canvas {
-  max-height: 300px;
-}
-</style>
