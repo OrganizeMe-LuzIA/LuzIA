@@ -1,21 +1,35 @@
-from typing import Dict, Any, Optional, Tuple, List
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
 
-from app.repositories.questionarios import QuestionariosRepo
+from app.repositories.questionarios import QuestionariosRepo, PerguntasRepo
 from app.repositories.usuarios import UsuariosRepo
+from app.repositories.respostas import RespostasRepo
 from app.bot.parsers import parse_answer
 
 
-class BotFlow:
-    """
-    Controla o estado do usuário e a sequência do questionário.
-    Estados: INATIVO, AGUARDANDO_CONFIRMACAO, EM_CURSO, FINALIZADO
+LikertValue = Union[int, List[int]]
 
+
+class BotFlow:
+    """Controla o estado do usuário e a sequência do questionário.
+
+    Estados (persistidos em usuarios.metadata.chat_state):
+      - INATIVO
+      - AGUARDANDO_CONFIRMACAO
+      - EM_CURSO
+      - FINALIZADO
+
+    Observação: este fluxo é independente do canal (Twilio/HTTP etc.). Os endpoints apenas chamam
+    `handle_incoming(phone, incoming_text)` e devolvem o texto retornado.
     """
 
     def __init__(self):
         self.users_repo = UsuariosRepo()
-        self.q_repo = QuestionariosRepo()
+        self.questionarios_repo = QuestionariosRepo()
+        self.perguntas_repo = PerguntasRepo()
+        self.respostas_repo = RespostasRepo()
 
     def _normalize(self, text: str) -> str:
         return (text or "").strip().lower()
@@ -24,7 +38,8 @@ class BotFlow:
         return (
             "Olá! Eu sou o LuzIA\n\n"
             "Vou te enviar um questionário rápido e suas respostas serão armazenadas de forma segura.\n\n"
-            "Para começar, responda: SIM"
+            "Para começar, responda: SIM\n\n"
+            "(Se você quiser recomeçar a qualquer momento, envie: REINICIAR)"
         )
 
     def _final_message(self) -> str:
@@ -36,112 +51,141 @@ class BotFlow:
     def _invalid_answer_message(self, min_v: int, max_v: int) -> str:
         return f"Resposta inválida. Envie apenas um número entre {min_v} e {max_v}."
 
-    async def handle_incoming(self, phone: str, incoming_text: str) -> str:
-        """Retorna o texto que deve ser enviado ao usuário no WhatsApp"""
-
-        user = await self.users_repo.find_by_phone(phone)
-
-        if not user:
-            return "Usuário não cadastrado no sistema. Fale com o administrador."
-
-        chat_state = (user.get("metadata", {}).get("chat_state")) or {}
-        status = chat_state.get("statusChat", "INATIVO")
-        indice = int(chat_state.get("indicePergunta", 0) or 0)
-        id_questionario = chat_state.get("idQuestionario")
-
-        text = self._normalize(incoming_text)
-
-        # Usuário INATIVO
-        if status == "INATIVO":
-            new_state = {
-                "statusChat": "AGUARDANDO_CONFIRMACAO",
+    async def _reset_user_chat(self, phone: str) -> None:
+        await self.users_repo.update_chat_state(
+            phone,
+            {
+                "statusChat": "INATIVO",
                 "indicePergunta": 0,
                 "idQuestionario": None,
                 "dataInicio": None,
-            }
-            await self.users_repo.update_chat_state(phone, new_state)
+            },
+        )
+
+    async def handle_incoming(self, phone: str, incoming_text: str) -> str:
+        """Retorna o texto que deve ser enviado ao usuário."""
+
+        user = await self.users_repo.find_by_phone(phone)
+        if not user:
+            return "Usuário não cadastrado no sistema. Fale com o administrador."
+
+        text = self._normalize(incoming_text)
+
+        # Comando de reset para desenvolvimento/UX
+        if text in {"reiniciar", "recomecar", "recomeçar", "reset"}:
+            await self._reset_user_chat(phone)
+            return self._intro_message()
+
+        chat_state: Dict[str, Any] = (user.get("metadata") or {}).get("chat_state") or {}
+        status: str = chat_state.get("statusChat") or "INATIVO"
+        indice: int = int(chat_state.get("indicePergunta") or 0)
+        id_questionario: Optional[str] = chat_state.get("idQuestionario")
+
+        # INATIVO -> pede confirmação
+        if status == "INATIVO":
+            await self.users_repo.update_chat_state(phone, {"statusChat": "AGUARDANDO_CONFIRMACAO"})
             return self._intro_message()
 
         # Esperando confirmação
         if status == "AGUARDANDO_CONFIRMACAO":
             if text == "sim":
-                q = await self.q_repo.get_active_questionnaire()
+                q = await self.questionarios_repo.get_active_questionnaire()
                 if not q:
                     return "Não encontrei um questionário ativo no momento."
 
                 q_id = str(q["_id"])
 
-                new_state = {
-                    "statusChat": "EM_CURSO",
-                    "indicePergunta": 0,
-                    "idQuestionario": q_id,
-                    "dataInicio": datetime.utcnow(),
-                }
-                await self.users_repo.update_chat_state(phone, new_state)
+                await self.users_repo.update_chat_state(
+                    phone,
+                    {
+                        "statusChat": "EM_CURSO",
+                        "indicePergunta": 0,
+                        "idQuestionario": q_id,
+                        "dataInicio": datetime.utcnow(),
+                    },
+                )
 
-                questions = await self.q_repo.get_questions(q_id)
+                questions = await self.perguntas_repo.get_questions(q_id)
                 if not questions:
+                    # volta para inativo para não travar o usuário
+                    await self._reset_user_chat(phone)
                     return "O questionário está ativo, mas não há perguntas cadastradas."
 
-                # Envia a primeira pergunta 
-                return questions[0]["texto"]
-
+                return questions[0].get("texto", "(Pergunta sem texto)")
             return self._invalid_confirm_message()
 
         # Em curso: valida resposta, salva e manda próxima
         if status == "EM_CURSO":
             if not id_questionario:
-                # Estado inconsistente
-                await self.users_repo.update_chat_state(phone, {"statusChat": "INATIVO"})
+                await self._reset_user_chat(phone)
                 return self._intro_message()
 
-            questions = await self.q_repo.get_questions(id_questionario)
+            questions = await self.perguntas_repo.get_questions(id_questionario)
             if not questions:
-                await self.users_repo.update_chat_state(phone, {"statusChat": "INATIVO"})
+                await self._reset_user_chat(phone)
                 return "Não há perguntas cadastradas. Tente novamente mais tarde."
 
-            # caso esteja no fim 
+            # Caso estado aponte para além do fim
             if indice >= len(questions):
                 await self.users_repo.update_chat_state(phone, {"statusChat": "FINALIZADO"})
                 return self._final_message()
 
             current_q = questions[indice]
 
-            valor_parseado = parse_answer(text, multipla=current_q.get("multipla", False))
-            if valor_parseado is None:
-                if current_q.get("multipla", False):
-                    return "Resposta inválida. Envie números de 1 a 5 separados por vírgula. Ex: 1,3,5"
-                return "Resposta inválida. Envie apenas um número de 1 a 5."
-            
+            # Range (se existir no doc). Caso contrário, padrão 1..5.
+            min_v = int(current_q.get("min", 1))
+            max_v = int(current_q.get("max", 5))
+
+            # parse: suporta multipla via "1,2,3" se multipla=True
+            try:
+                valor_parseado: LikertValue = parse_answer(text, multipla=bool(current_q.get("multipla", False)))
+            except ValueError:
+                # Para múltipla, a mensagem do parser já é 1..5; aqui respeitamos min/max se foram definidos
+                return self._invalid_answer_message(min_v, max_v)
+
+            # valida range também para lista
+            def _in_range(v: int) -> bool:
+                return min_v <= v <= max_v
+
+            if isinstance(valor_parseado, list):
+                if not valor_parseado or any(not _in_range(v) for v in valor_parseado):
+                    return self._invalid_answer_message(min_v, max_v)
+            else:
+                if not _in_range(int(valor_parseado)):
+                    return self._invalid_answer_message(min_v, max_v)
+
             # salva resposta
             anon_id = user.get("anonId")
-            await self.users_repo.push_answer(
+            if not anon_id:
+                # fallback: se o cadastro não tem anonId, não conseguimos registrar com consistência
+                return "Erro de cadastro: usuário sem anonId. Fale com o administrador."
+
+            await self.respostas_repo.push_answer(
                 anon_id=anon_id,
                 id_questionario=id_questionario,
-                id_pergunta=current_q["idPergunta"],
-                valor=valor_parseado,  # <- agora pode ser int ou lista[int]
+                id_pergunta=str(current_q.get("idPergunta")),
+                valor=valor_parseado,
             )
 
-            
             # avança
             next_index = indice + 1
 
             # acabou?
             if next_index >= len(questions):
-                await self.users_repo.update_chat_state(phone, {"statusChat": "FINALIZADO", "indicePergunta": next_index})
+                await self.users_repo.update_chat_state(
+                    phone,
+                    {"statusChat": "FINALIZADO", "indicePergunta": next_index},
+                )
                 return self._final_message()
 
-            # continua
             await self.users_repo.update_chat_state(phone, {"indicePergunta": next_index})
             next_q = questions[next_index]
-            return next_q["texto"]
+            return next_q.get("texto", "(Pergunta sem texto)")
 
-        # Finalizado (possui brechas para realizar novamente o questionario)
+        # Finalizado
         if status == "FINALIZADO":
-            return (
-                "Você já finalizou o questionário! \n"
-            )
+            return "Você já finalizou o questionário! Se quiser responder novamente, envie: REINICIAR"
 
         # fallback
-        await self.users_repo.update_chat_state(phone, {"statusChat": "INATIVO"})
+        await self._reset_user_chat(phone)
         return self._intro_message()
