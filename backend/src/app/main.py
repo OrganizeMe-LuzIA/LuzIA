@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from app.db import connect_to_mongo, close_mongo_connection
-
 from app.routers import auth, organizacoes, questionarios, respostas, diagnosticos, relatorios
 from app.config import settings
 

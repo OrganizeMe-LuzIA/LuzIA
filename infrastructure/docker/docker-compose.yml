@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: luzia-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-secret}
+      MONGO_INITDB_DATABASE: luzia
+    volumes:
+      - mongodb_data:/data/db
+      - ../mongo:/docker-entrypoint-initdb.d:ro
+    networks:
+      - luzia-network
+
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    container_name: luzia-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://admin:${MONGO_PASSWORD:-secret}@mongodb:27017/luzia?authSource=admin
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key}
+    depends_on:
+      - mongodb
+    networks:
+      - luzia-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  luzia-network:
+    driver: bridge
