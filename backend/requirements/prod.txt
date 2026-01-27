@@ -1,0 +1,2 @@
+# Dependências base (produção)
+-r base.txt
