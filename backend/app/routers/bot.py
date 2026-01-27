@@ -1,0 +1,75 @@
+from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi.responses import PlainTextResponse
+from pydantic import BaseModel
+from twilio.twiml.messaging_response import MessagingResponse
+from twilio.request_validator import RequestValidator
+from app.bot.flow import BotFlow
+from app.config import get_settings, Settings
+
+router = APIRouter(prefix="/bot", tags=["bot"])
+
+bot_flow = BotFlow()
+
+
+class DevIncoming(BaseModel):
+    phone: str
+    text: str
+
+
+@router.post("/dev/incoming")
+async def dev_incoming(payload: DevIncoming):
+    """Endpoint de desenvolvimento para testar o bot via JSON (sem Twilio)."""
+    reply = await bot_flow.handle_incoming(payload.phone, payload.text)
+    return {"reply": reply}
+
+
+def _validate_twilio_signature(request: Request, settings: Settings) -> None:
+    """Valida a assinatura do Twilio para evitar spoofing (produção)."""
+    if not settings.TWILIO_VALIDATE_SIGNATURE:
+        return
+    if not settings.TWILIO_AUTH_TOKEN:
+        raise HTTPException(status_code=500, detail="TWILIO_AUTH_TOKEN não configurado para validação de assinatura.")
+
+    # O Twilio assina o URL completo + parâmetros do form
+    signature = request.headers.get("X-Twilio-Signature", "")
+    validator = RequestValidator(settings.TWILIO_AUTH_TOKEN)
+
+    # Precisamos do URL completo. FastAPI monta em request.url.
+    url = str(request.url)
+
+
+
+@router.post("/twilio/whatsapp", response_class=PlainTextResponse)
+async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends(get_settings)):
+    """Webhook do Twilio para WhatsApp.
+
+    O Twilio envia os campos (form-encoded) como:
+      - From: 'whatsapp:+55...'
+      - Body: texto da mensagem
+    Retornamos TwiML XML com a resposta do bot.
+    """
+    form = await request.form()
+    from_ = str(form.get("From", "")).strip()
+    body = str(form.get("Body", "")).strip()
+
+    if not from_:
+        raise HTTPException(status_code=400, detail="Campo 'From' ausente.")
+    if body is None:
+        body = ""
+
+    if settings.TWILIO_VALIDATE_SIGNATURE:
+        signature = request.headers.get("X-Twilio-Signature", "")
+        validator = RequestValidator(settings.TWILIO_AUTH_TOKEN)
+        url = str(request.url)
+        params = {k: str(v) for k, v in form.items()}
+        if not validator.validate(url, params, signature):
+            raise HTTPException(status_code=403, detail="Assinatura do Twilio inválida.")
+
+    # Normaliza o numero
+    phone = from_.replace("whatsapp:", "")
+
+    reply = await bot_flow.handle_incoming(phone, body)
+
+    resp = MessagingResponse()
+    resp.message(reply)
+    return PlainTextResponse(str(resp), media_type="application/xml")
