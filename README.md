@@ -62,7 +62,7 @@ make run        # Inicia servidor de desenvolvimento
 
 ## 📚 Documentação
 
-- [Documentação Não Técnica – Visão Geral](documentos/visao-geral/README.md)
+- [Visão Geral do Projeto](docs/visao-geral/README.md)
 - [API Reference](docs/api/API.md)
 - [Guia de Implementação](docs/guides/Guia-Implementacao-Backend.md)
 - [Segurança](docs/security/SEGURANCA.md)
