@@ -1,4 +1,4 @@
-Visão Geral do Projeto LuzIA
+# Visão Geral do Projeto LuzIA
 
 O LuzIA é um sistema desenvolvido para apoiar organizações na realização de questionários de diagnóstico, especialmente voltados para a avaliação de aspectos psicossociais no ambiente de trabalho.
 
