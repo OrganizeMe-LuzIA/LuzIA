@@ -13,3 +13,8 @@ As respostas são coletadas de forma segura e totalmente anônima, garantindo qu
 Após a coleta, o sistema realiza a análise das informações, transformando as respostas em dados consolidados que refletem o cenário psicossocial da organização.
 
 Por fim, os resultados são apresentados por meio de dashboards visuais, acessíveis apenas a pessoas autorizadas da empresa, permitindo uma visualização clara dos indicadores, facilitando o acompanhamento e apoiando a tomada de decisões.
+
+
+➡️ **Próximo:** [Funcionalidades](funcionalidades.md)  
+⬅️ **Anterior:** [Objetivo do Projeto](objetivo.md)  
+🏠 [Voltar para Visão Geral](README.md)
