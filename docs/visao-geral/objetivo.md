@@ -17,3 +17,6 @@ Disponibilizar diagnósticos e relatórios claros, que permitam a análise dos r
 ### Facilitação da Análise das Informações
 
 Simplificar as etapas de coleta, organização e visualização dos dados, transformando informações complexas em conteúdos acessíveis, apresentados de forma clara e compreensível para pessoas autorizadas dentro das organizações.
+
+➡️ **Próximo:** [Como Funciona](como-funciona.md)  
+⬅️ [Voltar para Visão Geral](README.md)
