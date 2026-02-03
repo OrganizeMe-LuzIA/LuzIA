@@ -15,3 +15,9 @@ As organizações enfrentam dificuldades para identificar e acompanhar, de forma
 Grande parte das avaliações ainda é realizada por meio de métodos tradicionais, que costumam ser demorados e apresentam baixa participação dos colaboradores, o que compromete a qualidade dos resultados.
 
 Além disso, esses métodos geralmente dependem de processos manuais ou semi manuais, tanto na aplicação dos questionários quanto na análise das respostas. Isso aumenta o tempo necessário para obter diagnósticos, eleva a chance de erros e dificulta o acompanhamento sistemático da evolução dos indicadores ao longo do tempo.
+
+## Conteúdo
+
+[Objetivo do Projeto](objetivo.md)
+[Como Funciona](como-funciona.md)
+[Funcionalidades](funcionalidades.md)
