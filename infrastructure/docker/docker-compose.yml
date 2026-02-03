@@ -26,7 +26,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGODB_URL=mongodb://admin:${MONGO_PASSWORD:-secret}@mongodb:27017/luzia?authSource=admin
+      - MONGO_URI=mongodb://admin:${MONGO_PASSWORD:-secret}@mongodb:27017/luzia?authSource=admin
       - SECRET_KEY=${SECRET_KEY:-your-secret-key}
     depends_on:
       - mongodb
