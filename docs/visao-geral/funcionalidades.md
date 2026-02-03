@@ -1,26 +1,26 @@
-Funcionalidades do Sistema LuzIA
+# Funcionalidades do Sistema LuzIA
 
 O LuzIA foi desenvolvido para tornar a avaliação de riscos psicossociais mais simples, acessível e segura para empresas e colaboradores. A seguir, estão descritas as principais funcionalidades do sistema e como elas se integram para oferecer uma experiência eficiente.
 
-Como o Sistema LuzIA Funciona
+## Como o Sistema LuzIA Funciona
 
 O LuzIA conduz todo o processo de avaliação de forma intuitiva, desde o contato com os colaboradores até a apresentação dos resultados para a empresa.
 
 O fluxo acontece da seguinte forma:
 
-Interação via WhatsApp
+### Interação via WhatsApp
 Os colaboradores respondem aos questionários diretamente pelo WhatsApp, um canal familiar e de fácil acesso, o que aumenta a adesão e reduz barreiras de participação.
 
-Registro Anonimizado
+### Registro Anonimizado
 As respostas são registradas sem associação direta à identidade do colaborador, garantindo privacidade, segurança das informações e conformidade com a LGPD.
 
-Processamento Inteligente
+### Processamento Inteligente
 As respostas coletadas são organizadas e analisadas automaticamente pelo sistema, permitindo a geração de diagnósticos confiáveis sobre os riscos psicossociais.
 
-Visualização de Resultados
+### Visualização de Resultados
 As informações analisadas são transformadas em dados claros e objetivos, facilitando a compreensão dos cenários identificados.
 
-Painel de Controle (Front-End)
+### Painel de Controle (Front-End)
 
 O painel de controle é o ambiente visual onde pessoas autorizadas da empresa acompanham e gerenciam todo o processo de avaliação.
 
@@ -52,7 +52,7 @@ Confirmação da conclusão da avaliação ao final do processo
 
 Tudo isso ocorre de forma transparente para o usuário, que apenas responde às perguntas no WhatsApp, sem precisar acessar sistemas complexos.
 
-Benefícios das Funcionalidades
+## Benefícios das Funcionalidades
 
 As funcionalidades do LuzIA foram pensadas para:
 
