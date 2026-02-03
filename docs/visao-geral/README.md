@@ -19,5 +19,7 @@ Além disso, esses métodos geralmente dependem de processos manuais ou semi man
 ## Conteúdo
 
 [Objetivo do Projeto](objetivo.md)
+
 [Como Funciona](como-funciona.md)
+
 [Funcionalidades](funcionalidades.md)
