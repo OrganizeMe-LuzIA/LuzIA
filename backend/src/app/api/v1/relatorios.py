@@ -6,7 +6,7 @@ from app.repositories.relatorios import RelatoriosRepo
 from app.repositories.usuarios import UsuariosRepo
 from app.repositories.diagnosticos import DiagnosticosRepo
 from app.services.relatorio_service import RelatorioService
-from app.routers.deps import get_current_admin_user
+from app.api.deps import get_current_admin_user
 
 router = APIRouter(prefix="/relatorios", tags=["relatorios"])
 

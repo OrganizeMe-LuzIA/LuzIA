@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.config import settings
+from app.core.config import settings
 from typing import Optional
 import logging
 

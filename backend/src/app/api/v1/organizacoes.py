@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
 from app.models.base import Organizacao, Usuario
 from app.repositories.organizacoes import OrganizacoesRepo
-from app.routers.deps import get_current_admin_user
+from app.api.deps import get_current_admin_user
 
 router = APIRouter(prefix="/organizacoes", tags=["organizacoes"])
 

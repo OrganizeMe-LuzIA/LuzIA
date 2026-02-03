@@ -2,7 +2,7 @@
 Repositório para gerenciamento de respostas a questionários.
 """
 from typing import Optional, List, Dict, Any
-from app.db import get_db
+from app.core.database import get_db
 from bson import ObjectId
 from bson.errors import InvalidId
 from datetime import datetime

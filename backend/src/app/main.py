@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import connect_to_mongo, close_mongo_connection
-from app.routers import auth, organizacoes, questionarios, respostas, diagnosticos, relatorios
-from app.config import settings
+from app.core.database import connect_to_mongo, close_mongo_connection
+from app.api.v1 import api_router
+from app.bot.endpoints import router as bot_router
+from app.core.config import settings
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -12,6 +14,7 @@ async def lifespan(app: FastAPI):
     yield
     # Shutdown: Close MongoDB connection
     await close_mongo_connection()
+
 
 app = FastAPI(
     title="LuzIA Backend",
@@ -39,15 +42,10 @@ app.add_middleware(
 )
 
 # API Router Setup
-api_router = APIRouter()
-api_router.include_router(auth.router)
-api_router.include_router(organizacoes.router)
-api_router.include_router(questionarios.router)
-api_router.include_router(respostas.router)
-api_router.include_router(diagnosticos.router)
-api_router.include_router(relatorios.router)
-
 app.include_router(api_router, prefix="/api/v1")
+
+# Bot Router (webhook Twilio - sem autenticação JWT, usa validação Twilio)
+app.include_router(bot_router)
 
 # Rotas de teste
 @app.get("/")

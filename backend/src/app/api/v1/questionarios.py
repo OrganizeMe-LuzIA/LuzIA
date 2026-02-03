@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
 from app.models.base import Usuario
 from app.repositories.questionarios import QuestionariosRepo, PerguntasRepo
-from app.routers.deps import get_current_active_user, get_current_admin_user
+from app.api.deps import get_current_active_user, get_current_admin_user
 
 router = APIRouter(prefix="/questionarios", tags=["questionarios"])
 

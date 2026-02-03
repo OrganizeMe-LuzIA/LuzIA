@@ -5,7 +5,7 @@ from app.repositories.respostas import RespostasRepo
 from app.repositories.questionarios import QuestionariosRepo, PerguntasRepo
 from app.repositories.diagnosticos import DiagnosticosRepo
 from app.services.diagnostico_service import DiagnosticoService
-from app.routers.deps import get_current_active_user
+from app.api.deps import get_current_active_user
 
 router = APIRouter(prefix="/respostas", tags=["respostas"])
 

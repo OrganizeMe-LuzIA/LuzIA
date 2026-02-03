@@ -2,7 +2,7 @@
 Repositório para gerenciamento de usuários.
 """
 from typing import Optional, Dict, Any, List
-from app.db import get_db
+from app.core.database import get_db
 from bson import ObjectId
 from bson.errors import InvalidId
 from datetime import datetime

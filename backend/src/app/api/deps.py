@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
-from app.auth import get_current_user as get_token_user, TokenData
+from app.core.security import get_current_user as get_token_user, TokenData
 from app.models.base import Usuario, StatusEnum
 from app.repositories.usuarios import UsuariosRepo
 

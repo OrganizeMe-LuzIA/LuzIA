@@ -16,7 +16,7 @@ from pydantic import BaseModel, field_validator
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from app.config import settings
+from app.core.config import settings
 
 # Configuração via settings (não hardcoded)
 ALGORITHM = "HS256"

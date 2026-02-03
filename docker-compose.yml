@@ -23,7 +23,7 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:8080}
     volumes:
       # Mount source code for hot-reload in development
-      - ./backend/app:/app/app:ro
+      - ./backend/src:/app/src:ro
     depends_on:
       mongo:
         condition: service_healthy

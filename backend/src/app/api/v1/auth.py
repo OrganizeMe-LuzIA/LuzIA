@@ -8,14 +8,14 @@ from fastapi import APIRouter, HTTPException, status
 from datetime import timedelta
 from pydantic import ValidationError
 
-from app.auth import (
+from app.core.security import (
     create_access_token, 
     AuthRequest, 
     Token,
     check_rate_limit,
     verify_otp
 )
-from app.config import settings
+from app.core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

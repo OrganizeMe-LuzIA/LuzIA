@@ -20,6 +20,8 @@ RUN pip wheel --no-cache-dir --wheel-dir /build/wheels -r requirements.txt
 FROM python:3.11-slim AS runtime
 
 WORKDIR /app
+ENV PYTHONPATH=/app/src
+
 
 # Install runtime dependencies for WeasyPrint (PDF generation)
 RUN apt-get update && apt-get install -y --no-install-recommends \
