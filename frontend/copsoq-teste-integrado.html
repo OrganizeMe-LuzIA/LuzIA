@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COPSOQ II - Teste Integrado com Backend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .test-badge {
+            display: inline-block;
+            background: var(--warning);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* Connection Status */
+        .connection-bar {
+            background: var(--bg-card);
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-dot.connected {
+            background: var(--secondary);
+        }
+
+        .status-dot.error {
+            background: var(--danger);
+        }
+
+        .status-dot.loading {
+            background: var(--warning);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .config-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .config-bar input,
+        .config-bar select {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .config-bar input:focus,
+        .config-bar select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-card);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-hover);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-3);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Login Section */
+        .login-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .login-section h2 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-form input {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .login-form .btn {
+            padding: 0.75rem 1.5rem;
+        }
+
+        /* Domain Section */
+        .domain-section {
+            margin-bottom: 2rem;
+        }
+
+        .domain-header {
+            background: var(--bg-card);
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .domain-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .domain-EL {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .domain-OTC {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .domain-RSL {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .domain-ITI {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .domain-VLT {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .domain-SBE {
+            background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+        }
+
+        .domain-CO {
+            background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+        }
+
+        .domain-info h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .domain-info span {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-color: var(--primary);
+        }
+
+        .question-card.answered {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .question-number {
+            background: var(--bg-hover);
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .dimension-tag {
+            font-size: 0.7rem;
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .option {
+            flex: 1;
+            min-width: 100px;
+            position: relative;
+        }
+
+        .option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .option label {
+            display: block;
+            padding: 0.65rem 0.75rem;
+            background: var(--bg-hover);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .option label:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary-light);
+        }
+
+        .option input:checked+label {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .submit-btn {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .toast.error {
+            background: var(--danger);
+            color: white;
+        }
+
+        .toast.info {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-item {
+            background: var(--bg-hover);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .close-btn {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        .close-btn:hover {
+            background: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .options {
+                flex-direction: column;
+            }
+
+            .option {
+                min-width: 100%;
+            }
+
+            .connection-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <h1>🧠 COPSOQ II - Teste Integrado</h1>
+        <p>Frontend conectado ao Backend FastAPI</p>
+        <span class="test-badge">⚠️ MODO DE TESTE - Dados com prefixo TEST_</span>
+    </header>
+
+    <div class="connection-bar">
+        <div class="status-indicator">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Desconectado</span>
+        </div>
+        <div class="config-bar">
+            <input type="text" id="apiUrl" value="http://localhost:8000/api/v1" placeholder="URL da API">
+            <button class="btn btn-secondary" onclick="testConnection()">🔌 Testar Conexão</button>
+            <button class="btn btn-primary" id="loadBtn" onclick="loadFromAPI()" disabled>📥 Carregar
+                Questionários</button>
+        </div>
+    </div>
+
+    <div class="progress-container" style="display: none;" id="progressContainer">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+            <span id="progressText">0 de 0 perguntas respondidas</span>
+            <span id="progressPercent">0%</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div class="login-section" id="loginSection" style="display: none;">
+            <h2>🔐 Autenticação de Teste</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Use um telefone de teste para simular autenticação
+            </p>
+            <div class="login-form">
+                <input type="text" id="testPhone" value="+5511999999999" placeholder="Telefone de teste">
+                <button class="btn btn-primary" onclick="requestTestOTP()">📱 Solicitar OTP</button>
+                <input type="text" id="otpCode" placeholder="Código OTP (6 dígitos)" style="display: none;">
+                <button class="btn btn-secondary" id="verifyOTPBtn" onclick="verifyOTP()" style="display: none;">✅
+                    Verificar OTP</button>
+            </div>
+        </div>
+
+        <!-- Questionnaire Selection -->
+        <div id="questionnaireSelect" style="display: none;">
+            <h2 style="margin-bottom: 1rem;">📋 Selecione o Questionário</h2>
+            <div id="questionnaireList"></div>
+        </div>
+
+        <!-- Questions -->
+        <div id="questionnaire" style="display: none;"></div>
+
+        <div class="submit-section" id="submitSection" style="display: none;">
+            <button class="submit-btn" id="submitBtn" onclick="submitToBackend()">
+                📤 Enviar Respostas ao Backend
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div class="modal" id="resultsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Resultados</h2>
+                <p style="color: var(--text-secondary);" id="resultSubtitle"></p>
+            </div>
+            <div id="resultsContent"></div>
+            <button class="close-btn" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // Configuração e Estado
+        // =====================================================================
+
+        const state = {
+            connected: false,
+            token: null,
+            anonId: null,
+            questionarios: [],
+            selectedQuestionario: null,
+            perguntas: [],
+            respostas: {}
+        };
+
+        const dominiosInfo = {
+            "EL": { nome: "Exigências Laborais", icone: "⚡" },
+            "OTC": { nome: "Organização do Trabalho e Conteúdo", icone: "📋" },
+            "RSL": { nome: "Relações Sociais e Liderança", icone: "👥" },
+            "ITI": { nome: "Interface Trabalho-Indivíduo", icone: "⚖️" },
+            "VLT": { nome: "Valores no Local de Trabalho", icone: "💎" },
+            "SBE": { nome: "Saúde e Bem-Estar", icone: "❤️" },
+            "CO": { nome: "Comportamentos Ofensivos", icone: "⚠️" },
+            "PER": { nome: "Personalidade", icone: "🧠" }
+        };
+
+        // =====================================================================
+        // Utility Functions
+        // =====================================================================
+
+        function getApiUrl() {
+            return document.getElementById('apiUrl').value.replace(/\/$/, '');
+        }
+
+        function setStatus(status, message) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+
+            dot.className = 'status-dot ' + status;
+            text.textContent = message;
+
+            state.connected = status === 'connected';
+            document.getElementById('loadBtn').disabled = !state.connected || !state.token;
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function apiCall(endpoint, options = {}) {
+            const url = getApiUrl() + endpoint;
+            const headers = {
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+
+            if (state.token) {
+                headers['Authorization'] = `Bearer ${state.token}`;
+            }
+
+            const response = await fetch(url, { ...options, headers });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ detail: response.statusText }));
+                throw new Error(error.detail || 'API Error');
+            }
+
+            return response.json();
+        }
+
+        // =====================================================================
+        // Connection & Auth
+        // =====================================================================
+
+        async function testConnection() {
+            setStatus('loading', 'Testando conexão...');
+
+            try {
+                const response = await fetch(getApiUrl().replace('/api/v1', '') + '/health');
+
+                if (response.ok) {
+                    setStatus('connected', 'Conectado ao backend');
+                    showToast('Conexão estabelecida!', 'success');
+                    document.getElementById('loginSection').style.display = 'block';
+                } else {
+                    throw new Error('Health check failed');
+                }
+            } catch (error) {
+                setStatus('error', 'Erro de conexão');
+                showToast('Falha na conexão: ' + error.message, 'error');
+            }
+        }
+
+        async function requestTestOTP() {
+            const phone = document.getElementById('testPhone').value;
+            setStatus('loading', 'Solicitando OTP...');
+
+            try {
+                await apiCall('/auth/request-otp', {
+                    method: 'POST',
+                    body: JSON.stringify({ phone })
+                });
+
+                showToast('OTP solicitado! Verifique o console do backend.', 'success');
+                document.getElementById('otpCode').style.display = 'block';
+                document.getElementById('verifyOTPBtn').style.display = 'block';
+                setStatus('connected', 'Aguardando OTP');
+            } catch (error) {
+                showToast('Erro: ' + error.message, 'error');
+                setStatus('error', 'Erro ao solicitar OTP');
+            }
+        }
+
+        async function verifyOTP() {
+            const phone = document.getElementById('testPhone').value;
+            const code = document.getElementById('otpCode').value;
+
+            setStatus('loading', 'Verificando OTP...');
+
+            try {
+                const data = await apiCall('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ phone, code })
+                });
+
+                state.token = data.access_token;
+                state.anonId = 'TEST_' + Date.now(); // Prefixo de teste!
+
+                showToast('Autenticado com sucesso!', 'success');
+                setStatus('connected', 'Autenticado');
+                document.getElementById('loadBtn').disabled = false;
+                document.getElementById('loginSection').innerHTML = `
+                    <p style="color: var(--secondary);">✅ Autenticado como usuário de teste</p>
+                    <p style="color: var(--text-muted); font-size: 0.875rem;">anonId: ${state.anonId}</p>
+                `;
+            } catch (error) {
+                showToast('Erro: ' + error.message, 'error');
+                setStatus('error', 'Falha na autenticação');
+            }
+        }
+
+        // =====================================================================
+        // Load Questionnaires
+        // =====================================================================
+
+        async function loadFromAPI() {
+            setStatus('loading', 'Carregando questionários...');
+
+            try {
+                const questionarios = await apiCall('/questionarios/');
+                state.questionarios = questionarios;
+
+                showToast(`${questionarios.length} questionário(s) encontrado(s)`, 'success');
+                setStatus('connected', 'Questionários carregados');
+
+                renderQuestionnaireList();
+            } catch (error) {
+                showToast('Erro: ' + error.message, 'error');
+                setStatus('error', 'Erro ao carregar');
+            }
+        }
+
+        function renderQuestionnaireList() {
+            const container = document.getElementById('questionnaireList');
+            document.getElementById('questionnaireSelect').style.display = 'block';
+
+            if (state.questionarios.length === 0) {
+                container.innerHTML = `
+                    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; text-align: center;">
+                        <p>Nenhum questionário encontrado no banco de dados.</p>
+                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem;">
+                            Execute: mongosh LuzIA < seed_copsoq_curta_br.js
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = state.questionarios.map(q => `
+                <div class="question-card" onclick="selectQuestionnaire('${q.id}')" style="cursor: pointer;">
+                    <h3>${q.nome}</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                        ${q.totalPerguntas || '?'} perguntas • ${q.idioma || 'pt'}
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        async function selectQuestionnaire(id) {
+            setStatus('loading', 'Carregando perguntas...');
+
+            try {
+                const perguntas = await apiCall(`/questionarios/${id}/perguntas`);
+                state.selectedQuestionario = state.questionarios.find(q => q.id === id);
+                state.perguntas = perguntas;
+                state.respostas = {};
+
+                showToast(`${perguntas.length} perguntas carregadas`, 'success');
+                setStatus('connected', 'Pronto para responder');
+
+                document.getElementById('questionnaireSelect').style.display = 'none';
+                document.getElementById('progressContainer').style.display = 'block';
+                document.getElementById('submitSection').style.display = 'block';
+
+                renderQuestionnaire();
+                updateProgress();
+            } catch (error) {
+                showToast('Erro: ' + error.message, 'error');
+                setStatus('error', 'Erro ao carregar perguntas');
+            }
+        }
+
+        // =====================================================================
+        // Render & Interact
+        // =====================================================================
+
+        function renderQuestionnaire() {
+            const container = document.getElementById('questionnaire');
+            container.style.display = 'block';
+
+            // Group by domain
+            const dominios = {};
+            state.perguntas.forEach(p => {
+                const codigo = p.codigoDominio || p.dominio?.substring(0, 3).toUpperCase() || 'GEN';
+                if (!dominios[codigo]) dominios[codigo] = { nome: p.dominio || 'Geral', perguntas: [] };
+                dominios[codigo].perguntas.push(p);
+            });
+
+            let html = '';
+            for (const [codigo, data] of Object.entries(dominios)) {
+                const info = dominiosInfo[codigo] || { nome: data.nome, icone: '📝' };
+                html += `
+                    <div class="domain-section">
+                        <div class="domain-header">
+                            <div class="domain-icon domain-${codigo}">${info.icone}</div>
+                            <div class="domain-info">
+                                <h2>${info.nome}</h2>
+                                <span>${data.perguntas.length} perguntas</span>
+                            </div>
+                        </div>
+                        ${data.perguntas.map(p => renderQuestion(p)).join('')}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderQuestion(p) {
+            const opcoes = p.opcoesResposta || [
+                { valor: 4, texto: "Sempre" },
+                { valor: 3, texto: "Frequentemente" },
+                { valor: 2, texto: "Às vezes" },
+                { valor: 1, texto: "Raramente" },
+                { valor: 0, texto: "Nunca" }
+            ];
+
+            return `
+                <div class="question-card" id="card_${p.idPergunta}">
+                    <div class="question-meta">
+                        <span class="question-number">Pergunta ${p.ordem}</span>
+                        <span class="dimension-tag">${p.dimensao || ''}</span>
+                    </div>
+                    <p class="question-text">${p.texto}</p>
+                    <div class="options">
+                        ${opcoes.map((o, i) => `
+                            <div class="option">
+                                <input type="radio" 
+                                       id="${p.idPergunta}_${i}" 
+                                       name="${p.idPergunta}" 
+                                       value="${o.valor}"
+                                       onchange="handleAnswer('${p.idPergunta}', ${o.valor})">
+                                <label for="${p.idPergunta}_${i}">${o.texto}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleAnswer(idPergunta, valor) {
+            state.respostas[idPergunta] = valor;
+            document.getElementById(`card_${idPergunta}`).classList.add('answered');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const total = state.perguntas.length;
+            const respondidas = Object.keys(state.respostas).length;
+            const percent = total > 0 ? Math.round((respondidas / total) * 100) : 0;
+
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            document.getElementById('progressText').textContent = `${respondidas} de ${total} perguntas respondidas`;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+        }
+
+        // =====================================================================
+        // Submit to Backend
+        // =====================================================================
+
+        async function submitToBackend() {
+            const respondidas = Object.keys(state.respostas).length;
+            const total = state.perguntas.length;
+
+            if (respondidas < total) {
+                showToast(`Faltam ${total - respondidas} perguntas`, 'error');
+                return;
+            }
+
+            setStatus('loading', 'Enviando respostas...');
+
+            const payload = {
+                idQuestionario: state.selectedQuestionario.id,
+                respostas: Object.entries(state.respostas).map(([idPergunta, valor]) => ({
+                    idPergunta,
+                    valor
+                }))
+            };
+
+            console.log('Payload:', payload);
+
+            try {
+                const result = await apiCall('/respostas/', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                showToast('Respostas enviadas com sucesso!', 'success');
+                setStatus('connected', 'Respostas salvas');
+
+                showResults(result);
+            } catch (error) {
+                showToast('Erro: ' + error.message, 'error');
+                setStatus('error', 'Erro ao enviar');
+            }
+        }
+
+        function showResults(result) {
+            document.getElementById('resultSubtitle').textContent = result.message || 'Processamento em andamento';
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="result-item">
+                    <span>Status</span>
+                    <span style="color: var(--secondary);">✅ Salvo com Sucesso</span>
+                </div>
+                <div class="result-item">
+                    <span>Questionário</span>
+                    <span>${state.selectedQuestionario.nome}</span>
+                </div>
+                <div class="result-item">
+                    <span>Respostas Enviadas</span>
+                    <span class="result-score">${Object.keys(state.respostas).length}</span>
+                </div>
+                <div class="result-item">
+                    <span>anonId (Teste)</span>
+                    <span style="font-family: monospace; font-size: 0.75rem;">${state.anonId}</span>
+                </div>
+                <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.875rem; text-align: center;">
+                    💡 Para limpar estes dados de teste, execute:<br>
+                    <code style="background: var(--bg-hover); padding: 0.25rem 0.5rem; border-radius: 4px;">
+                        mongosh LuzIA < cleanup_test_data.js
+                    </code>
+                </p>
+            `;
+            document.getElementById('resultsModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('resultsModal').classList.remove('active');
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            setStatus('', 'Clique em "Testar Conexão" para iniciar');
+        });
+    </script>
+</body>
+
+</html>
