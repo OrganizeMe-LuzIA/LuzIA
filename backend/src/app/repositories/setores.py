@@ -3,6 +3,7 @@ Repositório para gerenciamento de setores.
 """
 from typing import Optional, List, Dict, Any
 from app.core.database import get_db
+from app.repositories.base_repository import BaseRepository
 from bson import ObjectId
 from bson.errors import InvalidId
 import logging
@@ -10,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class SetoresRepo:
+class SetoresRepo(BaseRepository[Dict[str, Any]]):
     """Gerencia operações CRUD para a coleção de setores."""
 
     def __init__(self):
@@ -113,3 +114,14 @@ class SetoresRepo:
         except InvalidId:
             logger.warning(f"ID de setor inválido para remoção: {sector_id}")
             return False
+    async def create(self, data: Dict[str, Any]) -> str:
+        return await self.create_sector(data)
+
+    async def get_by_id(self, id: str) -> Optional[Dict[str, Any]]:
+        return await self.get_sector(id)
+
+    async def update(self, id: str, data: Dict[str, Any]) -> bool:
+        return await self.update_sector(id, data)
+
+    async def delete(self, id: str) -> bool:
+        return await self.delete_sector(id)

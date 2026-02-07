@@ -3,6 +3,7 @@ Repositório para gerenciamento de usuários.
 """
 from typing import Optional, Dict, Any, List
 from app.core.database import get_db
+from app.repositories.base_repository import BaseRepository
 from bson import ObjectId
 from bson.errors import InvalidId
 from datetime import datetime
@@ -11,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class UsuariosRepo:
+class UsuariosRepo(BaseRepository[Dict[str, Any]]):
     """Gerencia operações CRUD para a coleção de usuários."""
 
     def __init__(self):
@@ -164,3 +165,34 @@ class UsuariosRepo:
         db = await get_db()
         result = await db[self.collection_name].delete_one({"telefone": phone})
         return result.deleted_count > 0
+    async def create(self, data: Dict[str, Any]) -> str:
+        return await self.create_user(data)
+
+    async def get_by_id(self, id: str) -> Optional[Dict[str, Any]]:
+        try:
+            db = await get_db()
+            return await db[self.collection_name].find_one({"_id": ObjectId(id)})
+        except InvalidId:
+            logger.warning(f"ID de usuário inválido: {id}")
+            return None
+
+    async def update(self, id: str, data: Dict[str, Any]) -> bool:
+        try:
+            db = await get_db()
+            result = await db[self.collection_name].update_one(
+                {"_id": ObjectId(id)},
+                {"$set": data},
+            )
+            return result.modified_count > 0
+        except InvalidId:
+            logger.warning(f"ID de usuário inválido para atualização: {id}")
+            return False
+
+    async def delete(self, id: str) -> bool:
+        try:
+            db = await get_db()
+            result = await db[self.collection_name].delete_one({"_id": ObjectId(id)})
+            return result.deleted_count > 0
+        except InvalidId:
+            logger.warning(f"ID de usuário inválido para remoção: {id}")
+            return False
