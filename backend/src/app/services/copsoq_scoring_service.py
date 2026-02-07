@@ -95,7 +95,9 @@ class COPSOQScoringService:
         Returns:
             Valor invertido
         """
-        return escala_max - valor
+        if escala_max == 4:
+            return escala_max - valor
+        return (escala_max + 1) - valor
     
     def calcular_pontuacao_item(
         self,

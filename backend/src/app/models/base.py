@@ -3,6 +3,7 @@ from typing import Optional, List, Dict, Any, Union
 from datetime import datetime
 from bson import ObjectId
 from enum import Enum
+from app.services.copsoq_scoring_service import ClassificacaoTercil
 
 # ==============================================================================
 # Enums
@@ -133,9 +134,13 @@ class Respostas(BaseModel):
 
 class DiagnosticoDimensao(BaseModel):
     dominio: str
+    codigoDominio: Optional[str] = None
     dimensao: str
     pontuacao: float
-    classificacao: str
+    classificacao: ClassificacaoTercil
+    sinal: str = "risco"
+    total_itens: int = 0
+    itens_respondidos: int = 0
     itens: Optional[List[Dict[str, Any]]] = None
 
 class Diagnostico(BaseModel):
@@ -151,6 +156,20 @@ class RelatorioMetricas(BaseModel):
     indiceProtecao: float
     totalRespondentes: int
 
+class RelatorioDimensao(BaseModel):
+    dimensao: str
+    media: float
+    distribuicao: Dict[str, int] = Field(default_factory=dict)
+    classificacao: ClassificacaoTercil
+    sinal: str
+
+class RelatorioDominio(BaseModel):
+    codigo: str
+    nome: str
+    dimensoes: List[RelatorioDimensao]
+    media_dominio: float
+    classificacao_predominante: ClassificacaoTercil
+
 class Relatorio(BaseModel):
     idQuestionario: Any
     idOrganizacao: Optional[Any] = None
@@ -159,6 +178,6 @@ class Relatorio(BaseModel):
     geradoPor: str
     dataGeracao: datetime = Field(default_factory=datetime.utcnow)
     metricas: RelatorioMetricas
-    dominios: List[Dict[str, Any]]
+    dominios: List[RelatorioDominio]
     recomendacoes: List[str] = Field(default_factory=list)
     observacoes: Optional[str] = None
