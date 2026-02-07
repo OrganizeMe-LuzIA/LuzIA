@@ -1,9 +1,11 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List, Dict, Any, Union
 from datetime import datetime
 from bson import ObjectId
 from enum import Enum
+import re
 from app.services.copsoq_scoring_service import ClassificacaoTercil
+from app.core.validators import validar_cnpj
 
 # ==============================================================================
 # Enums
@@ -52,6 +54,14 @@ class Organizacao(BaseModel):
     cnpj: str
     nome: str
 
+    @field_validator("cnpj")
+    @classmethod
+    def validate_cnpj(cls, value: str) -> str:
+        cnpj_clean = re.sub(r"\D", "", value or "")
+        if not validar_cnpj(cnpj_clean):
+            raise ValueError("CNPJ inválido")
+        return cnpj_clean
+
 class Setor(BaseModel):
     idOrganizacao: Any  # MongoDB ObjectId
     nome: str
@@ -66,7 +76,14 @@ class Usuario(BaseModel):
     anonId: str
     dataCadastro: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
+
+    @field_validator("telefone")
+    @classmethod
+    def validate_phone(cls, value: str) -> str:
+        if not re.fullmatch(r"^\+\d{10,15}$", value or ""):
+            raise ValueError("Telefone deve estar no formato E.164")
+        return value
+
     model_config = ConfigDict(arbitrary_types_allowed=True, use_enum_values=True)
 
 # ==============================================================================

@@ -28,8 +28,10 @@ class Settings(BaseSettings):
     TWILIO_WHATSAPP_NUMBER: str = os.getenv("TWILIO_WHATSAPP_NUMBER", "")
 
     # Configurações Celery
-    CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", os.getenv("REDIS_URL", "redis://localhost:6379/0"))
-    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", os.getenv("REDIS_URL", "redis://localhost:6379/1"))
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
+    CACHE_TTL: int = int(os.getenv("CACHE_TTL", "300"))
+    CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", f"{REDIS_URL}/0")
+    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", f"{REDIS_URL}/1")
     
     class Config:
         case_sensitive = True

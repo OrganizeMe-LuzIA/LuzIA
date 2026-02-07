@@ -17,9 +17,21 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="LuzIA Backend",
-    description="API para o sistema de questionários de saúde mental",
-    version="0.1.0",
+    title="LuzIA - Sistema de Avaliação Psicossocial",
+    description="""
+API para gestão de questionários COPSOQ II, diagnósticos e relatórios.
+
+Funcionalidades:
+- Organizações e Setores
+- Usuários com anonimização
+- Questionários COPSOQ
+- Diagnósticos por tercis
+- Relatórios organizacionais/setoriais
+- Dashboard executivo
+""",
+    version="2.1.0",
+    contact={"name": "LuzIA Team", "email": "contato@luzia.example.com"},
+    license_info={"name": "Proprietary"},
     lifespan=lifespan
 )
 
