@@ -6,6 +6,8 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from app.core.database import get_db
+from app.core.cache import cache
+from app.core.config import settings
 from app.models.dashboard import (
     AlertaDashboard,
     DashboardOverview,
@@ -386,6 +388,10 @@ class DashboardService:
         )
 
     async def get_overview(self) -> DashboardOverview:
+        cached = await cache.get("dashboard:overview")
+        if cached:
+            return DashboardOverview(**cached)
+
         db = await get_db()
         total_organizacoes = await db["organizacoes"].count_documents({})
         total_setores = await db["setores"].count_documents({})
@@ -429,7 +435,7 @@ class DashboardService:
                 )
             )
 
-        return DashboardOverview(
+        result = DashboardOverview(
             total_organizacoes=total_organizacoes,
             total_setores=total_setores,
             total_usuarios=total_usuarios,
@@ -439,3 +445,5 @@ class DashboardService:
             alertas=alertas,
             ultima_atualizacao=datetime.utcnow(),
         )
+        await cache.set("dashboard:overview", result.model_dump(), ttl=settings.CACHE_TTL)
+        return result

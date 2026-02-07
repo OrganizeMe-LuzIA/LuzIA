@@ -20,7 +20,34 @@ from app.services.dashboard_service import DashboardService
 router = APIRouter()
 
 
-@router.get("/organizacoes", response_model=List[OrganizacaoDashboard])
+@router.get(
+    "/organizacoes",
+    response_model=List[OrganizacaoDashboard],
+    tags=["Dashboard"],
+    summary="Lista todas as organizações",
+    description="Retorna métricas agregadas de todas as organizações cadastradas",
+    responses={
+        200: {
+            "description": "Lista de organizações com métricas",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": "507f1f77bcf86cd799439011",
+                            "cnpj": "12345678000190",
+                            "nome": "Empresa Exemplo Ltda",
+                            "total_setores": 5,
+                            "total_usuarios": 120,
+                            "usuarios_ativos": 98,
+                            "questionarios_em_andamento": 2,
+                            "taxa_conclusao": 75.5,
+                        }
+                    ]
+                }
+            },
+        }
+    },
+)
 async def listar_organizacoes(
     current_user: Usuario = Depends(get_current_admin_user),
 ) -> List[OrganizacaoDashboard]:
@@ -123,11 +150,16 @@ async def metricas_questionario(
     return result
 
 
-@router.get("/overview", response_model=DashboardOverview)
+@router.get(
+    "/overview",
+    response_model=DashboardOverview,
+    tags=["Dashboard"],
+    summary="Resumo executivo do dashboard",
+    description="Retorna indicadores gerais agregados do sistema.",
+)
 async def dashboard_overview(
     current_user: Usuario = Depends(get_current_admin_user),
 ) -> DashboardOverview:
     _ = current_user
     service = DashboardService()
     return await service.get_overview()
-
