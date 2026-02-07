@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, AsyncMock
 from app.main import app
 from app.models.base import Usuario
-from app.routers.deps import get_current_active_user, get_current_admin_user
+from app.api.deps import get_current_active_user, get_current_admin_user
 
 client = TestClient(app)
 

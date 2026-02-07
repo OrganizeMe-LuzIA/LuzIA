@@ -2,13 +2,50 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List, Dict, Any, Union
 from datetime import datetime
 from bson import ObjectId
+from enum import Enum
+from app.services.copsoq_scoring_service import ClassificacaoTercil
+
+# ==============================================================================
+# Enums
+# ==============================================================================
+
+class StatusEnum(str, Enum):
+    ATIVO = "ativo"
+    INATIVO = "inativo"
+    AGUARDANDO_CONFIRMACAO = "aguardando_confirmacao"
+
+# ==============================================================================
+# COPSOQ II - Modelos Auxiliares
+# ==============================================================================
+
+class Dominio(BaseModel):
+    """Domínio de um questionário COPSOQ II (ex: Exigências Laborais, Saúde e Bem-Estar)"""
+    codigo: str
+    nome: str
+    ordem: int
+    descricao: Optional[str] = None
+
+class OpcaoResposta(BaseModel):
+    """Opção de resposta para uma pergunta (ex: {valor: 4, texto: 'Sempre'})"""
+    valor: int
+    texto: str
+
+class SubPergunta(BaseModel):
+    """Sub-pergunta condicional (usada em Comportamentos Ofensivos)"""
+    condicao: str  # ex: "valor > 0"
+    texto: str
+    tipoResposta: str  # ex: "multipla_escolha"
+    opcoes: List[str]
+
+# ==============================================================================
+# Modelos Base
+# ==============================================================================
 
 class UserState(BaseModel):
-    # Field to manage bot flow, will be stored inside 'metadata' or 'state'
-    # Since DB has additionalProperties: false, we'll store this in 'metadata'
+    """Estado do usuário durante o fluxo do chatbot"""
     idQuestionario: Optional[str] = None
     indicePergunta: int = 0
-    statusChat: str = "INATIVO" # INATIVO, EM_CURSO, FINALIZADO
+    statusChat: str = "INATIVO"  # INATIVO, EM_CURSO, FINALIZADO
     dataInicio: Optional[datetime] = None
 
 class Organizacao(BaseModel):
@@ -16,20 +53,13 @@ class Organizacao(BaseModel):
     nome: str
 
 class Setor(BaseModel):
-    idOrganizacao: Any # MongoDB ObjectId
+    idOrganizacao: Any  # MongoDB ObjectId
     nome: str
     descricao: Optional[str] = None
 
-from enum import Enum
-
-class StatusEnum(str, Enum):
-    ATIVO = "ativo"
-    INATIVO = "inativo"
-    AGUARDANDO_CONFIRMACAO = "aguardando_confirmacao"
-
 class Usuario(BaseModel):
     telefone: str
-    idOrganizacao: Any # MongoDB ObjectId
+    idOrganizacao: Any  # MongoDB ObjectId
     idSetor: Optional[Any] = None
     status: StatusEnum = StatusEnum.AGUARDANDO_CONFIRMACAO
     respondido: bool = False
@@ -39,24 +69,56 @@ class Usuario(BaseModel):
     
     model_config = ConfigDict(arbitrary_types_allowed=True, use_enum_values=True)
 
+# ==============================================================================
+# COPSOQ II - Questionário e Perguntas
+# ==============================================================================
+
 class Pergunta(BaseModel):
+    """
+    Pergunta do questionário COPSOQ II.
+    
+    Campos novos para COPSOQ II:
+    - codigoDominio: código do domínio (EL, OTC, RSL, etc.)
+    - tipoEscala: tipo de escala (frequencia, intensidade, etc.)
+    - ordem: ordem de apresentação
+    - opcoesResposta: lista de opções de resposta
+    - subPergunta: pergunta condicional (Comportamentos Ofensivos)
+    """
     idQuestionario: Any
+    codigoDominio: Optional[str] = None  # NOVO: código do domínio (EL, OTC, etc.)
     dominio: str
     dimensao: str
     idPergunta: str
     texto: str
-    tipo: str = "escala_likert" # Matches enum in DB
-    sinal: str = "risco" # Matches enum in DB
+    tipoEscala: str = "frequencia"  # RENOMEADO de 'tipo' - frequencia, intensidade, etc.
+    sinal: str = "risco"  # risco ou protecao
     itemInvertido: bool = False
-    escala: int = 5 # Matches DB (number of options)
+    ordem: Optional[int] = None  # NOVO: ordem de apresentação
+    opcoesResposta: Optional[List[OpcaoResposta]] = None  # NOVO: opções de resposta
+    subPergunta: Optional[SubPergunta] = None  # NOVO: pergunta condicional
     ativo: bool = True
+    
+    # Campos legados para compatibilidade
+    tipo: Optional[str] = None  # DEPRECATED: use tipoEscala
+    escala: Optional[int] = 5  # DEPRECATED: use opcoesResposta
 
 class Questionario(BaseModel):
+    """
+    Questionário COPSOQ II.
+    
+    Suporta duas versões:
+    - COPSOQ_CURTA_BR: Versão curta brasileira (40 itens)
+    - COPSOQ_MEDIA_PT: Versão média portuguesa (76 perguntas)
+    """
     nome: str
+    codigo: Optional[str] = None  # NOVO: COPSOQ_CURTA_BR ou COPSOQ_MEDIA_PT
     versao: str
+    tipo: str = "psicossocial"  # NOVO: tipo do questionário
+    idioma: str = "pt-BR"  # NOVO: pt-BR ou pt-PT
     descricao: str
-    dominios: List[str]
-    escala: str
+    dominios: Union[List[str], List[Dominio]]  # Aceita formato antigo ou novo
+    escalasPossiveis: Optional[List[str]] = None  # NOVO: escalas disponíveis
+    escala: Optional[str] = None  # DEPRECATED: use escalasPossiveis
     totalPerguntas: int
     ativo: bool = True
 
@@ -72,9 +134,13 @@ class Respostas(BaseModel):
 
 class DiagnosticoDimensao(BaseModel):
     dominio: str
+    codigoDominio: Optional[str] = None
     dimensao: str
     pontuacao: float
-    classificacao: str
+    classificacao: ClassificacaoTercil
+    sinal: str = "risco"
+    total_itens: int = 0
+    itens_respondidos: int = 0
     itens: Optional[List[Dict[str, Any]]] = None
 
 class Diagnostico(BaseModel):
@@ -90,6 +156,20 @@ class RelatorioMetricas(BaseModel):
     indiceProtecao: float
     totalRespondentes: int
 
+class RelatorioDimensao(BaseModel):
+    dimensao: str
+    media: float
+    distribuicao: Dict[str, int] = Field(default_factory=dict)
+    classificacao: ClassificacaoTercil
+    sinal: str
+
+class RelatorioDominio(BaseModel):
+    codigo: str
+    nome: str
+    dimensoes: List[RelatorioDimensao]
+    media_dominio: float
+    classificacao_predominante: ClassificacaoTercil
+
 class Relatorio(BaseModel):
     idQuestionario: Any
     idOrganizacao: Optional[Any] = None
@@ -98,6 +178,6 @@ class Relatorio(BaseModel):
     geradoPor: str
     dataGeracao: datetime = Field(default_factory=datetime.utcnow)
     metricas: RelatorioMetricas
-    dominios: List[Dict[str, Any]]
+    dominios: List[RelatorioDominio]
     recomendacoes: List[str] = Field(default_factory=list)
     observacoes: Optional[str] = None

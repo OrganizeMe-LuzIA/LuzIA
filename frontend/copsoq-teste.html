@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COPSOQ II - Teste do Questionário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-card);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 100px;
+            z-index: 99;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-hover);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-3);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Domain Section */
+        .domain-section {
+            margin-bottom: 3rem;
+        }
+
+        .domain-header {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .domain-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .domain-EL { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .domain-OTC { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .domain-RSL { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .domain-ITI { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .domain-VLT { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .domain-SBE { background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%); }
+        .domain-CO { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
+
+        .domain-info h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .domain-info span {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .question-card.answered {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .question-number {
+            background: var(--bg-hover);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .dimension-tag {
+            font-size: 0.75rem;
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .option {
+            flex: 1;
+            min-width: 120px;
+            position: relative;
+        }
+
+        .option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .option label {
+            display: block;
+            padding: 0.875rem 1rem;
+            background: var(--bg-hover);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .option label:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary-light);
+        }
+
+        .option input:checked + label {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Sub-question */
+        .sub-question {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px dashed var(--border);
+            display: none;
+        }
+
+        .sub-question.visible {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sub-question label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .checkbox-option:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .checkbox-option input {
+            accent-color: var(--primary);
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .submit-btn {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.75rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .result-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .result-score {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-bar {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+
+        .result-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .result-fill.low { background: var(--secondary); }
+        .result-fill.medium { background: var(--warning); }
+        .result-fill.high { background: var(--danger); }
+
+        .close-btn {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .close-btn:hover {
+            background: var(--primary);
+        }
+
+        /* Version Selector */
+        .version-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .version-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .version-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .version-btn:hover:not(.active) {
+            border-color: var(--primary-light);
+            color: var(--text-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .container { padding: 1rem; }
+            .options { flex-direction: column; }
+            .option { min-width: 100%; }
+            .version-selector { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🧠 COPSOQ II - Questionário Psicossocial</h1>
+        <p>Copenhagen Psychosocial Questionnaire - Teste de Interface</p>
+    </header>
+
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+            <span id="progressText">0 de 40 perguntas respondidas</span>
+            <span id="progressPercent">0%</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="version-selector">
+            <button class="version-btn active" onclick="loadVersion('curta_br')">
+                🇧🇷 Versão Curta Brasileira (40 itens)
+            </button>
+            <button class="version-btn" onclick="loadVersion('media_pt')">
+                🇵🇹 Versão Média Portuguesa (76 itens)
+            </button>
+        </div>
+
+        <div id="questionnaire"></div>
+
+        <div class="submit-section">
+            <button class="submit-btn" id="submitBtn" onclick="submitQuestionnaire()">
+                📊 Ver Resultados
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div class="modal" id="resultsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Resultados do Questionário</h2>
+                <p style="color: var(--text-secondary);">Pontuação por Domínio</p>
+            </div>
+            <div class="results-grid" id="resultsGrid"></div>
+            <button class="close-btn" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // Dados do Questionário - Versão Curta Brasileira
+        // =====================================================================
+        
+        const escalaFrequencia = [
+            { valor: 4, texto: "Sempre" },
+            { valor: 3, texto: "Frequentemente" },
+            { valor: 2, texto: "Às vezes" },
+            { valor: 1, texto: "Raramente" },
+            { valor: 0, texto: "Nunca" }
+        ];
+
+        const escalaFrequenciaInvertida = [
+            { valor: 0, texto: "Sempre" },
+            { valor: 1, texto: "Frequentemente" },
+            { valor: 2, texto: "Às vezes" },
+            { valor: 3, texto: "Raramente" },
+            { valor: 4, texto: "Nunca" }
+        ];
+
+        const escalaIntensidade = [
+            { valor: 4, texto: "Em grande parte" },
+            { valor: 3, texto: "Em boa parte" },
+            { valor: 2, texto: "De certa forma" },
+            { valor: 1, texto: "Pouco" },
+            { valor: 0, texto: "Muito pouco" }
+        ];
+
+        const escalaSatisfacao = [
+            { valor: 3, texto: "Muito satisfeito" },
+            { valor: 2, texto: "Satisfeito" },
+            { valor: 1, texto: "Insatisfeito" },
+            { valor: 0, texto: "Muito insatisfeito" }
+        ];
+
+        const escalaConflitoTF = [
+            { valor: 3, texto: "Sim, com certeza" },
+            { valor: 2, texto: "Sim, até certo ponto" },
+            { valor: 1, texto: "Sim, mas muito pouco" },
+            { valor: 0, texto: "Não, realmente não" }
+        ];
+
+        const escalaSaudeGeral = [
+            { valor: 4, texto: "Excelente" },
+            { valor: 3, texto: "Muito boa" },
+            { valor: 2, texto: "Boa" },
+            { valor: 1, texto: "Razoável" },
+            { valor: 0, texto: "Ruim" }
+        ];
+
+        const escalaComportamentoOfensivo = [
+            { valor: 4, texto: "Sim, diariamente" },
+            { valor: 3, texto: "Sim, semanalmente" },
+            { valor: 2, texto: "Sim, mensalmente" },
+            { valor: 1, texto: "Sim, poucas vezes" },
+            { valor: 0, texto: "Não" }
+        ];
+
+        const opcoesAgressor = ["Colegas", "Gerente/supervisor", "Subordinados", "Clientes/pacientes"];
+
+        const dominiosInfo = {
+            "EL": { nome: "Exigências Laborais", icone: "⚡" },
+            "OTC": { nome: "Organização do Trabalho e Conteúdo", icone: "📋" },
+            "RSL": { nome: "Relações Sociais e Liderança", icone: "👥" },
+            "ITI": { nome: "Interface Trabalho-Indivíduo", icone: "⚖️" },
+            "VLT": { nome: "Valores no Local de Trabalho", icone: "💎" },
+            "SBE": { nome: "Saúde e Bem-Estar", icone: "❤️" },
+            "CO": { nome: "Comportamentos Ofensivos", icone: "⚠️" }
+        };
+
+        // Versão Curta Brasileira - 40 itens
+        const perguntasCurtaBR = [
+            // EL - Exigências Laborais (6 itens)
+            { codigoDominio: "EL", dimensao: "Exigências quantitativas", idPergunta: "EL_EQ_01A", ordem: 1, texto: "Você atrasa a entrega do seu trabalho?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "EL", dimensao: "Exigências quantitativas", idPergunta: "EL_EQ_01B", ordem: 2, texto: "O tempo para realizar as suas tarefas no trabalho é suficiente?", tipoEscala: "frequencia_inv", sinal: "protecao", opcoesResposta: escalaFrequenciaInvertida },
+            { codigoDominio: "EL", dimensao: "Ritmo de trabalho", idPergunta: "EL_RT_01A", ordem: 3, texto: "É necessário manter um ritmo acelerado no trabalho?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "EL", dimensao: "Ritmo de trabalho", idPergunta: "EL_RT_01B", ordem: 4, texto: "Você trabalha em ritmo acelerado ao longo de toda jornada?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "EL", dimensao: "Exigências emocionais", idPergunta: "EL_EE_01A", ordem: 5, texto: "Seu trabalho coloca você em situações emocionalmente desgastantes?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "EL", dimensao: "Exigências emocionais", idPergunta: "EL_EE_01B", ordem: 6, texto: "Você tem que lidar com os problemas pessoais de outras pessoas como parte do seu trabalho?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+
+            // OTC - Organização do Trabalho e Conteúdo (8 itens)
+            { codigoDominio: "OTC", dimensao: "Influência no trabalho", idPergunta: "OTC_IT_01A", ordem: 7, texto: "Você tem um alto grau de influência nas decisões sobre o seu trabalho?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "OTC", dimensao: "Influência no trabalho", idPergunta: "OTC_IT_01B", ordem: 8, texto: "Você pode interferir na quantidade de trabalho atribuída a você?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "OTC", dimensao: "Possibilidades de desenvolvimento", idPergunta: "OTC_PD_01A", ordem: 9, texto: "Você tem a possibilidade de aprender coisas novas através do seu trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "OTC", dimensao: "Possibilidades de desenvolvimento", idPergunta: "OTC_PD_01B", ordem: 10, texto: "Seu trabalho exige que você tome iniciativas?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "OTC", dimensao: "Significado do trabalho", idPergunta: "OTC_ST_01A", ordem: 11, texto: "Seu trabalho é significativo?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "OTC", dimensao: "Significado do trabalho", idPergunta: "OTC_ST_01B", ordem: 12, texto: "Você sente que o trabalho que faz é importante?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "OTC", dimensao: "Compromisso com local de trabalho", idPergunta: "OTC_CLT_01A", ordem: 13, texto: "Você sente que o seu local de trabalho é muito importante para você?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "OTC", dimensao: "Compromisso com local de trabalho", idPergunta: "OTC_CLT_01B", ordem: 14, texto: "Você recomendaria a um amigo que se candidatasse a uma vaga no seu local de trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+
+            // RSL - Relações Sociais e Liderança (10 itens)
+            { codigoDominio: "RSL", dimensao: "Previsibilidade", idPergunta: "RSL_PR_01A", ordem: 15, texto: "No seu local de trabalho, você é informado antecipadamente sobre decisões importantes, mudanças ou planos para o futuro?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Previsibilidade", idPergunta: "RSL_PR_01B", ordem: 16, texto: "Você recebe toda a informação necessária para fazer bem o seu trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Recompensas", idPergunta: "RSL_RE_01A", ordem: 17, texto: "O seu trabalho é reconhecido e valorizado pelos seus superiores?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Recompensas", idPergunta: "RSL_RE_01B", ordem: 18, texto: "Você é tratado de forma justa no seu local de trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Transparência do papel", idPergunta: "RSL_TP_01A", ordem: 19, texto: "O seu trabalho tem objetivos/metas claros(as)?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Transparência do papel", idPergunta: "RSL_TP_01B", ordem: 20, texto: "Você sabe exatamente o que se espera de você no trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Qualidade da liderança", idPergunta: "RSL_QL_01A", ordem: 21, texto: "Você diria que o seu superior imediato dá alta prioridade para a satisfação com trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Qualidade da liderança", idPergunta: "RSL_QL_01B", ordem: 22, texto: "Você diria que o seu superior imediato é bom no planejamento do trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "RSL", dimensao: "Apoio social de superiores", idPergunta: "RSL_ASS_01A", ordem: 23, texto: "Com que frequência o seu superior imediato está disposto a ouvir os seus problemas no trabalho?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "RSL", dimensao: "Apoio social de superiores", idPergunta: "RSL_ASS_01B", ordem: 24, texto: "Com que frequência você recebe ajuda e suporte do seu superior imediato?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequencia },
+
+            // ITI - Interface Trabalho-Indivíduo (3 itens)
+            { codigoDominio: "ITI", dimensao: "Satisfação no trabalho", idPergunta: "ITI_ST_01", ordem: 25, texto: "Qual o seu nível de satisfação com o seu trabalho como um todo, considerando todos os aspectos?", tipoEscala: "satisfacao", sinal: "protecao", opcoesResposta: escalaSatisfacao },
+            { codigoDominio: "ITI", dimensao: "Conflito trabalho-família", idPergunta: "ITI_CTF_01A", ordem: 26, texto: "Você sente que o seu trabalho consome tanto sua energia que ele tem um efeito negativo na sua vida particular?", tipoEscala: "conflito_tf", sinal: "risco", opcoesResposta: escalaConflitoTF },
+            { codigoDominio: "ITI", dimensao: "Conflito trabalho-família", idPergunta: "ITI_CTF_01B", ordem: 27, texto: "Você sente que o seu trabalho ocupa tanto tempo que ele tem um efeito negativo na sua vida particular?", tipoEscala: "conflito_tf", sinal: "risco", opcoesResposta: escalaConflitoTF },
+
+            // VLT - Valores no Local de Trabalho (4 itens)
+            { codigoDominio: "VLT", dimensao: "Confiança vertical", idPergunta: "VLT_CV_01A", ordem: 28, texto: "Você pode confiar nas informações que vêm dos seus superiores?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "VLT", dimensao: "Confiança vertical", idPergunta: "VLT_CV_01B", ordem: 29, texto: "Os seus superiores confiam que os funcionários farão bem seu trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "VLT", dimensao: "Justiça e respeito", idPergunta: "VLT_JR_01A", ordem: 30, texto: "Os conflitos são resolvidos de forma justa?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+            { codigoDominio: "VLT", dimensao: "Justiça e respeito", idPergunta: "VLT_JR_01B", ordem: 31, texto: "O trabalho é distribuído de forma justa?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidade },
+
+            // SBE - Saúde e Bem-Estar (5 itens)
+            { codigoDominio: "SBE", dimensao: "Saúde geral", idPergunta: "SBE_SG_01", ordem: 32, texto: "Em geral, você diria que a sua saúde é:", tipoEscala: "saude_geral", sinal: "protecao", opcoesResposta: escalaSaudeGeral },
+            { codigoDominio: "SBE", dimensao: "Burnout", idPergunta: "SBE_BO_01A", ordem: 33, texto: "Com que frequência você tem se sentido fisicamente esgotado?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "SBE", dimensao: "Burnout", idPergunta: "SBE_BO_01B", ordem: 34, texto: "Com que frequência você tem se sentido emocionalmente esgotado?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "SBE", dimensao: "Stress", idPergunta: "SBE_ST_01A", ordem: 35, texto: "Com que frequência você tem se sentido estressado?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+            { codigoDominio: "SBE", dimensao: "Stress", idPergunta: "SBE_ST_01B", ordem: 36, texto: "Com que frequência você tem se sentido irritado?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequencia },
+
+            // CO - Comportamentos Ofensivos (4 itens)
+            { codigoDominio: "CO", dimensao: "Atenção sexual indesejada", idPergunta: "CO_ASI_01", ordem: 37, texto: "Você foi exposto a atenção sexual indesejada no seu local de trabalho durante os últimos 12 meses?", tipoEscala: "comportamento_ofensivo", sinal: "risco", opcoesResposta: escalaComportamentoOfensivo, temSubPergunta: true },
+            { codigoDominio: "CO", dimensao: "Ameaças de violência", idPergunta: "CO_AV_01", ordem: 38, texto: "Você foi exposto a ameaças de violência no seu local de trabalho nos últimos 12 meses?", tipoEscala: "comportamento_ofensivo", sinal: "risco", opcoesResposta: escalaComportamentoOfensivo, temSubPergunta: true },
+            { codigoDominio: "CO", dimensao: "Violência física", idPergunta: "CO_VF_01", ordem: 39, texto: "Você foi exposto a violência física em seu local de trabalho durante os últimos 12 meses?", tipoEscala: "comportamento_ofensivo", sinal: "risco", opcoesResposta: escalaComportamentoOfensivo, temSubPergunta: true },
+            { codigoDominio: "CO", dimensao: "Bullying", idPergunta: "CO_BU_01", ordem: 40, texto: 'Você foi exposto a "bullying" no seu local de trabalho nos últimos 12 meses?', tipoEscala: "comportamento_ofensivo", sinal: "risco", opcoesResposta: escalaComportamentoOfensivo, temSubPergunta: true }
+        ];
+
+        // Versão Média Portuguesa - 76 itens (simplificada)
+        const escalaFrequenciaPT = [
+            { valor: 5, texto: "Sempre" },
+            { valor: 4, texto: "Frequentemente" },
+            { valor: 3, texto: "Às vezes" },
+            { valor: 2, texto: "Raramente" },
+            { valor: 1, texto: "Nunca/quase nunca" }
+        ];
+
+        const escalaIntensidadePT = [
+            { valor: 5, texto: "Extremamente" },
+            { valor: 4, texto: "Muito" },
+            { valor: 3, texto: "De certa forma" },
+            { valor: 2, texto: "Pouco" },
+            { valor: 1, texto: "Nada/quase nada" }
+        ];
+
+        // Primeiras 20 perguntas da versão média PT para demonstração
+        const perguntasMediaPT = [
+            { codigoDominio: "EL", dimensao: "Exigências quantitativas", idPergunta: "EL_EQ_01", ordem: 1, texto: "A sua carga de trabalho acumula-se por ser mal distribuída?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "EL", dimensao: "Exigências quantitativas", idPergunta: "EL_EQ_02", ordem: 2, texto: "Com que frequência não tem tempo para completar todas as tarefas?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "EL", dimensao: "Exigências quantitativas", idPergunta: "EL_EQ_03", ordem: 3, texto: "Precisa fazer horas extra?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "EL", dimensao: "Ritmo de trabalho", idPergunta: "EL_RT_01", ordem: 4, texto: "Precisa trabalhar muito rapidamente?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "EL", dimensao: "Exigências cognitivas", idPergunta: "EL_EC_01", ordem: 5, texto: "O seu trabalho exige a sua atenção constante?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "EL", dimensao: "Exigências cognitivas", idPergunta: "EL_EC_02", ordem: 6, texto: "O seu trabalho requer que tome decisões difíceis?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "EL", dimensao: "Exigências cognitivas", idPergunta: "EL_EC_03", ordem: 7, texto: "O seu trabalho requer que seja bom a propor novas ideias?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "EL", dimensao: "Exigências emocionais", idPergunta: "EL_EE_01", ordem: 8, texto: "O seu trabalho é emocionalmente exigente?", tipoEscala: "frequencia", sinal: "risco", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Influência no trabalho", idPergunta: "OTC_IT_01", ordem: 9, texto: "Tem influência sobre a quantidade de trabalho que lhe compete?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Influência no trabalho", idPergunta: "OTC_IT_02", ordem: 10, texto: "Tem influência sobre o tipo de tarefas que faz?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Influência no trabalho", idPergunta: "OTC_IT_03", ordem: 11, texto: "Tem influência sobre a ordem de realização das tarefas?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Influência no trabalho", idPergunta: "OTC_IT_04", ordem: 12, texto: "Participa na escolha das pessoas com quem trabalha?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Possibilidades de desenvolvimento", idPergunta: "OTC_PD_01", ordem: 13, texto: "O seu trabalho exige que tenha iniciativa?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Possibilidades de desenvolvimento", idPergunta: "OTC_PD_02", ordem: 14, texto: "O seu trabalho permite-lhe aprender coisas novas?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Possibilidades de desenvolvimento", idPergunta: "OTC_PD_03", ordem: 15, texto: "O seu trabalho permite-lhe usar as suas competências?", tipoEscala: "frequencia", sinal: "protecao", opcoesResposta: escalaFrequenciaPT },
+            { codigoDominio: "OTC", dimensao: "Significado do trabalho", idPergunta: "OTC_ST_01", ordem: 16, texto: "O seu trabalho tem significado para si?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidadePT },
+            { codigoDominio: "OTC", dimensao: "Significado do trabalho", idPergunta: "OTC_ST_02", ordem: 17, texto: "Sente que o trabalho que faz é importante?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidadePT },
+            { codigoDominio: "OTC", dimensao: "Significado do trabalho", idPergunta: "OTC_ST_03", ordem: 18, texto: "Sente-se motivado e envolvido no seu trabalho?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidadePT },
+            { codigoDominio: "OTC", dimensao: "Compromisso com local de trabalho", idPergunta: "OTC_CLT_01", ordem: 19, texto: "Gosta de falar sobre o seu local de trabalho com outras pessoas?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidadePT },
+            { codigoDominio: "OTC", dimensao: "Compromisso com local de trabalho", idPergunta: "OTC_CLT_02", ordem: 20, texto: "Sente que os problemas do seu local de trabalho são seus também?", tipoEscala: "intensidade", sinal: "protecao", opcoesResposta: escalaIntensidadePT }
+        ];
+
+        // =====================================================================
+        // Estado da Aplicação
+        // =====================================================================
+        
+        let currentVersion = 'curta_br';
+        let perguntas = perguntasCurtaBR;
+        let respostas = {};
+
+        // =====================================================================
+        // Funções
+        // =====================================================================
+
+        function loadVersion(version) {
+            currentVersion = version;
+            perguntas = version === 'curta_br' ? perguntasCurtaBR : perguntasMediaPT;
+            respostas = {};
+            
+            // Update version buttons
+            document.querySelectorAll('.version-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderQuestionnaire();
+            updateProgress();
+        }
+
+        function renderQuestionnaire() {
+            const container = document.getElementById('questionnaire');
+            const dominios = {};
+            
+            // Agrupar perguntas por domínio
+            perguntas.forEach(p => {
+                if (!dominios[p.codigoDominio]) {
+                    dominios[p.codigoDominio] = [];
+                }
+                dominios[p.codigoDominio].push(p);
+            });
+            
+            let html = '';
+            
+            for (const [codigo, perguntasDominio] of Object.entries(dominios)) {
+                const info = dominiosInfo[codigo];
+                html += `
+                    <div class="domain-section">
+                        <div class="domain-header">
+                            <div class="domain-icon domain-${codigo}">${info.icone}</div>
+                            <div class="domain-info">
+                                <h2>${info.nome}</h2>
+                                <span>${perguntasDominio.length} perguntas</span>
+                            </div>
+                        </div>
+                        ${perguntasDominio.map(p => renderQuestion(p)).join('')}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function renderQuestion(pergunta) {
+            const opcoesHtml = pergunta.opcoesResposta.map((opcao, idx) => `
+                <div class="option">
+                    <input type="radio" 
+                           id="${pergunta.idPergunta}_${idx}" 
+                           name="${pergunta.idPergunta}" 
+                           value="${opcao.valor}"
+                           onchange="handleAnswer('${pergunta.idPergunta}', ${opcao.valor}, ${pergunta.temSubPergunta || false})">
+                    <label for="${pergunta.idPergunta}_${idx}">${opcao.texto}</label>
+                </div>
+            `).join('');
+
+            let subPerguntaHtml = '';
+            if (pergunta.temSubPergunta) {
+                subPerguntaHtml = `
+                    <div class="sub-question" id="sub_${pergunta.idPergunta}">
+                        <label>Se sim, de quem?</label>
+                        <div class="checkbox-group">
+                            ${opcoesAgressor.map((opcao, idx) => `
+                                <label class="checkbox-option">
+                                    <input type="checkbox" 
+                                           name="${pergunta.idPergunta}_agressor" 
+                                           value="${opcao}"
+                                           onchange="handleSubAnswer('${pergunta.idPergunta}')">
+                                    ${opcao}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="question-card" id="card_${pergunta.idPergunta}">
+                    <div class="question-meta">
+                        <span class="question-number">Pergunta ${pergunta.ordem}</span>
+                        <span class="dimension-tag">${pergunta.dimensao}</span>
+                    </div>
+                    <p class="question-text">${pergunta.texto}</p>
+                    <div class="options">
+                        ${opcoesHtml}
+                    </div>
+                    ${subPerguntaHtml}
+                </div>
+            `;
+        }
+
+        function handleAnswer(idPergunta, valor, temSubPergunta) {
+            respostas[idPergunta] = { valor, agressores: [] };
+            
+            // Mark card as answered
+            const card = document.getElementById(`card_${idPergunta}`);
+            card.classList.add('answered');
+            
+            // Show/hide sub-question
+            if (temSubPergunta) {
+                const subQuestion = document.getElementById(`sub_${idPergunta}`);
+                if (valor > 0) {
+                    subQuestion.classList.add('visible');
+                } else {
+                    subQuestion.classList.remove('visible');
+                    respostas[idPergunta].agressores = [];
+                }
+            }
+            
+            updateProgress();
+        }
+
+        function handleSubAnswer(idPergunta) {
+            const checkboxes = document.querySelectorAll(`input[name="${idPergunta}_agressor"]:checked`);
+            respostas[idPergunta].agressores = Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function updateProgress() {
+            const total = perguntas.length;
+            const respondidas = Object.keys(respostas).length;
+            const percent = Math.round((respondidas / total) * 100);
+            
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            document.getElementById('progressText').textContent = `${respondidas} de ${total} perguntas respondidas`;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+        }
+
+        function submitQuestionnaire() {
+            const respondidas = Object.keys(respostas).length;
+            const total = perguntas.length;
+            
+            if (respondidas < total) {
+                const faltam = total - respondidas;
+                alert(`Ainda faltam ${faltam} perguntas para responder.`);
+                return;
+            }
+            
+            calculateResults();
+        }
+
+        function calculateResults() {
+            const resultados = {};
+            
+            // Inicializar domínios
+            for (const codigo of Object.keys(dominiosInfo)) {
+                resultados[codigo] = { soma: 0, count: 0, max: 0 };
+            }
+            
+            // Calcular pontuações
+            perguntas.forEach(p => {
+                if (respostas[p.idPergunta]) {
+                    const valor = respostas[p.idPergunta].valor;
+                    resultados[p.codigoDominio].soma += valor;
+                    resultados[p.codigoDominio].count++;
+                    resultados[p.codigoDominio].max += Math.max(...p.opcoesResposta.map(o => o.valor));
+                }
+            });
+            
+            // Gerar HTML dos resultados
+            let html = '';
+            for (const [codigo, dados] of Object.entries(resultados)) {
+                if (dados.count === 0) continue;
+                
+                const info = dominiosInfo[codigo];
+                const media = (dados.soma / dados.count).toFixed(1);
+                const percentual = Math.round((dados.soma / dados.max) * 100);
+                
+                let nivel = 'low';
+                if (percentual > 66) nivel = 'high';
+                else if (percentual > 33) nivel = 'medium';
+                
+                html += `
+                    <div class="result-card">
+                        <h3>${info.icone} ${info.nome}</h3>
+                        <div class="result-score">${media}</div>
+                        <small style="color: var(--text-muted)">Média por item (${dados.count} itens)</small>
+                        <div class="result-bar">
+                            <div class="result-fill ${nivel}" style="width: ${percentual}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('resultsGrid').innerHTML = html;
+            document.getElementById('resultsModal').classList.add('active');
+            
+            // Log para debug
+            console.log('Respostas:', respostas);
+            console.log('Resultados:', resultados);
+        }
+
+        function closeModal() {
+            document.getElementById('resultsModal').classList.remove('active');
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestionnaire();
+        });
+    </script>
+</body>
+</html>

@@ -40,7 +40,7 @@ clean:
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 
 docker-up:
-	docker-compose -f infrastructure/docker/docker-compose.yml up -d
+	docker compose -f infrastructure/docker/docker-compose.yml up -d
 
 docker-down:
-	docker-compose -f infrastructure/docker/docker-compose.yml down
+	docker compose -f infrastructure/docker/docker-compose.yml down

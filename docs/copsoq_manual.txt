@@ -1,0 +1,4279 @@
+Copenhagen
+Psychosocial
+Questionnaire
+COPSOQ
+
+Versão Portuguesa
+
+Portugal e países africanos de língua
+oficial portuguesa
+Carlos Fernandes da Silva
+Universidade de Aveiro
+Versão Original: Kristensen, T. et al., 2000
+
+“Medição do Índice de Capacidade Humana para o Trabalho
+em Trabalhadores Portugueses”
+
+PTDC/SAU-ESA/66163/2006 (FCOMP-01-0124-FEDER007481).
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+
+Equipa de Investigação
+Carlos Silva (1), Vânia Amaral (1), Alexandra Pereira (1), Pedro Bem-haja (1), Anabela Pereira (1), Vítor
+Rodrigues (2), Teresa Cotrim (4), Jorge Silvério (3), Paulo Nossa (5).
+(1) Universidade de Aveiro – Departamento de Educação
+(2) Universidade de Coimbra – Faculdade de Medicina
+(3) Universidade do Minho – Escola de Psicologia
+(4) Universidade Técnica de Lisboa – Departamento de Ergonomia da Faculdade de Motricidade Humana
+(5) Universidade de Coimbra – Faculdade de Letras
+
+Colaboradores
+Hugo de Almeida – Universidade de Aveiro
+Paulo Rodrigues – Universidade da Beira Interior
+José Pedro Moura – Universidade de Aveiro
+
+Manual desenvolvido e editado por:
+
+Análise Exacta - Consultadoria, Formação e Edição de livros
+www.analiseexacta.pt
+
+Ano de Publicação: 2011
+Como citar:
+Silva, C., Amaral, V., Pereira, A. C., Bem-haja, P., Pereira, A., Rodrigues, V., Cotrim, T., Silvério, J. &
+Nossa, P. (2011). Copenhagen Psychosocial Questionnaire: Portugal e Países Africanos de Língua oficial
+Portuguesa. Aveiro: Departamento de Educação, Universidade de Aveiro.
+
+Versão Portuguesa
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+
+Versão Portuguesa
+
+ÍNDICE
+
+Enquadramento conceptual…………………………………………….………………….……1
+Copenhagen Psychosocial Questionnaire………………………………………….….….3
+Normas de utilização………………………………………………………………………….…….4
+Participação……………………………………………………………………………………….…….5
+Versão portuguesa……………………………………………………………………………….…..6
+Valores de referência nacionais……………………………………………………………..…9
+Intervenção psicossocial no local de trabalho…………………………………………12
+Referências bibliográficas……………………………………………………………………….19
+Anexos………………………………………………………………………………………………..….22
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+EENNQQUUAADDRRAAM
+MEENNTTO
+O CCO
+ONNCCEEPPTTUUAALL
+As condições de trabalho nos países ocidentais sofreram enormes mudanças na
+organização do trabalho nas últimas décadas. A par destas mudanças nas condições de
+produção e realidades na indústria, administração e serviços, as exigências sobre os
+trabalhadores também mudaram. A flexibilidade no horário e no local de trabalho, a
+alta tenacidade ou competências sociais estão-se a tornar qualificações-chave. Como
+consequência destes desenvolvimentos o stress aumentou acentuadamente, e como
+consequência destas faltas por doença e custos nos tratamentos.
+
+Há um consenso generalizado de que a medição psicossociológica é deveras difícil
+dada a indefinição de um constructo teórico, portanto, várias são as maneiras de
+definir e operacionalizar a carga e a tensão dos fatores psicossociais.
+Uma elevada percentagem de empregados na União Europeia estão expostos a
+stressores psicossociais no local de trabalho e as consequências são nefastas para os
+trabalhadores, para a empresa e para a sociedade em geral (Kristensen et al., 2005).
+Entre os fatores relacionados com o local de trabalho, a União europeia evidenciou os
+fatores psicossociais como prioritários, sendo mesmo considerado como um dos
+campos de investigação mais importantes num futuro próximo (EU-OSHA, 2000).
+Na verdade, a Fourth European working conditions survey mostrou que, em 2005, 20%
+dos trabalhadores da União Europeia a 15 e 30% dos novos 10 estadosmembros acreditava que sua saúde está em risco por causa do stress do trabalho. Em
+2002, o custo económico anual do stress do trabalho na UE-15 foi estimado em 20
+milhões de euros (European Foundation for the Improvement of Living and Working
+Conditions, 2006)
+
+De acordo com o relatório do National Institute for Occupational Safety and Health em
+2002, a organização do trabalho iria sofrer enormes mudanças nas próximas duas
+décadas. Tendo em conta o cenário organizacional atual, verificamos que essas
+mudanças estão de facto a ocorrer, nomeadamente, e tal como o relatório referia: o
+aumento de downsizing e outsourcing; introdução de tecnologias estratégicas como
+
+Versão Portuguesa
+
+1
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+meios de produção efetiva, gestão da qualidade total; o uso de contratos de trabalho
+temporários; e aumento das horas de trabalho. Estas mudanças/desenvolvimentos
+têm um impacto negativo na qualidade do ambiente psicossocial do trabalho, devido à
+maior sobrecarga e pressão na realização do trabalho, menor previsibilidade e maior
+insegurança do emprego, entre outros fatores.
+
+Numa tentativa de criar um instrumento válido e compreensível para avaliar os fatores
+psicossociais surge o Copenhagen Psychosocial Questionnaire – COPSOQ –
+desenvolvido e validado por Kristensen e Borg (2000) com a colaboração do Danish
+National Institute for Occupational Health in Copenhagen. O questionário teve como
+enquadramento teórico uma perspectiva eclética, daí cobrir uma ampla gama de
+aspetos, conceitos e teorias atuais. O COPSOQ tenta lidar com a amplitude do
+construto “fatores psicossociais”, mediante a aplicação de uma abordagem
+multidimensional, com um espetro muito amplo de aspetos verificados (Kristensen et
+al., 2005).
+Este instrumento segue um conceito multidimensional e destina-se a cobrir as
+necessidades gerais envolvida na abrangência do conceito de “stress no trabalho”. É
+baseado no modelo de exigência e controlo, que tenta explicar o stress como
+consequência das elevadas exigências no trabalho e de um baixo apoio social
+(Kristensen et al., 2005).
+Num estudo transversal efetuado em 2005 com uma amostra representativa da
+população assalariada espanhola, os autores concluíram que o COPSOQ é um
+instrumento válido e permitiu o estabelecimento de níveis de referência da população
+trabalhadora quanto a riscos psicossociais, dando a possibilidade de elaborar
+estratégias de prevenção dos mesmos (Moncada et al., 2008). Um outro estudo
+desenvolvido na Dinamarca revelou também que o COPSOQ, através da identificação
+de fatores psicossociais, possibilita efetuar um registo das causas do absentismo por
+doença entre os trabalhadores dinamarqueses (Rugulies et al., 2010).
+Seguindo o exemplo dos vários países que utilizam o COPSOQ, também Portugal o
+usou com o objetivo de avaliar o impacto dos fatores psicossociais no trabalho e
+contribuir neste sentido para o progresso científico no campo da saúde ocupacional.
+
+Versão Portuguesa
+
+2
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+Entende-se como fatores psicossociais aquelas caraterísticas inerentes às condições e
+organização do trabalho que afetam a saúde dos indivíduos, através de processos
+psicológicos e fisiológicos. Os riscos psicossociais no trabalho resultam da interacção
+entre o indivíduo, as suas condições de vida e as suas condições de trabalho. A
+Organização Internacional do Trabalho (OIT) aponta os seguintes riscos psicossociais:
+sobrecarga horária, sobrecarga de trabalho mental e físico, monotonia, falta de
+empowerment, burnout, assédio moral e violência, insegurança no emprego, stress
+(Individual e no trabalho). Como consequências da exposição a estes riscos é válido
+apontar: acidentes de trabalho, absentismo, doenças (ansiedade, depressão, stress,
+doenças cardiovasculares, …), deterioração do ambiente social no trabalho,
+decréscimo da produtividade e qualidade do trabalho, entre outros.
+A relação entre os riscos psicossociais e a saúde manifesta-se de forma menos objetiva
+e manifesta que a exposição a outros riscos associados à higiene e segurança no
+trabalho, não obstante o real prejuízo que estes fatores causam na saúde e bem-estar
+do trabalhador (European Commission, 2000). O impacto da exposição a estes fatores
+manifesta-se sob as mais diversas formas, comprometendo o funcionamento saudável
+a um nível orgânico, emocional, cognitivo, social e comportamental. Alguns dos
+sintomas associados à exposição contínua e/ou intensa aos riscos psicossociais
+prendem-se com a ansiedade, depressão, lentificação psicomotora, problemas no
+sono, isolamento, abuso de substâncias, agressividade, inibição da capacidade de
+concentração e tomada de decisão e alterações neuroendócrinas. Muitos são os
+estudos que apontam a relação entre estes indícios e as doenças cardiovasculares,
+endócrinas, mentais, entre outras (Duffy et al, 1991; Kristensen, 1996; European Heart
+Network, 1998; Stansfeld et al., 1999; Kiviwäki et al., 2002; Schmitt et al., 2008).
+
+CCOOPPEENNHHAAGGEENN PPSSYYCCHHOOSSOOCCIIAALL Q
+QUUEESSTTIIOONNNNAAIIRREE –– CCO
+OPPSSO
+OQ
+Q
+O COPSOQ apresenta-se como um instrumento multidimensional, numa metodologia
+tripartida. Trata-se de um poderoso instrumento que reúne consenso internacional
+quanto à sua validade, modernidade e compreensibilidade na avaliação de muitas das
+mais relevantes dimensões psicossociais inerentes ao contexto laboral. Este
+
+Versão Portuguesa
+
+3
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+questionário, num formato recente reformulado em 2007 (COPSOQ II), compreende
+três versões distintas: (i) uma versão curta (23 dimensões e 40 perguntas), visando a
+autoavaliação dos trabalhadores ou a aplicação em locais de trabalho com menos de
+30 trabalhadores; (ii) uma versão média (28 dimensões e 87 perguntas), destinada ao
+uso por profissionais de saúde ocupacional, nomeadamente na avaliação de riscos,
+planificação e inspeção, e (iii) uma versão longa (41 dimensões e 128 perguntas) para
+fins de investigação. De acordo com os autores da versão original, a versão curta e
+média
+
+incluem
+
+somente
+
+aquelas
+
+dimensões
+
+psicossociais
+
+com
+
+evidência
+
+epidemiológica de relação com a saúde. Todas as versões apresentam dimensões que
+medem indicadores de exposição (riscos psicossociais) e indicadores do seu efeito
+(saúde, satisfação e stress). A maioria das escalas que integram as várias dimensões
+têm como base instrumentos já conhecidos e validados previamente, enquanto
+algumas foram construídas para este instrumento, o que permitiu unificar
+instrumentos de avaliação e comparar resultados de investigadores e profissionais de
+saúde ocupacional (Kristensen et al., 2005).
+Efetivamente, este instrumento cobre a maior diversidade possível de dimensões
+psicossociais que possam existir no mundo do trabalho atual, suportadas pelas teorias
+mais aceites neste âmbito. Desta forma, o COPSOQ pode ser utilizado em qualquer
+tipo de trabalho.
+
+N
+NOORRM
+MAASS DDEE UUTTIILLIIZZAAÇÇÃÃO
+O
+O COPSOQ é um instrumento de avaliação que pretende identificar os riscos
+psicossociais simplificados conceptualmente. O seu principal objetivo é a prevenção,
+visando a resposta às questões: onde está o problema? Como delinear a solução
+adequada? Este instrumento possibilita a obtenção de valores de referência da
+população ativa por fatores sociodemográficos e setores profissionais, permitindo
+comparações de nível de exposição aos fatores de risco entre os colaboradores de
+determinada empresa ou instituição e os valores de referência nacionais.
+Adicionalmente, o pressuposto de utilização do COPSOQ permite a aplicação das suas
+dimensões ou subescalas de modo independente e flexível, podendo o profissional
+
+Versão Portuguesa
+
+4
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+optar apenas pela aplicação das subescalas que considerar mais pertinentes ao
+contexto laboral em causa e/ ou função desempenhada pelo trabalhador, e pela
+ordem que desejar. De facto, é essencial acordar com os diversos intervenientes o que
+se pretende avaliar, adaptando o questionário à realidade laboral em questão. No
+entanto, as normas de utilização deste instrumento implicam a não inclusão de outras
+questões além das que o constituem.
+Devemos olhar para os resultados da aplicação do COPSOQ como oportunidades para
+identificar potenciais áreas de risco a melhorar na organização do trabalho. A
+identificação destes riscos não é um fim em si mesmo nem uma imposição legal. É uma
+estratégia eficaz de sinalização, necessariamente preliminar a uma prevenção
+adequada e efetiva. A lei obriga a seguir uma sequência lógica: primeiro avaliar para
+depois prevenir.
+O COPSOQ não deve ser usado se não se pretende agir face aos resultados
+encontrados.
+
+PPAARRTTIICCIIPPAAÇÇÃÃOO
+
+A utilização deste instrumento e o subsequente processo de prevenção pressupõe o
+envolvimento de todos os agentes implicados (serviços de saúde ocupacional,
+representantes da direção da empresa e representante dos trabalhadores).
+A aplicação deste princípio subentende a existência de um acordo entre os
+representantes da direção da empresa e os representantes dos trabalhadores sobre a
+utilização do COPSOQ. Secundariamente, junto com os técnicos de prevenção, estes
+representantes devem participar em todo o processo de intervenção: decidir que
+dimensões avaliar, adaptar o questionário, informar os trabalhadores, interpretar os
+resultados, dar feedback dos resultados aos trabalhadores, propor medidas
+preventivas/ remediativas, dar prioridade à sua aplicação e avaliar a sua eficácia. A
+participação ativa aumentará a confiança entre a equipa.
+A participação direta dos trabalhadores é uma condição imprescindível na utilização
+do COPSOQ. A avaliação de riscos psicossociais implica avaliar a forma como é feito o
+trabalho e ninguém o saberá melhor que os próprios intervenientes. Há que ouvir os
+
+Versão Portuguesa
+
+5
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+trabalhadores, que neste método é baseado num questionário individual cuja
+resposta é pessoal e voluntária.
+O COPSOQ é um questionário individual e que avalia apenas a exposição do
+trabalhador a fatores de risco para a saúde de natureza psicossocial. As respostas ao
+questionário são anónimas e deve ser garantida a confidencialidade. Os dados devem
+ser tratados por indivíduos que assumam e cumpram rigorosamente os princípios
+éticos de proteção dos dados e informações pessoais.
+
+VVEERRSSÃÃOO PPOORRTTUUGGUUEESSAA
+À semelhança da escala original, a versão portuguesa do COPSOQ está disponível em
+três versões: curta, média e longa. As versões média e curta são desenvolvidas
+empiricamente a partir da versão longa. O número de subescalas e itens de cada uma
+das três versões portuguesas consta na tabela 1.
+Após autorização e cedência de materiais por parte dos autores da versão original para
+a adaptação do Copenhagen Psychosocial Questionnaire para a população portuguesa,
+procedemos à tradução independente da versão longa original, em inglês, pelo
+Instituto de Letras e Ciências Humanas da Universidade do Minho. Esta tradução foi
+analisada pelos autores portugueses para identificação de eventuais desvios ao
+enquadramento conceptual, reformulando alguns termos. Posteriormente, foi
+efetuado um estudo piloto, aplicando esta versão traduzida para o português a 100
+trabalhadores nacionais, selecionados por conveniência, distribuídos por sexo, grupo
+etário, habilitações literárias e setor profissional. Recorremos ao procedimento de
+reflexão falada, através de entrevistas estruturadas, como forma de averiguar a
+compreensibilidade dos itens traduzidos da escala e sinalização de itens dúbios e/ ou
+redundantes, registando o tempo de resposta. A análise destas entrevistas,
+paralelamente à fundamentação teórica das subescalas, objectivos pretendidos e
+aplicabilidade à população portuguesa, justificaram a construção de uma versão
+média, com um menor número de itens. Esta nova versão respeita a estrutura e
+conteúdos da versão original dinamarquesa, com a devida adaptação à nossa
+população. Após a elaboração da versão média do COPSOQ, esta foi sujeita a
+
+Versão Portuguesa
+
+6
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+retrotradução por uma segunda entidade, o Feedback Institute Lda., o que comprovou
+a validade de conteúdo dos itens.
+Uma vez que a versão média se assume com a ferramenta mais adequada para
+utilização em saúde ocupacional, por apresentar uma identificação mais completa de
+dimensões psicossociais, não sendo excessivamente longa, esta foi a versão utilizada
+na população ativa portuguesa para obtenção de valores de referência.
+Adicionalmente, esta é a versão preferencialmente utilizada em estudos
+internacionais, o que nos permitirá comparações entre a nossa realidade laboral e a de
+outros países. A versão curta foi construída após a aplicação da versão média no
+presente estudo, de forma a identificar os itens mais relevantes e compreensíveis na
+realidade laboral portuguesa transversal a todos os setores profissionais, respeitando a
+estrutura base original.
+Todos os itens das três versões são avaliados numa escala tipo Likert de 5 pontos (1 Nunca/quase nunca, 2- Raramente, 3- Às vezes, 4 – Frequentemente e 5- Sempre ou 1 –
+Nada/quase nada, 2- Um pouco, 3- Moderadamente, 4-Muito e 5 – Extremamente)1. A
+cotação das respostas, na versão portuguesa, obedece a estes valores, podendo cada
+item ser cotado de 1 a 5 pontos, no sentido direto ao da resposta assinalada. Os únicos
+itens invertidos na versão média são o 42 e 45 (na versão longa correspondem aos
+itens 51 e 54, sendo inexistentes na versão curta), visto assumirem um sentido
+conceptual oposto aos restantes itens do mesmo fator. Assim, a título de exemplo, se
+o indivíduo assinalar 2 (Raramente) em resposta ao item 42, deverão ser cotados 4
+pontos.
+A análise dos resultados pressupõe a interpretação fator a fator. Ou seja, o COPSOQ
+não mede um único constructo, mas sim diversos riscos psicossociais e variáveis de
+saúde, stress e satisfação. Desta forma, deverão ser calculadas as médias dos itens de
+cada fator2, assumindo a interpretação desse valor sentidos distintos conforme o
+fator/ subescala em causa. Isto é, uma média de 4 (Frequentemente ou Muito) na
+subescala Possibilidades de desenvolvimento é interpretada como uma exposição
+favorável para saúde. Por outro lado, a mesma média de 4 pontos (Frequentemente ou
+Muito) na subescala Insegurança laboral será interpretada como uma situação de risco
+1
+2
+
+Cf Anexos
+Cf tópico Valores de Referência Nacionais.
+
+Versão Portuguesa
+
+7
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+para a saúde. Esta média deverá ser confrontada com os valores normativos para a
+população ativa portuguesa.
+Adicionalmente, o utilizador poderá situar a média obtida em determinado fator em
+tercis², ou seja, a divisão da amplitude da cotação dos itens (1 a 5), de cada subescala,
+em três partes iguais, com os respetivos pontos de corte 2,33 e 3,66. Esta divisão
+tripartida assume uma interpretação “semáforo”, mediante o impacto para a saúde
+que a exposição a determinada dimensão representa, nomeadamente: verde (situação
+favorável para a saúde), amarelo (situação intermédia) e vermelho (risco para a saúde).
+
+Este manual é acompanhado de uma aplicação informática para a cotação automática
+das respostas à versão média portuguesa. O utilizador insere o valor de cada item da
+escala no programa, e é automaticamente calculada a média dos respetivos fatores e
+determinada a cor referente ao impacto da exposição desse fator para a saúde.
+Tabela 1. Número de itens e subescalas das três versões portuguesas do COPSOQ.
+
+EXIGÊNCIAS LABORAIS
+Exigências quantitativas
+Ritmo de trabalho
+Exigências cognitivas
+Exigências emocionais
+Exigências de esconder emoções
+ORGANIZAÇÃO DO TRABALHO E CONTEÚDO
+Influência no trabalho
+Possibilidades de desenvolvimento
+Variação no trabalho
+Significado do trabalho
+Compromisso face ao local de trabalho
+RELAÇÕES SOCIAIS E LIDERANÇA
+Previsibilidade
+Recompensas (Reconhecimento)
+Transparência do papel laboral desempenhado
+Conflitos de papéis laborais
+Qualidade da liderança
+Apoio social de superiores
+Apoio social de colegas
+INTERFACE TRABALHO-INDIVÍDUO
+Insegurança Laboral
+Satisfação laboral
+Conflito Trabalho/Família
+Conflito Família/Trabalho
+VALORES NO LOCAL DE TRABALHO
+Confiança vertical
+Confiança horizontal
+
+Versão Curta
+
+Nº itens
+Versão Média
+
+Versão Longa
+
+2
+1
+2
+1
+-
+
+3
+1
+3
+1
+-
+
+3
+1
+3
+3
+4
+
+1
+2
+2
+1
+
+4
+3
+3
+2
+
+4
+3
+1
+3
+3
+
+2
+2
+1
+1
+1
+-
+
+2
+3
+3
+3
+4
+3
+3
+
+2
+3
+4
+4
+4
+3
+3
+
+1
+1
+2
+-
+
+1
+4
+3
+-
+
+4
+4
+3
+2
+
+2
+-
+
+3
+3
+
+3
+3
+
+Versão Portuguesa
+
+8
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+Justiça e respeito
+Comunidade social no trabalho
+Responsabilidade social
+PERSONALIDADE
+Auto-eficácia
+SAÚDE E BEM-ESTAR
+Saúde Geral
+Stress
+Burnout
+Problemas em dormir
+Stress somático
+Stress cognitivo
+Sintomas Depressivos
+COMPORTAMENTOS OFENSIVOS
+Número de subescalas
+Número de questões
+
+2
+1
+-
+
+3
+3
+-
+
+4
+3
+4
+
+1
+
+2
+
+6
+
+1
+2
+2
+1
+1
+4
+26
+41
+
+1
+2
+2
+2
+2
+4
+29
+76
+
+1
+4
+4
+4
+5
+4
+4
+6
+35
+119
+
+VVAALLOORREESSDDEE RREEFFEERRÊÊNNCCIIAA N
+NAACCIIOONNAAIISS
+Para a obtenção de dados normativos dos trabalhadores portugueses, procedemos à
+distribuição de cerca de 20.000 protocolos de avaliação, constituídos pela versão
+média portuguesa do COPSOQ II3, antecedido do consentimento informado. Das
+empresas/ instituições abordadas para colaboração neste estudo, aceitaram participar
+cerca de 35 empresas e instituições públicas e privadas de Portugal continental, de
+diversos setores profissionais e dimensões empresariais. Adicionalmente, estes
+protocolos foram distribuídos online e presencialmente a diversos indivíduos, cujo
+único critério de inclusão era: ser trabalhador português. A taxa de retorno de
+questionários devidamente preenchidos não ultrapassou os 20%, assumindo a nossa
+amostra final o número de 4162 trabalhadores, 46,3% mulheres, com idades
+compreendidas entre os 19 e os 69 anos. As características sociodemográficas e
+ocupacionais da amostra estão descritas na tabela 2.
+
+3
+
+Cf Anexos
+
+Versão Portuguesa
+
+9
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+
+Setores
+Profissionais
+
+Masculino
+
+Feminino
+
+Total
+
+N= 2237 (53.7%)
+
+N=1925 (46.3%)
+
+N=4162
+
+M
+
+DP
+
+M
+
+DP
+
+M
+
+DP
+
+Idade
+
+40.49
+
+9.53
+
+38.12
+
+9.79
+
+39.4
+
+9.72
+
+Anos
+de trabalho
+
+18.32
+
+10.16
+
+14.84
+
+9.83
+
+16.7
+
+10.18
+
+Masculino
+
+%
+
+Feminino
+
+%
+
+Total
+
+%
+
+476
+1449
+120
+23
+143
+15
+
+21.4
+65.1
+5.4
+1
+6.4
+0.7
+
+585
+962
+163
+33
+145
+19
+
+30.7
+50.4
+8.5
+1.7
+7.6
+1
+
+1061
+2411
+283
+56
+288
+34
+
+25.7
+58.3
+6.8
+1.3
+6.9
+0.8
+
+Masculino
+
+%
+
+Feminino
+
+%
+
+Total
+
+%
+
+123
+128
+510
+781
+43
+31
+429
+116
+63
+Masculino
+386
+115
+373
+273
+167
+825
+98
+
+5.5
+5.8
+22.9
+35.1
+1.9
+1.4
+19.3
+5.2
+2.8
+%
+17.3
+5.1
+16.7
+12.2
+7.5
+36.9
+4.4
+
+46
+55
+163
+368
+48
+49
+897
+212
+71
+Feminino
+235
+205
+221
+804
+227
+112
+121
+
+2.4
+2.9
+8.5
+19.1
+2.5
+2.5
+46.6
+11
+3.7
+%
+12.2
+10.6
+11.5
+41.8
+11.8
+5.8
+6.3
+
+169
+183
+673
+1149
+91
+80
+1326
+328
+134
+Total
+621
+320
+594
+1077
+394
+937
+219
+
+4.1
+4.4
+16.3
+27.8
+2.2
+1.9
+32.1
+7.9
+3.2
+%
+14.9
+7.7
+14.3
+25.9
+9.5
+22.5
+5.3
+
+Solteiro(a)
+Casado(a)
+Divorciado(a)
+Viúvo(a)
+União de facto
+Separado(a)
+1º Ciclo
+2º Ciclo
+3º Ciclo
+Secundário
+Médio
+Bacharelato
+Licenciatura
+Mestrado
+Doutoramento
+
+Básico
+
+Habilitações Literárias
+
+Estado civil
+
+Tabela 2. Características gerais da amostra: idade, anos de trabalho, estado civil, habilitações literárias e
+setores profissionais.
+
+Indústria
+Ensino
+Serviços e Comércio
+Saúde
+Administração Pública
+Forças Policiais
+Outros
+
+Procedeu-se a uma análise descritiva de todas as dimensões avaliadas na versão média
+portuguesa do COPSOQ, verificando os níveis de exposição aos riscos psicossociais nos
+trabalhadores portugueses e níveis de saúde, stress e satisfação no trabalho.
+O gráfico 1 apresenta os resultados gerais nas subescalas do COPSOQ, através da
+divisão das pontuações em terços, tal como é utilizado por outros autores estrangeiros
+(p. ex. Moncada, 2008), pela facilidade de interpretação e comunicação com os
+profissionais e empresas. Estes terços são interpretados através do impacto para a
+saúde que a exposição a determinada dimensão representa, num modelo tricolor4.
+Foram igualmente determinados os valores de consistência interna (alpha de
+Cronbach), médias e desvios-padrão dos 4162 trabalhadores avaliados (tabela 3).
+4
+
+Ver tópico Versão Portuguesa (cotação e interpretação).
+
+Versão Portuguesa
+
+10
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+
+Risco para a saúde
+
+Intermédio
+
+Situação favorável
+
+Comportamentos ofensivos
+Sintomas depressivos
+Stress
+Burnout
+Problemas em dormir
+Conflito trabalho-família
+Saúde Geral
+Insegurança laboral
+Satisfação no trabalho
+Compromisso face ao local de trabalho
+Significado do trabalho
+Auto-eficácia
+Justiça e respeito
+Confiança vertical
+Confiança horizontal
+Qualidade da chefia
+Comunidade social no trabalho
+Apoio social de superiores
+Apoio social de colegas
+Conflitos laborais
+Recompensas
+Transparência de papel
+Previsibilidade
+Possibilidades de desenvolvimento
+Influência no trabalho
+Exigências emocionais
+Exigências cognitivas
+Ritmo de trabalho
+Exigências quantitativas
+
+0%
+
+10%
+
+20%
+
+30%
+
+40%
+
+50%
+
+60%
+
+70%
+
+80%
+
+90%
+
+Gráfico 1. Tercis das subescalas da versão média portuguesa do COPSOQ.
+
+Versão Portuguesa
+
+11
+
+100%
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+
+Tabela 3. Consistência interna, médias e desvios-padrão das subescalas da versão média do COPSOQ.
+
+Subescalas
+Exigências quantitativas
+Ritmo de trabalho
+Exigências cognitivas
+Exigências emocionais
+Influência no trabalho
+Possibilidades de desenvolvimento
+Previsibilidade
+Transparência do papel laboral
+Recompensas
+Conflitos laborais
+Apoio social de colegas
+Apoio social de superiores
+Comunidade social no trabalho
+Qualidade da liderança
+Confiança horizontal
+Confiança vertical
+Justiça e respeito
+Auto-eficácia
+Significado do trabalho
+Compromisso com o local de trabalho
+Satisfação no trabalho
+Insegurança laboral
+Saúde geral
+Conflito trabalho-família
+Problemas em dormir
+Burnout
+Stress
+Sintomas depressivos
+Comportamentos ofensivos
+
+Itens
+3
+1
+3
+1
+4
+3
+2
+3
+3
+3
+3
+3
+3
+4
+3
+3
+3
+2
+3
+2
+4
+1
+1
+3
+2
+2
+2
+2
+4
+
+α
+.63
+*
+.60
+*
+.70
+.76
+.72
+.76
+.82
+.67
+.71
+.87
+.85
+.90
+.29**
+.20**
+.79
+.67
+.82
+.61
+.82
+*
+*
+.86
+.84
+.83
+.73
+.80
+.78
+
+Média
+2,48
+3,18
+3,79
+3,42
+2,83
+3,85
+3,23
+4,19
+3,71
+2,94
+3,44
+3,13
+3,97
+3,49
+2,79
+3,60
+3,37
+3,90
+4,03
+3,40
+3,37
+3,13
+3,44
+2,67
+2,46
+2,70
+2,70
+2,35
+1,23
+
+DP
+0,86
+1,00
+0,71
+1,15
+0,89
+0,81
+0,92
+0,72
+0,87
+0,69
+0,77
+0,97
+0,81
+0,93
+0,64
+0,60
+0,81
+0,67
+0,72
+0,90
+0,75
+1,47
+0,91
+1,05
+1,05
+0,97
+0,90
+0,91
+0,48
+
+* Não é possível calcular o α de Cronbach uma vez que a subescala é constituída por um único item.
+** Os itens constituintes destas escalas avaliam informação distinta, embora obedecendo aos mesmos valores no local de trabalho
+(ex: Subescala Confiança horizontal - Os funcionários ocultam informação uns aos outros?; Os funcionários ocultam informação à
+gerência?) daí a possível baixa consistência interna.
+
+Adicionalmente, foram comparadas as médias e desvios-padrão das dimensões do
+COPSOQ entre homens e mulheres (tabela 4) e segundo dois grupos etários divididos
+pela mediana (=38 anos de idade), como se pode verificar na tabela 5.
+
+Versão Portuguesa
+
+12
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+Tabela 4. Médias e desvios-padrão das subescalas do COPSOQ por sexo.
+
+Subescalas
+Exigências quantitativas
+Ritmo de trabalho
+Exigências cognitivas
+Exigências emocionais
+Influência no trabalho
+Possibilidades de desenvolvimento
+Previsibilidade
+Transparência do papel laboral
+Recompensas
+Conflitos de papéis laborais
+Apoio social de colegas
+Apoio social de superiores
+Comunidade social no trabalho
+Qualidade da liderança
+Confiança horizontal
+Confiança vertical
+Justiça e respeito
+Auto-eficácia
+Significado do trabalho
+Compromisso com o local de trabalho
+Satisfação no trabalho
+Insegurança laboral
+Saúde geral
+Conflito trabalho-família
+Problemas em dormir
+Burnout
+Stress
+Sintomas depressivos
+Comportamentos ofensivos
+
+Sexo
+Feminino
+Média DP
+2,48 0,86
+3,30 0,98
+3,79 0,71
+3,61 1,14
+2,74 0,88
+3,88 0,81
+3,26 0,90
+4,17 0,73
+3,69 0,83
+2,95 0,66
+3,42 0,76
+3,08 0,96
+3,87 0,82
+3,40 0,95
+2,78 0,64
+3,62 0,59
+3,32 0,77
+3,86 0,67
+4,02 0,72
+3,38 0,90
+3,33 0,74
+3,24 1,42
+3,42 0,88
+2,67 1,06
+2,54 1,06
+2,89 0,96
+2,82 0,89
+2,41 0,94
+1,19 0,42
+
+Versão Portuguesa
+
+Sexo
+Masculino
+Média DP
+2,47 0,86
+3,08 1,00
+3,79 0,72
+3,26 1,13
+2,90 0,90
+3,83 0,80
+3,21 0,94
+4,21 0,72
+3,72 0,90
+2,94 0,71
+3,46 0,78
+3,16 0,97
+4,06 0,79
+3,56 0,92
+2,80 0,65
+3,58 0,60
+3,41 0,85
+3,93 0,68
+4,04 0,72
+3,41 0,91
+3,40 0,76
+3,03 1,50
+3,45 0,93
+2,68 1,04
+2,39 1,04
+2,54 0,95
+2,60 0,90
+2,31 0,86
+1,25 0,52
+
+t
+.211
+6.912
+.030
+9.914
+-5.778
+2.140
+1.649
+-1.771
+-1.378
+.114
+-1.603
+-2.697
+-7.224
+-5.380
+-1.220
+1.823
+-3.516
+-3.475
+-.826
+-.977
+-3.054
+4.513
+-1.013
+-.474
+4.464
+11.606
+7.848
+3.715
+-3.999
+
+p
+.833
+.000
+.976
+.000
+.000
+.032
+.099
+.077
+.168
+.909
+.109
+.007
+.000
+.000
+.223
+.068
+.000
+.001
+.409
+.329
+.002
+.000
+.311
+.636
+.000
+.000
+.000
+.000
+.000
+
+13
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+Tabela 5. Médias e desvios-padrão das subescalas do COPSOQ por grupo etário.
+
+Subescalas
+Exigências quantitativas
+Ritmo de trabalho
+Exigências cognitivas
+Exigências emocionais
+Influência no trabalho
+Possibilidades de desenvolvimento
+Previsibilidade
+Transparência do papel laboral
+Recompensas
+Conflitos de papéis laborais
+Apoio social de colegas
+Apoio social de superiores
+Comunidade social no trabalho
+Qualidade da liderança
+Confiança horizontal
+Confiança vertical
+Justiça e respeito
+Auto-eficácia
+Significado do trabalho
+Compromisso com o local de trabalho
+Satisfação no trabalho
+Insegurança laboral
+Saúde geral
+Conflito trabalho-família
+Problemas em dormir
+Burnout
+Stress
+Sintomas depressivos
+Comportamentos ofensivos
+
+< 38 anos de
+idade
+Média
+DP
+2,54
+0,86
+3,24
+0,96
+3,79
+0,68
+3,42
+1,14
+2,76
+0,85
+3,86
+0,79
+3,22
+0,88
+4,13
+0,71
+3,68
+0,84
+2,99
+0,69
+3,49
+0,74
+3,14
+0,92
+3,95
+0,80
+3,43
+0,91
+2,79
+0,62
+3,57
+0,55
+3,34
+0,78
+3,85
+0,66
+3,97
+0,76
+3,35
+0,90
+3,34
+0,75
+3,12
+1,45
+3,63
+0,87
+2,71
+1,05
+2,38
+1,06
+2,75
+0,98
+2,72
+0,92
+2,37
+0,92
+1,26
+0,51
+
+≥ 38 anos de
+idade
+Média
+DP
+2,42
+0,85
+3,12
+1,03
+3,79
+0,73
+3,42
+1,15
+2,89
+0,92
+3,84
+0,81
+3,25
+0,96
+4,25
+0,73
+3,74
+0,89
+2,91
+0,69
+3,40
+0,79
+3,11
+1,00
+3,99
+0,82
+3,54
+0,95
+2,79
+0,66
+3,62
+0,63
+3,39
+0,83
+3,94
+0,68
+4,09
+0,68
+3,44
+0,90
+3,41
+0,74
+3,13
+1,48
+3,27
+0,91
+2,63
+1,05
+2,53
+1,04
+2,64
+0,96
+2,68
+0,89
+2,34
+0,90
+1,19
+0,44
+
+t
+-4.610
+-3.805
+-.582
+.101
+4.582
+-.708
+1.263
+5.259
+2.463
+-3.625
+-3.923
+-.972
+1.699
+3.576
+-.120
+3.170
+2.042
+4.003
+5.283
+3.175
+3.317
+.227
+-12.668
+-2.480
+4.479
+-3.677
+-1.241
+-1.050
+-4.900
+
+p
+.000
+.000
+.561
+.920
+.000
+.479
+.207
+.000
+.014
+.000
+.000
+.331
+.089
+.000
+.905
+.002
+.041
+.000
+.000
+.002
+.001
+.821
+.311
+.013
+.000
+.000
+.215
+.294
+.000
+
+As pontuações médias obtidas pelos trabalhadores desta amostra, segundo os seis
+setores profissionais avaliados, estão representadas na tabela 6.
+
+Versão Portuguesa
+
+14
+
+Copenhagen Psychosocial Questionnaire - COPSOQ
+Tabela 6. Médias e desvios-padrão das subescalas do COPSOQ por setor profissional.
+Subescalas
+
+Exigências
+quantitativas
+Ritmo de
+trabalho
+Exigências
+cognitivas
+Exigências
+emocionais
+Influência no
+trabalho
+Possibilidades de
+desenvolvimento
+Previsibilidade
+Transparência do
+papel laboral
+Recompensas
+Conflitos de
+papéis laborais
+Apoio social de
+colegas
+Apoio social de
+superiores
+Comunidade
+social no trabalho
+Qualidade da
+liderança
+Confiança
+horizontal
+Confiança vertical
+
+Indústria
+
+Ensino
+
+Média
+
+DP
+
+Média
+
+DP
+
+Serviços e
+Comércio
+Média
+DP
+
+Saúde
+
+2,51
+
+0,91
+
+3,08
+
+0,90
+
+2,31
+
+0,81
+
+2,46
+
+0,81
+
+2,34
+
+0,81
+
+2,41
+
+0,80
+
+3,34
+
+0,95
+
+3,43
+
+0,91
+
+2,95
+
+1,06
+
+3,39
+
+0,95
+
+3,14
+
+0,96
+
+3,98
+
+0,96
+
+3,67
+
+0,74
+
+3,97
+
+0,67
+
+3,73
+
+0,73
+
+3,85
+
+0,69
+
+3,69
+
+0,77
+
+3,80
+
+0,67
+
+3,12
+
+1,18
+
+3,71
+
+1,08
+
+3,20
+
+1,19
+
+3,89
+
+0,99
+
+3,18
+
+1,14
+
+3,32
+
+1,06
+
+2,86
+
+1,00
+
+3,18
+
+0,78
+
+2,71
+
+0,88
+
+2,71
+
+0,90
+
+2,68
+
+0,84
+
+2,96
+
+0,83
+
+3,77
+
+0,83
+
+4,13
+
+0,80
+
+3,69
+
+0,87
+
+3,93
+
+0,77
+
+3,67
+
+0,87
+
+3,85
+
+0,72
+
+3,41
+
+0,96
+
+3,25
+
+0,75
+
+3,09
+
+0,96
+
+3,29
+
+0,86
+
+3,18
+
+0,99
+
+3,10
+
+0,90
+
+4,30
+
+0,71
+
+3,95
+
+0,77
+
+4,15
+
+0,78
+
+4,22
+
+0,67
+
+4,16
+
+0,73
+
+4,23
+
+0,69
+
+3,79
+
+0,87
+
+3,69
+
+0,72
+
+3,65
+
+0,94
+
+3,62
+
+0,82
+
+3,84
+
+0,89
+
+3,70
+
+0,88
+
+2,82
+
+0,70
+
+3,17
+
+0,98
+
+2,94
+
+0,71
+
+2,96
+
+0,64
+
+2,90
+
+0,69
+
+2,96
+
+0,69
+
+3,41
+
+0,79
+
+3,28
+
+0,82
+
+3,38
+
+0,85
+
+3,41
+
+0,71
+
+3,48
+
+0,79
+
+3,58
+
+0,73
+
+3,26
+
+0,96
+
+2,73
+
+0,94
+
+2,98
+
+1,04
+
+3,00
+
+0,92
+
+3,27
+
+0,98
+
+3,31
+
+0,88
+
+4,02
+
+0,82
+
+3,71
+
+0,47
+
+3,95
+
+0,86
+
+3,84
+
+0,77
+
+3,99
+
+0,81
+
+4,16
+
+0,76
+
+3,57
+
+0,88
+
+3,08
+
+0,94
+
+3,38
+
+0,99
+
+3,38
+
+0,93
+
+3,57
+
+1,04
+
+3,71
+
+0,82
+
+2,84
+
+0,67
+
+2,92
+
+0,47
+
+2,74
+
+0,74
+
+2,67
+
+0,68
+
+2,80
+
+0,63
+
+2,84
+
+0,55
+
+Média
+
+DP
+
+Administração
+Pública
+Média
+DP
+
+Forças
+Policiais
+Média
+DP
+
+3,61
+
+0,64
+
+3,42
+
+0,41
+
+3,65
+
+0,69
+
+3,69
+
+0,62
+
+3,52
+
+0,58
+
+3,53
+
+0,52
+
+Justiça e respeito
+
+3,41
+
+0,84
+
+3,15
+
+0,71
+
+3,29
+
+0,87
+
+3,32
+
+0,74
+
+3,32
+
+0,84
+
+3,48
+
+0,83
+
+Auto-eficácia
+Significado do
+trabalho
+Compromisso
+com o local de
+trabalho
+Satisfação no
+trabalho
+Insegurança
+laboral
+
+3,88
+
+0,71
+
+3,79
+
+0,62
+
+3,99
+
+0,73
+
+3,82
+
+0,66
+
+4,01
+
+0,62
+
+3,91
+
+0,65
+
+4,07
+
+0,77
+
+3,98
+
+0,79
+
+4,00
+
+0,74
+
+4,08
+
+0,71
+
+3,96
+
+0,72
+
+4,05
+
+0,65
+
+3,57
+
+0,92
+
+3,52
+
+0,89
+
+3,38
+
+0,90
+
+3,45
+
+0,85
+
+3,24
+
+0,99
+
+3,27
+
+0,88
+
+3,58
+
+0,75
+
+3,28
+
+0,77
+
+3,33
+
+0,76
+
+3,29
+
+0,73
+
+3,41
+
+0,80
+
+3,37
+
+0,71
+
+3,57
+
+1,35
+
+3,03
+
+1,38
+
+3,62
+
+1,39
+
+2,98
+
+1,41
+
+3,34
+
+1,39
+
+2,53
+
+1,49
+
+Saúde geral
+
+3,44
+
+0,97
+
+3,47
+
+0,81
+
+3,40
+
+0,95
+
+3,41
+
+0,89
+
+3,49
+
+0,90
+
+3,45
+
+0,89
+
+2,44
+
+1,02
+
+3,19
+
+1,11
+
+2,60
+
+1,04
+
+2,79
+
+1,01
+
+2,31
+
+0,99
+
+2,72
+
+1,02
+
+2,47
+
+1,09
+
+2,53
+
+1,06
+
+2,44
+
+1,04
+
+2,55
+
+1,04
+
+2,44
+
+1,05
+
+2,37
+
+1,03
+
+2,68
+
+0,99
+
+3,00
+
+0,97
+
+2,62
+
+0,96
+
+2,88
+
+0,93
+
+2,69
+
+1,01
+
+2,45
+
+0,92
+
+2,67
+
+0,91
+
+3,01
+
+0,92
+
+2,62
+
+0,92
+
+2,79
+
+0,84
+
+2,75
+
+0,90
+
+2,53
+
+0,91
+
+2,27
+
+0,93
+
+2,55
+
+0,99
+
+2,36
+
+0,91
+
+2,38
+
+0,89
+
+2,41
+
+0,90
+
+2,28
+
+0,88
+
+1,19
+
+0,45
+
+1,18
+
+0,41
+
+1,25
+
+0,49
+
+1,24
+
+0,46
+
+1,18
+
+0,37
+
+1,27
+
+0,56
+
+Conflito trabalhofamília
+Problemas em
+dormir
+Burnout
+Stress
+Sintomas
+depressivos
+Comportamentos
+ofensivos
+
+Versão Portuguesa
+
+15
+
+IINNTTEERRVVEENNÇÇÃÃOO PPSSIICCOOSSSSOOCCIIAALL NNOO LLOOCCAALL DDEE TTRRAABBAALLHHOO
+A Lei-Quadro da Segurança e Saúde no Trabalho (Decreto-Lei n.º 441/91, de 14 de novembro)
+visa a efectivação do direito à segurança e à protecção da saúde no local de trabalho por via da
+coerência de medidas e da eficácia de intervenção das entidades, públicas, privadas ou
+cooperativas, que exercem, naquele âmbito, competências nas áreas da regulamentação,
+licenciamento, formação, informação, consulta e participação, serviços técnicos de prevenção e
+vigilância da saúde e fiscalização. Por outro lado, a Lei nº 102/2009 de 10 de setembro
+
+regulamenta o regime jurídico da promoção e prevenção da segurança e da saúde no
+trabalho, de acordo com o previsto no artigo 284.º do Código do Trabalho. Neste
+decreto de lei, o artigo 15º do capítulo 2, reporta as obrigações gerais do empregador,
+que especificamos as alíneas d) e e): O empregador deve zelar, de forma continuada e
+permanente, pelo exercício da actividade em condições de segurança e de saúde para o
+trabalhador, tendo em conta os seguintes princípios gerais de prevenção: d) Assegurar,
+nos locais de trabalho, que as exposições aos agentes químicos, físicos e biológicos e
+aos factores de risco psicossociais não constituem risco para a segurança e saúde do
+trabalhador; e) Adaptação do trabalho ao homem, especialmente no que se refere à
+concepção dos postos de trabalho, à escolha de equipamentos de trabalho e aos
+métodos de trabalho e produção, com vista a, nomeadamente, atenuar o trabalho
+monótono e o trabalho repetitivo e reduzir os riscos psicossociais.
+Percebemos assim pela legislação portuguesa, o papel do estado enquanto agente de
+promoção da melhoria e manutenção das boas condições de trabalho, assim como
+entidade de fiscalização e regulação da prevenção em contexto laboral.
+
+É comum perceber os riscos psicossociais enquanto aspetos demasiado complexos,
+intangíveis e difíceis de entender, e que como as ações preventivas estão na mão dos
+empregadores, estas exigem alterações irrealistas na organização do trabalho. Para
+aqueles que trabalham no âmbito da prevenção em saúde ocupacional estes
+argumentos são infundados e contornáveis.
+
+É essencial atuar atempadamente onde é necessário. Devemos evitar os efeitos
+nefastos da exposição aos riscos psicossociais quando detemos informação sobre as
+
+16
+
+suas consequências reais. Ou seja, se dispomos de evidências suficientes de que a
+insegurança no trabalho, o excesso de exigências cognitivas e emocionais, a fraca
+autonomia e apoio social, a ausência de recompensas, entre outros, são fatores de
+risco para a saúde, o que se trata é de os identificar no local de trabalho e controlá-los.
+Estes são os pilares de ação da saúde pública, medicina do trabalho e a higiene e
+segurança no trabalho.
+
+Após a localização dos fatores de risco há que implementar mudanças na organização
+laboral. O impacto que estas alterações terão na saúde dos trabalhadores deverão
+assumir-se como alvo central das ações das empresas neste âmbito. A jusante,
+estamos a falar da saúde da própria empresa e da sociedade em geral.
+
+Nos últimos anos, os estudos de intervenção no local de trabalho têm aumentado
+notoriamente. Ainda assim, e dada a complexidade e especificidade da relação entre
+estes fatores, cada indivíduo e cada empresa, são fundamentais mais estudos que
+sinalizem os efeitos das atividades planeadas no local de trabalho com o objetivo de
+melhorar as condições de trabalho e a saúde. O seu efeito deverá impreterivelmente
+ser avaliado através de métodos de avaliação e investigação fidedignos (Kristensen,
+2005).
+Algumas destas práticas constam no trabalho de Di Marino & Karasek (1992) editadas
+pela OIT. Uma empresa pode organizar-se de forma saudável mediante a prática de
+medidas concretas que visem:
+•
+
+Redução das exigências psicológicas;
+
+•
+
+Incrementar das oportunidades e desenvolvimento das competências e
+conhecimentos, evitando o trabalho monótono e repetitivo;
+
+•
+
+Incrementar o nível de controlo sobre os tempos de trabalho (férias, pausas,
+….).
+
+•
+
+Potenciem a participação nas decisões relacionadas com o conteúdo das
+tarefas.
+
+•
+
+Potenciem a decisão dos trabalhadores sobre as suas condições de trabalho.
+
+•
+
+Facilitem o apoio entre os trabalhadores e a empresa;
+
+17
+
+•
+
+Fomentem a clareza e a transparência organizativa, definindo postos de
+trabalho, tarefas e autonomia;
+
+•
+
+Proporcionem formação e competências diretivas não autoritárias;
+
+•
+
+Eliminem a competitividade entre trabalhadores e/ou departamentos;
+
+•
+
+Garantir o respeito e o tratamento justo;
+
+•
+
+Garantir a segurança e a estabilidade entre o emprego e as condições de
+trabalho;
+
+•
+
+Eliminar a discriminação por sexo, idade, etnia ou qualquer outra etnia;
+
+•
+
+Facilitar as relações entre a vida profissional e familiar.
+
+A adaptação do COPSOQ à população portuguesa, enquanto ferramenta/ método
+internacionalmente aceite para avaliação dos riscos psicossociais e seu impacto na
+saúde e bem-estar do trabalhador, pretende assumir-se como um incentivo ao
+desenvolvimento das boas práticas neste contexto. Pretende-se que a disponibilização
+deste instrumento assuma um papel dinamizador na avaliação prospetiva dos riscos
+psicossociais emergentes, fornecendo dados normativos dos trabalhadores nacionais e
+impulsionando estudos posteriores de alargamento e aprofundamento dos dados já
+existentes, identificando grupos vulneráveis, tipologias eficazes de intervenção, e o
+desenvolvimento de comunidades nacionais e internacionais de partilha no âmbito da
+saúde ocupacional.
+
+18
+
+RReeffeerrêênncciiaass BBiibblliiooggrrááffiiccaass
+AMIS's spørgeskema om psykisk arbejdsmiljø (2000). NIOH's questionnaire on psychosocial work
+environment). Copenhagen: Arbejdsmiljøinstituttet.
+
+Cox, T., Griffiths, J., B arlow, A., Randal, J., Thomson, E. & Rial-Gonzalez, E. (2000). Organisational
+interventions for work stress: a risk management approach. HSE Books. Sudbury.
+
+Decreto-Lei nº 441/91 de 14 Novembro. Diário da República I Serie A nº 62.
+
+Duffy, L. C., Zielezny, M. A., Marshall, J. R., et al. et al. (2001). Relevance of major stress events as an
+indicator of disease activity prevalence in inflamatory bowel disease. Behavioral Medicine ,
+17(3), 101-110.
+
+European Agency for Safety and Health at Work (2000). Future occupational safety and health research
+needs and priorities in the member states of the European Union. Luxembourg: Office for
+Official Publications of the European Communities.
+
+European Commission (2000). Guidance on work-relates stress: spice of life or kiss of death?
+Luxembourg: Office for Official Publications of the European Communities.
+
+European Foundation for the Improvement of Living and Working Conditions (2006). Fourth European
+working conditions survey. Office for Official Publications of the European Communities,
+Luxemburgo.
+
+Karasek, R. (1979). Job demands, Job decision latitude and mental strain: implications for Job re-design.
+Administrative Science Quarterly, 24, 285-308.
+
+Karasek, R. (1992). Stress prevention through work reorganization: a summary of 19 international case
+studies. In ILO (V. Di Martino, Ed.), Conditions of work digest. Preventing Stress at Work, 11 (2),
+23-41.
+
+Karasek, R., Brisson, C., Kawakami, N., Houtman, I., Bongers, P. & Amick, B. (1998). The Job Content
+Questionnaire (JCQ): an instrument for international comparative assessments of psychosocial
+job characteristics. Journal of Occupational Health Psychology, 3, 322-355.
+
+19
+
+Kivimäki, M., Leino-Arjas, P., Luukkonen, R., Riihimäki, H., Vathera, J., Kirjonen, J. (2002). Work stress
+and risk of cardiovascular mortality: prospective cohort study of industrial employees. British
+Medical Journal 325 19, 1-5.
+
+Kristensen, T. S. (1996). Job stress and cardiovascular disease: a theoretic critical review. Journal of
+Occupational Health Psychology, 1(3), 246-260.
+
+Kristensen, T.S. (2002) A new tool for assessing psychosocial factors at work: The Copenhagen
+Psychosocial Questionnaire. TUTB Newsletter, 19-20, 45-47.
+
+Kristensen, T. (2005) Intervention studies in occupational epidemiology. Occupational and
+Environmental Medicine, 62, 205-210.
+
+Kristensen, T., Hannerz, H., Hogh, A. & Borg, V. (2005). The Copenhagen psychosocial Questionnaire – a
+tool for the assessment and improvement of the psychosocial work environment. Scandinavian
+Journal of Work, Environment and Health, 31(6), 438-449.
+
+Moncada, S., Llorens, C., Navarro, A. & Kristensen, T. S. (2005). ISTAS21: Versión en lengua castellana del
+cuestionário psicosocial de Copenhague (COPSOQ). Archivos de Prevención de Riesgos
+Laborales, 8 (1), 18-29.
+
+Moncada, S., Serrano, C., Corominas, A., Camps, A. & Giné, A. (2008). Exposicion a riesgos psicossociales
+entre la poblacion asalariada en España (2004-05): Valores de referencia de Las 21 dimensiones
+del cuestionario COPSOQ ISTAS 21. Revista Espanola de Salud Publica, 82 (6), 667-675.
+
+National Institute of Occupational Safety and Health (NIOSH) (2002). The changing organization of work
+and the safety and health of working people. Cincinnati (OH), 16 [Versão eletrónica] retirado a
+02-01-2010 de http://www.cdc.gov/niosh/.
+
+Nübling, M., Stößel, U., Hasselhorn, H., Michaelis, M. & Hofmann, F. (2006). Measuring psychological
+stress and strain at work: Evaluation of the COPSOQ Questionnaire in Germany. GMS
+Psychosocial Medicine, 3.
+
+Rugulies, R., Christensen, B., Borritz, M., Villadsen, E., Bultmann, U. & Kristensen, T. (2007). The
+contribution of the psychosocial work environment to sickness absence in human service
+workers: results from a 3-year follow-up. Work Stress, 21, 293-311.
+
+20
+
+Schmitt, N., Fuchs, A. & Kirch, W. (2008). Mental health disorders and work-life balance. In A., Linos &
+W. Kirch (eds.). Promoting health for working women. Springer: New York.
+
+Stansfeld, S. A., Furher, R., Shipley, M.J., Marmot, M. (1999). Work characteristics predict psychiatric
+disorder: prospective results from the Whitehall II study. Occupational and Environmental
+Medicine, 56, 302-307.
+
+Tabanelli, M.C., Depolo, M., Cooke, R., Siarchielli, G., Bonfliglioli, R., Mattioli, S. et al. (2008). Available
+instruments for measurement of psychosocial factors in the work environment. Archives of
+Occupational and Environmental Health, 82, 1-12.
+
+The European Heart Network (1998). Social factors, stress and cardiovascular disease prevention in the
+European Union. Expert Group on Psychosocial and Occupation Factors. Brussels: European
+Heart Network 1998.
+
+21
+
+Anexos
+
+COPSOQ II – Versão Portuguesa
+Versão Curta
+Versão Média
+Versão Longa
+Versão Média com designação das subescalas
+Versão Longa com designação das subescalas
+
+22
+
+COPSOQ II – Versão Curta
+(Kristensen, T., 2001)
+(Tradução e adaptação de Silva, C. et al., 2011)
+
+Das seguintes afirmações indique (X) a que mais se adequa à sua resposta de acordo com as
+seguintes alternativas:
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+1. A sua carga de trabalho acumula-se por ser mal distribuída?
+2. Com que frequência não tem tempo para completar todas as tarefas do
+seu trabalho?
+3. Precisa trabalhar muito rapidamente?
+4. O seu trabalho exige a sua atenção constante?
+5. O seu trabalho exige que tome decisões difíceis?
+6. O seu trabalho exige emocionalmente de si?
+7. Tem um elevado grau de influência no seu trabalho?
+8. O seu trabalho exige que tenha iniciativa?
+9. O seu trabalho permite-lhe aprender coisas novas?
+10. No seu local de trabalho, é informado com antecedência sobre decisões
+importantes, mudanças ou planos para o futuro?
+11. Recebe toda a informação de que necessita para fazer bem o seu
+trabalho?
+12. Sabe exactamente quais as suas responsabilidades?
+13. O seu trabalho é reconhecido e apreciado pela gerência?
+14. É tratado de forma justa no seu local de trabalho?
+15. Com que frequência tem ajuda e apoio do seu superior imediato?
+16. Existe um bom ambiente de trabalho entre si e os seus colegas?
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Em relação à sua chefia directa até que ponto considera que…
+17.
+
+Oferece
+
+aos
+
+indivíduos
+
+e
+
+ao
+
+grupo
+
+boas
+
+oportunidades
+
+5- Sempre
+
+1
+
+2
+
+3
+
+de
+
+desenvolvimento?
+18. É bom no planeamento do trabalho?
+19. A gerência confia nos seus funcionários para fazerem o seu trabalho
+bem?
+20. Confia na informação que lhe é transmitida pela gerência?
+21. Os conflitos são resolvidos de uma forma justa?
+22. O trabalho é igualmente distribuído pelos funcionários?
+23. Sou sempre capaz de resolver problemas, se tentar o suficiente.
+
+23
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+4
+
+5
+
+24. O seu trabalho tem algum significado para si?
+25. Sente que o seu trabalho é importante?
+26. Sente que os problemas do seu local de trabalho são seus também?
+27. Quão satisfeito está com o seu trabalho de uma forma global?
+28. Sente-se preocupado em ficar desempregado?
+
+Excelente
+
+Muito
+boa
+
+Boa
+
+Razoável
+
+Deficitária
+
+29.Em geral, sente que a sua saúde é:
+.
+
+As próximas três questões referem-se ao modo como o seu trabalho afecta a sua vida privada:
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+30. Sente que o seu trabalho lhe exige muita energia que acaba por afectar a
+sua vida privada negativamente?
+31. Sente que o seu trabalho lhe exige muito tempo que acaba por afectar a
+sua vida privada negativamente?
+
+Com que frequência durante as últimas 4 semanas sentiu…
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+32. Acordou várias vezes durante a noite e depois não conseguia adormecer
+novamente?
+33. Fisicamente exausto?
+34. Emocionalmente exausto?
+35. Irritado?
+36. Ansioso?
+37. Triste?
+
+Nos últimos 12 meses, no seu local de trabalho:
+
+24
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+38. Tem sido alvo de insultos ou provocações verbais?
+39. Tem sido exposto a assédio sexual indesejado?
+40. Tem sido exposto a ameaças de violência?
+41. Tem sido exposto a violência física?
+
+Obrigado pela sua colaboração.
+
+25
+
+COPSOQ II – Versão Média
+(Kristensen, T., 2001)
+(Tradução e adaptação de Silva, C. et al., 2011)
+
+Das seguintes afirmações indique (X) a que mais se adequa à sua resposta de acordo com as
+seguintes alternativas:
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+1. A sua carga de trabalho acumula-se por ser mal distribuída?
+2. Com que frequência não tem tempo para completar todas as tarefas do
+seu trabalho?
+3. Precisa fazer horas-extra?
+4. Precisa trabalhar muito rapidamente?
+5. O seu trabalho exige a sua atenção constante?
+6. O seu trabalho requer que seja bom a propor novas ideias?
+7. O seu trabalho exige que tome decisões difíceis?
+8. O seu trabalho exige emocionalmente de si?
+9. Tem um elevado grau de influência no seu trabalho?
+10. Participa na escolha das pessoas com quem trabalha?
+11. Pode influenciar a quantidade de trabalho que lhe compete a si?
+12. Tem alguma influência sobre o tipo de tarefas que faz?
+13. O seu trabalho exige que tenha iniciativa?
+14. O seu trabalho permite-lhe aprender coisas novas?
+15. O seu trabalho permite-lhe usar as suas habilidades ou perícias?
+16. No seu local de trabalho, é informado com antecedência sobre decisões
+importantes, mudanças ou planos para o futuro?
+17. Recebe toda a informação de que necessita para fazer bem o seu
+trabalho?
+18. O seu trabalho apresenta objectivos claros?
+19. Sabe exactamente quais as suas responsabilidades?
+20. Sabe exactamente o que é esperado de si?
+21. O seu trabalho é reconhecido e apreciado pela gerência?
+22. A gerência do seu local de trabalho respeita-o?
+23. É tratado de forma justa no seu local de trabalho?
+24. Faz coisas no seu trabalho que uns concordam mas outros não?
+25. Por vezes tem que fazer coisas que deveriam ser feitas de outra
+maneira?
+26. Por vezes tem que fazer coisas que considera desnecessárias?
+27. Com que frequência tem ajuda e apoio dos seus colegas de trabalho?
+
+26
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+28. Com que frequência os seus colegas estão dispostos a ouvi-lo(a) sobre
+os seus problemas de trabalho?
+29. Com que frequência os seus colegas falam consigo acerca do seu
+desempenho laboral?
+30. Com que frequência o seu superior imediato fala consigo sobre como
+está a decorrer o seu trabalho?
+31. Com que frequência tem ajuda e apoio do seu superior imediato?
+32. Com que frequência é que o seu superior imediato fala consigo em
+relação ao seu desempenho laboral?
+33. Existe um bom ambiente de trabalho entre si e os seus colegas?
+34. Existe uma boa cooperação entre os colegas de trabalho?
+35. No seu local de trabalho sente-se parte de uma comunidade?
+Em relação à sua chefia directa até que ponto considera que…
+36.
+
+Oferece
+
+aos
+
+indivíduos
+
+e
+
+ao
+
+grupo
+
+boas
+
+oportunidades
+
+de
+
+desenvolvimento?
+37. Dá prioridade à satisfação no trabalho?
+38. É bom no planeamento do trabalho?
+39. É bom a resolver conflitos?
+As questões seguintes referem-se ao seu local de trabalho no seu todo.
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+40. Os funcionários ocultam informações uns dos outros?
+41. Os funcionários ocultam informação à gerência?
+42. Os funcionários confiam uns nos outros de um modo geral?
+43. A gerência confia nos seus funcionários para fazerem o seu trabalho
+bem?
+44. Confia na informação que lhe é transmitida pela gerência?
+45. A gerência oculta informação aos seus funcionários?
+46. Os conflitos são resolvidos de uma forma justa?
+47. As sugestões dos funcionários são tratadas de forma séria pela
+gerência?
+48. O trabalho é igualmente distribuído pelos funcionários?
+49. Sou sempre capaz de resolver problemas, se tentar o suficiente.
+50. É-me fácil seguir os meus planos e atingir os meus objectivos.
+
+27
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+4
+
+5
+
+51. O seu trabalho tem algum significado para si?
+52. Sente que o seu trabalho é importante?
+53. Sente-se motivado e envolvido com o seu trabalho?
+54. Gosta de falar com os outros sobre o seu local de trabalho?
+55. Sente que os problemas do seu local de trabalho são seus também?
+Em relação ao seu trabalho em geral, quão satisfeito está com…
+56. As suas perspectivas de trabalho?
+57. As condições físicas do seu local de trabalho?
+58. A forma como as suas capacidades são utilizadas?
+59. O seu trabalho de uma forma global?
+60. Sente-se preocupado em ficar desempregado?
+
+Excelente
+
+Muito
+boa
+
+Boa
+
+Razoável
+
+Deficitária
+
+61.Em geral, sente que a sua saúde é:
+.
+As próximas três questões referem-se ao modo como o seu trabalho afecta a sua vida privada:
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+62. Sente que o seu trabalho lhe exige muita energia que acaba por afectar a
+sua vida privada negativamente?
+63. Sente que o seu trabalho lhe exige muito tempo que acaba por afectar a
+sua vida privada negativamente?
+64. A sua família e os seus amigos dizem-lhe que trabalha demais?
+Com que frequência durante as últimas 4 semanas sentiu…
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+65. Dificuldade a adormecer?
+66. Acordou várias vezes durante a noite e depois não conseguia adormecer
+novamente?
+67. Fisicamente exausto?
+68. Emocionalmente exausto?
+
+28
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+69. Irritado?
+70. Ansioso?
+71. Triste?
+72. Falta de interesse por coisas quotidianas?
+
+Nos últimos 12 meses, no seu local de trabalho:
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+73. Tem sido alvo de insultos ou provocações verbais?
+74. Tem sido exposto a assédio sexual indesejado?
+75. Tem sido exposto a ameaças de violência?
+76. Tem sido exposto a violência física?
+
+Obrigado pela sua colaboração.
+
+29
+
+COPSOQ II – Versão Longa
+(Kristensen, T., 2001)
+(Tradução e adaptação de Silva, C. et al., 2011)
+
+Das seguintes afirmações indique (X) a que mais se adequa à sua resposta de acordo com as
+seguintes alternativas:
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+1. A sua carga de trabalho acumula-se por ser mal distribuída?
+2. Com que frequência não tem tempo para completar todas as tarefas do
+seu trabalho?
+3. Precisa fazer horas-extra?
+4. Precisa trabalhar muito rapidamente?
+5. O seu trabalho exige a sua atenção constante?
+6. O seu trabalho requer que seja bom a propor novas ideias?
+7. O seu trabalho exige que tome decisões difíceis?
+8. O seu trabalho coloca-o em situações emocionalmente perturbadoras?
+9. O seu trabalho exige emocionalmente de si?
+10. Sente-se emocionalmente envolvido com o seu trabalho?
+11. O seu trabalho requer que não manifeste a sua opinião?
+12. O seu trabalho requer que esconda os seus sentimentos?
+13. É-lhe exigido que trate todas as pessoas de forma igual embora não se
+sinta satisfeito com isso?
+14. É-lhe exigido que seja simpático com todos, embora sinta que o mesmo
+não lhe é retribuído?
+15. Tem um elevado grau de influência no seu trabalho?
+16. Participa na escolha das pessoas com quem trabalha?
+17. Pode influenciar a quantidade de trabalho que lhe compete a si?
+18. Tem alguma influência sobre o tipo de tarefas que faz?
+19. O seu trabalho exige que tenha iniciativa?
+20. O seu trabalho permite-lhe aprender coisas novas?
+21. O seu trabalho permite-lhe usar as suas habilidades ou perícias?
+22. O seu trabalho é variado?
+23. No seu local de trabalho, é informado com antecedência sobre decisões
+importantes, mudanças ou planos para o futuro?
+24. Recebe toda a informação de que necessita para fazer bem o seu
+trabalho?
+
+30
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+1
+
+2
+
+3
+
+4
+
+5
+
+25. O seu trabalho apresenta objectivos claros?
+26. Sabe exactamente quais as suas responsabilidades?
+27. Sabe exactamente o que é esperado de si?
+28. O seu trabalho é reconhecido e apreciado pela gerência?
+29. Há boas perspectivas no seu emprego?
+30. A gerência do seu local de trabalho respeita-o?
+31. É tratado de forma justa no seu local de trabalho?
+32. Faz coisas no seu trabalho que uns concordam mas outros não?
+33. No seu trabalho são-lhe colocadas exigências contraditórias?
+34. Por vezes tem que fazer coisas que deveriam ser feitas de outra
+maneira?
+35. Por vezes tem que fazer coisas que considera desnecessárias?
+36. Com que frequência tem ajuda e apoio dos seus colegas de trabalho?
+37. Com que frequência os seus colegas estão dispostos a ouvi-lo(a)
+sobre os seus problemas de trabalho?
+38. Com que frequência os seus colegas falam consigo acerca do seu
+desempenho laboral?
+39. Com que frequência o seu superior imediato fala consigo sobre como
+está a decorrer o seu trabalho?
+40. Com que frequência tem ajuda e apoio do seu superior imediato?
+41. Com que frequência é que o seu superior imediato fala consigo em
+relação ao seu desempenho laboral?
+42. Existe um bom ambiente de trabalho entre si e os seus colegas?
+43. Existe uma boa cooperação entre os colegas de trabalho?
+44. No seu local de trabalho sente-se parte de uma comunidade?
+Em relação á sua chefia directa até que ponto considera que…
+
+45. Oferece aos indivíduos e ao grupo boas oportunidades de
+desenvolvimento?
+46. Dá prioridade à satisfação no trabalho?
+47. É bom no planeamento do trabalho?
+48. É bom a resolver conflitos?
+
+31
+
+As questões seguintes referem-se ao seu local de trabalho no seu todo.
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+49. Os funcionários ocultam informações uns dos outros?
+50. Os funcionários ocultam informação à gerência?
+51. Os funcionários confiam uns nos outros de um modo geral?
+52. A gerência confia nos seus funcionários para fazerem o seu trabalho
+bem?
+53. Confia na informação que lhe é transmitida pela gerência?
+54. A gerência oculta informação aos seus funcionários?
+55. Os conflitos são resolvidos de uma forma justa?
+56. Os funcionários são apreciados quando fazem um bom trabalho?
+57. As sugestões dos funcionários são tratadas de forma séria pela gerência?
+58. O trabalho é igualmente distribuído pelos funcionários?
+59. Os homens e as mulheres são tratados da mesma forma?
+60. Existe lugar para funcionários de diferentes raças e religiões?
+61. Existe lugar para funcionários com doenças ou deficiências?
+62. Existe lugar para funcionários da terceira idade?
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+63. O seu trabalho tem significado?
+64. Sente que o seu trabalho é importante?
+65. Sente-se motivado e envolvido com o seu trabalho?
+66. Gosta de falar com os outros sobre o seu local de trabalho?
+67. Sente que os problemas do seu local de trabalho são seus também?
+68. O seu local de trabalho é de grande importância pessoal para si?
+Em relação ao seu trabalho em geral, quão satisfeito está com…
+69. As suas perspectivas de trabalho?
+70. As condições físicas do seu local de trabalho?
+71. A forma como as suas capacidades são utilizadas?
+72. O seu trabalho de uma forma global?
+Sente-se preocupado com…
+73. Ficar desempregado?
+74. Que uma nova tecnologia o torne dispensável?
+75. Dificuldade em conseguir outro trabalho caso ficasse desempregado?
+76. Ser transferido para outro local de trabalho contra a sua vontade?
+
+32
+
+Excelente
+
+Muito
+boa
+
+Boa
+
+Razoável
+
+Deficitária
+
+77.Em geral, sente que a sua saúde é:
+.
+
+As próximas três questões referem-se ao modo como o seu trabalho afecta a sua vida privada:
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+4
+
+5
+
+78. Sente que o seu trabalho lhe exige muita energia que acaba por afectar a
+sua vida privada negativamente?
+79. Sente que o seu trabalho lhe exige muito tempo que acaba por afectar a
+sua vida privada negativamente?
+80. A sua família e os seus amigos dizem-lhe que trabalha demais?
+
+As próximas três questões referem-se ao modo como a sua vida privada afecta o seu trabalho:
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+81. Sente que a sua vida privada lhe exige muita energia e que acaba por
+afectar o seu trabalho negativamente?
+82. Sente que a sua vida privada lhe exige muito tempo e que acaba por
+afectar o seu trabalho negativamente?
+Com que frequência durante as últimas 4 semanas sentiu…
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+83. Dificuldade a adormecer?
+84. Dormiu mal e de forma sobressaltada?
+85. Acordou demasiado cedo e depois teve dificuldade em adormecer
+novamente?
+86. Acordou várias vezes durante a noite e depois não conseguia adormecer
+novamente?
+87. Cansado?
+88. Esgotado?
+89. Fisicamente exausto?
+
+33
+
+Com que frequência durante as últimas 4 semanas sentiu…
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+90. Emocionalmente exausto?
+91. Dificuldades em relaxar?
+92. Irritado?
+93. Tenso?
+94. Ansioso?
+95. Triste?
+96. Falta de auto-confiança?
+97. Peso na consciência ou sentimento de culpa?
+98. Falta de interesse por coisas quotidianas?
+99. Dores de barriga? ……………..………………….
+100. Aperto ou dor no peito?
+101. Dores de cabeça?
+102. Palpitações?
+103. Tensão em vários músculos?
+104. Dificuldade em concentrar-se?
+105. Dificuldade em tomar decisões?
+106. Dificuldade em lembrar-se de algo?
+107. Dificuldade em pensar claramente?
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+108. Sou sempre capaz de resolver problemas, se tentar o suficiente.
+109. Mesmo que as pessoas trabalhem contra mim, encontro sempre forma
+de atingir o que pretendo.
+110. É-me fácil seguir os meus planos e atingir os meus objectivos.
+111. Sinto-me confiante em lidar com acontecimentos inesperados.
+112. Quando tenho um problema, usualmente tenho várias maneiras de lidar
+com o mesmo.
+113. Independentemente do que acontecer, costumo encontrar soluções
+para os meus problemas.
+
+34
+
+Nos últimos 12 meses, no seu local de trabalho:
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+114. Tem-se envolvido em conflitos ou discussões?
+115. Tem sido alvo de rumores ou calúnias?
+116. Tem sido alvo de insultos ou provocações verbais?
+117. Tem sido exposto a assédio sexual indesejado?
+118. Tem sido exposto a ameaças de violência?
+119. Tem sido exposto a violência física?
+
+Obrigado pela sua colaboração.
+
+35
+
+COPSOQ II – Versão Média
+Subescalas
+(Kristensen, T., 2001)
+(Tradução e adaptação de Silva, C. et al., 2011)
+
+Das seguintes afirmações indique (X) a que mais se adequa à sua resposta de acordo com as
+seguintes alternativas:
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Exigências quantitativas
+
+1
+
+5- Sempre
+
+2
+
+3
+
+4
+
+5
+
+1. A sua carga de trabalho acumula-se por ser mal distribuída?
+2. Com que frequência não tem tempo para completar todas as tarefas do
+seu trabalho?
+3. Precisa fazer horas-extra?
+Ritmo de trabalho
+4. Precisa trabalhar muito rapidamente?
+Exigências cognitivas
+5. O seu trabalho exige a sua atenção constante?
+6. O seu trabalho requer que seja bom a propor novas ideias?
+7. O seu trabalho exige que tome decisões difíceis?
+Exigências emocionais
+8. O seu trabalho exige emocionalmente de si?
+Influência no trabalho
+9. Tem um elevado grau de influência no seu trabalho?
+10. Participa na escolha das pessoas com quem trabalha?
+11. Pode influenciar a quantidade de trabalho que lhe compete a si?
+12. Tem alguma influência sobre o tipo de tarefas que faz?
+Possibilidades de desenvolvimento
+13. O seu trabalho exige que tenha iniciativa?
+14. O seu trabalho permite-lhe aprender coisas novas?
+15. O seu trabalho permite-lhe usar as suas habilidades ou perícias?
+Previsibilidade
+16. No seu local de trabalho, é informado com antecedência sobre
+decisões importantes, mudanças ou planos para o futuro?
+17. Recebe toda a informação de que necessita para fazer bem o seu
+trabalho?
+Transparência do papel laboral desempenhado
+18. O seu trabalho apresenta objectivos claros?
+19. Sabe exactamente quais as suas responsabilidades?
+20. Sabe exactamente o que é esperado de si?
+
+36
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Recompensas
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+1
+
+2
+
+3
+
+4
+
+5
+
+21. O seu trabalho é reconhecido e apreciado pela gerência?
+22. A gerência do seu local de trabalho respeita-o?
+23. É tratado de forma justa no seu local de trabalho?
+Conflitos laborais
+24. Faz coisas no seu trabalho que uns concordam mas outros não?
+25. Por vezes tem que fazer coisas que deveriam ser feitas de outra
+maneira?
+26. Por vezes tem que fazer coisas que considera desnecessárias?
+Apoio social de colegas
+27. Com que frequência tem ajuda e apoio dos seus colegas de trabalho?
+28. Com que frequência os seus colegas estão dispostos a ouvi-lo(a)
+sobre os seus problemas de trabalho?
+29. Com que frequência os seus colegas falam consigo acerca do seu
+desempenho laboral?
+Apoio social de superiores
+30. Com que frequência o seu superior imediato fala consigo sobre como
+está a decorrer o seu trabalho?
+31. Com que frequência tem ajuda e apoio do seu superior imediato?
+32. Com que frequência é que o seu superior imediato fala consigo em
+relação ao seu desempenho laboral?
+Comunidade social no trabalho
+33. Existe um bom ambiente de trabalho entre si e os seus colegas?
+34. Existe uma boa cooperação entre os colegas de trabalho?
+35. No seu local de trabalho sente-se parte de uma comunidade?
+Qualidade da liderança
+Em relação à sua chefia directa até que ponto considera que…
+36. Oferece aos indivíduos e ao grupo boas oportunidades de
+desenvolvimento?
+37. Dá prioridade à satisfação no trabalho?
+38. É bom no planeamento do trabalho?
+39. É bom a resolver conflitos?
+
+37
+
+As questões seguintes referem-se ao seu local de trabalho no seu todo.
+
+Confiança horizontal
+
+1
+
+2
+
+3
+
+4
+
+5
+
+40. Os funcionários ocultam informações uns dos outros?
+41. Os funcionários ocultam informação à gerência?
+42. Os funcionários confiam uns nos outros de um modo geral?
+Confiança vertical
+43. A gerência confia nos seus funcionários para fazerem o seu trabalho
+bem?
+44. Confia na informação que lhe é transmitida pela gerência?
+45. A gerência oculta informação aos seus funcionários?
+Justiça e respeito
+46. Os conflitos são resolvidos de uma forma justa?
+47. As sugestões dos funcionários são tratadas de forma séria pela gerência?
+48. O trabalho é igualmente distribuído pelos funcionários?
+Auto-eficácia
+49. Sou sempre capaz de resolver problemas, se tentar o suficiente.
+50. É-me fácil seguir os meus planos e atingir os meus objectivos.
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+Significado do trabalho
+
+5- Extremamente
+
+1
+
+2
+
+3
+
+4
+
+5
+
+1
+
+2
+
+3
+
+4
+
+5
+
+51. O seu trabalho tem algum significado para si?
+52. Sente que o seu trabalho é importante?
+53. Sente-se motivado e envolvido com o seu trabalho?
+Compromisso face ao local de trabalho
+54. Gosta de falar com os outros sobre o seu local de trabalho?
+55. Sente que os problemas do seu local de trabalho são seus também?
+Satisfação no trabalho
+Em relação ao seu trabalho em geral, quão satisfeito está com…
+56. As suas perspectivas de trabalho?
+57. As condições físicas do seu local de trabalho?
+58. A forma como as suas capacidades são utilizadas?
+59. O seu trabalho de uma forma global?
+Insegurança Laboral
+60. Sente-se preocupado em ficar desempregado?
+
+38
+
+Saúde Geral
+Excelente
+
+Muito
+boa
+
+Boa
+
+Razoável
+
+Deficitária
+
+61.Em geral, sente que a sua saúde é:
+.
+As próximas três questões referem-se ao modo como o seu trabalho afecta a sua vida privada:
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+Conflito trabalho/ família
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+4
+
+5
+
+62. Sente que o seu trabalho lhe exige muita energia que acaba por afectar a
+sua vida privada negativamente?
+63. Sente que o seu trabalho lhe exige muito tempo que acaba por afectar a
+sua vida privada negativamente?
+64. A sua família e os seus amigos dizem-lhe que trabalha demais?
+Com que frequência durante as últimas 4 semanas sentiu…
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Problemas em dormir
+
+5- Sempre
+
+1
+
+2
+
+3
+
+65. Dificuldade a adormecer?
+66. Acordou várias vezes durante a noite e depois não conseguia adormecer
+novamente?
+Burnout
+67. Fisicamente exausto?
+68. Emocionalmente exausto?
+Stress
+69. Irritado?
+70. Ansioso?
+Sintomas depressivos
+71. Triste?
+72. Falta de interesse por coisas quotidianas?
+
+Nos últimos 12 meses, no seu local de trabalho:
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+Comportamentos ofensivos
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+73. Tem sido alvo de insultos ou provocações verbais?
+
+39
+
+1
+
+2
+
+3
+
+4
+
+5
+
+74. Tem sido exposto a assédio sexual indesejado?
+75. Tem sido exposto a ameaças de violência?
+76. Tem sido exposto a violência física?
+
+Obrigado pela sua colaboração.
+
+40
+
+COPSOQ II – Versão Longa
+Subescalas
+(Kristensen, T., 2001)
+(Tradução e adaptação de Silva, C. et al., 2011)
+
+Das seguintes afirmações indique (X) a que mais se adequa à sua resposta de acordo com as
+seguintes alternativas:
+
+41
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Exigências quantitativas
+
+1
+
+5- Sempre
+
+2
+
+3
+
+4
+
+5
+
+1. A sua carga de trabalho é desigualmente distribuída de forma que se
+acumula?
+2. Com que frequência não tem tempo para completar todas as tarefas
+do seu trabalho?
+3. Precisa fazer horas-extra?
+Ritmo de trabalho
+4. Precisa trabalhar muito rapidamente?
+Exigências cognitivas
+5. O seu trabalho exige a sua atenção constante?
+6. O seu trabalho requer que seja bom a propor novas ideias?
+7. O seu trabalho exige que tome decisões difíceis?
+Exigências emocionais
+8. O seu trabalho coloca-o em situações emocionalmente perturbadoras?
+9. O seu trabalho exige emocionalmente de si?
+10. Sente-se emocionalmente envolvido com o seu trabalho?
+Exigências para esconder emoções
+11. O seu trabalho requer que não manifeste a sua opinião?
+12. O seu trabalho requer que esconda os seus sentimentos?
+13. É-lhe exigido que trate todas as pessoas de forma igual embora não
+se sinta satisfeito com isso?
+14. É-lhe exigido que seja simpático com todos, embora sinta que o
+mesmo não lhe é retribuído?
+Influência no trabalho
+15. Tem um elevado grau de influência no seu trabalho?
+16. Participa na escolha das pessoas com quem trabalha?
+17. Pode influenciar a quantidade de trabalho que lhe compete a si?
+18. Tem alguma influência sobre o tipo de tarefas que faz?
+Possibilidades de desenvolvimento
+19. O seu trabalho exige que tenha iniciativa?
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+1
+
+5- Sempre
+
+2
+
+3
+
+4
+
+5
+
+20. O seu trabalho permite-lhe aprender coisas novas?
+21. O seu trabalho permite-lhe usar as suas habilidades ou perícias?
+Variação no trabalho
+
+42
+
+22. O seu trabalho é variado?
+Previsibilidade
+23. No seu local de trabalho, é informado com antecedência sobre
+decisões importantes, mudanças ou planos para o futuro?
+24. Recebe toda a informação de que necessita para fazer bem o seu
+trabalho?
+Transparência do papel laboral desempenhado
+25. O seu trabalho apresenta objectivos claros?
+26. Sabe exactamente quais as suas responsabilidades?
+27. Sabe exactamente o que é esperado de si?
+Recompensas
+28. O seu trabalho é reconhecido e apreciado pela gerência?
+29. Há boas perspectivas no seu emprego?
+30. A gerência do seu local de trabalho respeita-o?
+31. É tratado de forma justa no seu local de trabalho?
+Conflitos laborais
+32. Faz coisas no seu trabalho que uns concordam mas outros não?
+33. No seu trabalho são-lhe colocadas exigências contraditórias?
+34. Por vezes tem que fazer coisas que deveriam ser feitas de outra
+maneira?
+35. Por vezes tem que fazer coisas que considera desnecessárias?
+Apoio social de colegas
+36. Com que frequência tem ajuda e apoio dos seus colegas de
+trabalho?
+37. Com que frequência os seus colegas estão dispostos a ouvi-lo(a)
+sobre os seus problemas de trabalho?
+38. Com que frequência os seus colegas falam consigo acerca do seu
+desempenho laboral?
+Apoio social de superiores
+39. Com que frequência o seu superior imediato fala consigo sobre como
+está a decorrer o seu trabalho?
+40. Com que frequência tem ajuda e apoio do seu superior imediato?
+41. Com que frequência é que o seu superior imediato fala consigo em
+relação ao seu desempenho laboral?
+
+43
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Comunidade social no trabalho
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+42. Existe um bom ambiente de trabalho entre si e os seus colegas?
+43. Existe uma boa cooperação entre os colegas de trabalho?
+44. No seu local de trabalho sente-se parte de uma comunidade?
+Qualidade da liderança
+Em relação á sua chefia directa até que ponto considera que…
+45. Oferece aos indivíduos e ao grupo boas oportunidades de
+desenvolvimento?
+46. Dá prioridade à satisfação no trabalho?
+47. É bom no planeamento do trabalho?
+48. É bom a resolver conflitos?
+As questões seguintes referem-se ao seu local de trabalho no seu todo.
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Confiança horizontal
+
+5- Sempre
+
+1
+
+2
+
+3
+
+4
+
+5
+
+49. Os funcionários ocultam informações uns dos outros?
+50. Os funcionários ocultam informação à gerência?
+51. Os funcionários confiam uns nos outros de um modo geral?
+Confiança vertical
+52. A gerência confia nos seus funcionários para fazerem o seu trabalho
+bem?
+53. Confia na informação que lhe é transmitida pela gerência?
+54. A gerência oculta informação aos seus funcionários?
+Justiça e respeito
+55. Os conflitos são resolvidos de uma forma justa?
+56. Os funcionários são apreciados quando fazem um bom trabalho?
+57. As sugestões dos funcionários são tratadas de forma séria pela
+gerência?
+58. O trabalho é igualmente distribuído pelos funcionários?
+Responsabilidade social
+59. Os homens e as mulheres são tratados da mesma forma?
+60. Existe lugar para funcionários de diferentes raças e religiões?
+61. Existe lugar para funcionários com doenças ou deficiências?
+62. Existe lugar para funcionários da terceira idade?
+
+44
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+Significado do trabalho
+
+1
+
+2
+
+3
+
+4
+
+5
+
+1
+
+2
+
+3
+
+4
+
+5
+
+1
+
+2
+
+3
+
+4
+
+5
+
+63. O seu trabalho tem significado?
+64. Sente que o seu trabalho é importante?
+65. Sente-se motivado e envolvido com o seu trabalho?
+Compromisso face ao local de trabalho
+66. Gosta de falar com os outros sobre o seu local de trabalho?
+67. Sente que os problemas do seu local de trabalho são seus também?
+68. O seu local de trabalho é de grande importância pessoal para si?
+Satisfação no trabalho
+Em relação ao seu trabalho em geral, quão satisfeito está com…
+69. As suas perspectivas de trabalho?
+70. As condições físicas do seu local de trabalho?
+71. A forma como as suas capacidades são utilizadas?
+72. O seu trabalho de uma forma global?
+Insegurança laboral
+Sente-se preocupado com…
+73. Ficar desempregado?
+74. Que uma nova tecnologia o torne dispensável?
+75. Dificuldade em conseguir outro trabalho caso ficasse desempregado?
+76. Ser transferido para outro local de trabalho contra a sua vontade?
+
+Excelente
+
+Muito
+boa
+
+Boa
+
+Razoável
+
+Deficitária
+
+77.Em geral, sente que a sua saúde é:
+.
+
+As próximas três questões referem-se ao modo como o seu trabalho afecta a sua vida privada:
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+Conflito trabalho/ família
+
+1
+
+2
+
+3
+
+4
+
+5
+
+78. Sente que o seu trabalho lhe exige muita energia que acaba por afectar a
+sua vida privada negativamente?
+79. Sente que o seu trabalho lhe exige muito tempo que acaba por afectar a
+sua vida privada negativamente?
+80. A sua família e os seus amigos dizem-lhe que trabalha demais?
+
+45
+
+As próximas três questões referem-se ao modo como a sua vida privada afecta o seu trabalho:
+
+1- Nada/ quase nada
+
+2- Um pouco
+
+3- Moderadamente
+
+4- Muito
+
+5- Extremamente
+
+Conflito família/trabalho
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+81. Sente que a sua vida privada lhe exige muita energia e que acaba por
+afectar o seu trabalho negativamente?
+82. Sente que a sua vida privada lhe exige muito tempo e que acaba por
+afectar o seu trabalho negativamente?
+Com que frequência durante as últimas 4 semanas sentiu…
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Problemas em dormir
+
+5- Sempre
+
+1
+
+2
+
+3
+
+83. Dificuldade a adormecer?
+84. Dormiu mal e de forma sobressaltada?
+85. Acordou demasiado cedo e depois teve dificuldade em adormecer
+novamente?
+86. Acordou várias vezes durante a noite e depois não conseguia adormecer
+novamente?
+Extenuação
+87. Cansado?
+88. Esgotado?
+89. Fisicamente exausto?
+90. Emocionalmente exausto?
+Stress
+91. Dificuldades em relaxar?
+92. Irritado?
+93. Tenso?
+94. Ansioso?
+Sintomas depressivos
+95. Triste?
+96. Falta de auto-confiança?
+97. Peso na consciência ou sentimento de culpa?
+98. Falta de interesse por coisas quotidianas?
+Stress somático
+99. Dores de barriga? ……………..………………….
+100. Aperto ou dor no peito?
+101. Dores de cabeça?
+
+46
+
+1
+
+2
+
+3
+
+4
+
+5
+
+4
+
+5
+
+4
+
+5
+
+102. Palpitações?
+103. Tensão em vários músculos?
+Stress cognitivo
+104. Dificuldade em concentrar-se?
+105. Dificuldade em tomar decisões?
+106. Dificuldade em lembrar-se de algo?
+107. Dificuldade em pensar claramente?
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+4- Frequentemente
+
+Auto-eficácia
+
+5- Sempre
+
+1
+
+2
+
+3
+
+108. Sou sempre capaz de resolver problemas, se tentar o suficiente.
+109. Mesmo que as pessoas trabalhem contra mim, encontro sempre forma
+de atingir o que pretendo.
+110. É-me fácil seguir os meus planos e atingir os meus objectivos.
+111. Sinto-me confiante em lidar com acontecimentos inesperados.
+112. Quando tenho um problema, usualmente tenho várias maneiras de lidar
+com o mesmo.
+113. Independentemente do que acontecer, costumo encontrar soluções
+para os meus problemas.
+
+Nos últimos 12 meses, no seu local de trabalho:
+
+1- Nunca/ quase nunca
+
+2- Raramente
+
+3- Às vezes
+
+Comportamentos ofensivos
+
+4- Frequentemente
+
+5- Sempre
+
+1
+
+2
+
+3
+
+114. Tem-se envolvido em conflitos ou discussões?
+115. Tem sido alvo de rumores ou calúnias?
+116. Tem sido alvo de insultos ou provocações verbais?
+117. Tem sido exposto a assédio sexual indesejado?
+118. Tem sido exposto a ameaças de violência?
+119. Tem sido exposto a violência física?
+
+Obrigado pela sua colaboração.
+
+47
+
+Contacto
+Carlos Fernandes da Silva
+Departamento de Educação
+Universidade de Aveiro
+Campus Universitário de Santiago
+3810- 193, Aveiro
+Portugal
+Tel: +351 234 370 353
+(Extensão: 24227)
+Fax: +351 234 370 640
+csilva@ua.pt
+
+48
+
+

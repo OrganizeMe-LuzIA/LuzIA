@@ -1,12 +1,12 @@
 import pytest
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.config import settings
-from app.db import db
+from app.core.config import settings
+from app.core.database import db
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.models.base import Usuario, StatusEnum
-from app.auth import create_access_token
+from app.core.security import create_access_token
 from datetime import timedelta
 
 @pytest.fixture(scope="session")
