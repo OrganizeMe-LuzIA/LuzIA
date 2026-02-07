@@ -6,6 +6,7 @@ from app.repositories.relatorios import RelatoriosRepo
 from app.repositories.usuarios import UsuariosRepo
 from app.repositories.diagnosticos import DiagnosticosRepo
 from app.services.relatorio_service import RelatorioService
+from app.workers.relatorio_tasks import generate_organizational_report, generate_sector_report
 from app.api.deps import get_current_admin_user
 
 router = APIRouter(prefix="/relatorios", tags=["relatorios"])
@@ -76,6 +77,37 @@ async def gerar_relatorio(
     return {
         "id": rid, 
         "message": f"Relatório gerado com sucesso base em {len(clean_diags)} diagnósticos."
+    }
+
+
+@router.post("/gerar-async", status_code=status.HTTP_202_ACCEPTED)
+async def gerar_relatorio_async(
+    req: GerarRelatorioRequest,
+    current_user: Usuario = Depends(get_current_admin_user),
+) -> Dict[str, Any]:
+    """
+    Dispara geração assíncrona de relatório via Celery.
+    """
+    if req.tipo == "setorial":
+        if not req.idSetor:
+            raise HTTPException(status_code=400, detail="idSetor é obrigatório para relatório setorial")
+        task = generate_sector_report.delay(
+            questionario_id=req.idQuestionario,
+            setor_id=req.idSetor,
+            org_id=req.idOrganizacao,
+            gerado_por=current_user.telefone,
+        )
+    else:
+        task = generate_organizational_report.delay(
+            questionario_id=req.idQuestionario,
+            org_id=req.idOrganizacao,
+            gerado_por=current_user.telefone,
+        )
+
+    return {
+        "task_id": task.id,
+        "status": "queued",
+        "message": "Geração de relatório enviada para processamento assíncrono.",
     }
 
 @router.get("/{rel_id}", response_model=Dict[str, Any])

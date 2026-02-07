@@ -3,6 +3,7 @@ Repositório para gerenciamento de organizações.
 """
 from typing import Optional, List, Dict, Any
 from app.core.database import get_db
+from app.repositories.base_repository import BaseRepository
 from bson import ObjectId
 from bson.errors import InvalidId
 import logging
@@ -10,11 +11,23 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class OrganizacoesRepo:
+class OrganizacoesRepo(BaseRepository[Dict[str, Any]]):
     """Gerencia operações CRUD para a coleção de organizações."""
 
     def __init__(self):
         self.collection_name = "organizacoes"
+
+    async def create(self, data: Dict[str, Any]) -> str:
+        return await self.create_organization(data)
+
+    async def get_by_id(self, id: str) -> Optional[Dict[str, Any]]:
+        return await self.get_organization(id)
+
+    async def update(self, id: str, data: Dict[str, Any]) -> bool:
+        return await self.update_organization(id, data)
+
+    async def delete(self, id: str) -> bool:
+        return await self.delete_organization(id)
 
     async def create_organization(self, org_data: Dict[str, Any]) -> str:
         """

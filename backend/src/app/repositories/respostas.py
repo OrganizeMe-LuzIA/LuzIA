@@ -3,6 +3,7 @@ Repositório para gerenciamento de respostas a questionários.
 """
 from typing import Optional, List, Dict, Any
 from app.core.database import get_db
+from app.repositories.base_repository import BaseRepository
 from bson import ObjectId
 from bson.errors import InvalidId
 from datetime import datetime
@@ -11,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RespostasRepo:
+class RespostasRepo(BaseRepository[Dict[str, Any]]):
     """Gerencia operações para a coleção de respostas."""
 
     def __init__(self):
@@ -173,3 +174,47 @@ class RespostasRepo:
         except InvalidId:
             logger.warning(f"ID de questionário inválido: {id_questionario}")
             return False
+    async def create(self, data: Dict[str, Any]) -> str:
+        db = await get_db()
+        payload = dict(data)
+        if "idQuestionario" in payload:
+            payload["idQuestionario"] = self._ensure_object_id(payload["idQuestionario"])
+        payload.setdefault("data", datetime.utcnow())
+        result = await db[self.collection_name].insert_one(payload)
+        return str(result.inserted_id)
+
+    async def get_by_id(self, id: str) -> Optional[Dict[str, Any]]:
+        try:
+            db = await get_db()
+            return await db[self.collection_name].find_one({"_id": ObjectId(id)})
+        except InvalidId:
+            logger.warning(f"ID de resposta inválido: {id}")
+            return None
+
+    async def update(self, id: str, data: Dict[str, Any]) -> bool:
+        try:
+            db = await get_db()
+            payload = dict(data)
+            if "idQuestionario" in payload:
+                payload["idQuestionario"] = self._ensure_object_id(payload["idQuestionario"])
+            result = await db[self.collection_name].update_one(
+                {"_id": ObjectId(id)},
+                {"$set": payload},
+            )
+            return result.modified_count > 0
+        except InvalidId:
+            logger.warning(f"ID de resposta inválido para atualização: {id}")
+            return False
+
+    async def delete(self, id: str) -> bool:
+        try:
+            db = await get_db()
+            result = await db[self.collection_name].delete_one({"_id": ObjectId(id)})
+            return result.deleted_count > 0
+        except InvalidId:
+            logger.warning(f"ID de resposta inválido para remoção: {id}")
+            return False
+
+    async def count_by_filter(self, query: Optional[Dict[str, Any]] = None) -> int:
+        db = await get_db()
+        return await db[self.collection_name].count_documents(query or {})

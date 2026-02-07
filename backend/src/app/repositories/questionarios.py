@@ -1,46 +1,28 @@
 """
-Repositório para gerenciamento de questionários e perguntas.
+Repositório para gerenciamento de questionários.
 """
-from typing import Optional, List, Dict, Any
-from app.core.database import get_db
+from typing import Any, Dict, List, Optional
+import logging
+
 from bson import ObjectId
 from bson.errors import InvalidId
-import logging
+
+from app.core.database import get_db
+from app.repositories.base_repository import BaseRepository
 
 logger = logging.getLogger(__name__)
 
 
-class QuestionariosRepo:
+class QuestionariosRepo(BaseRepository[Dict[str, Any]]):
     """Gerencia operações para a coleção de questionários."""
 
     def __init__(self):
         self.collection_name = "questionarios"
 
-    async def get_active_questionnaire(
-        self, name: str = "CoPsoQ II"
-    ) -> Optional[Dict[str, Any]]:
-        """
-        Busca um questionário ativo pelo nome.
-
-        Args:
-            name: Nome do instrumento (padrão: "CoPsoQ II").
-
-        Returns:
-            Documento do questionário ou None se não encontrado.
-        """
-        db = await get_db()
-        return await db[self.collection_name].find_one({"nome": name, "ativo": True})
+    async def create(self, data: Dict[str, Any]) -> str:
+        return await self.create_questionnaire(data)
 
     async def get_by_id(self, questionario_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Busca um questionário pelo seu ID.
-
-        Args:
-            questionario_id: ID do questionário.
-
-        Returns:
-            Documento do questionário ou None.
-        """
         try:
             db = await get_db()
             return await db[self.collection_name].find_one({"_id": ObjectId(questionario_id)})
@@ -48,83 +30,68 @@ class QuestionariosRepo:
             logger.warning(f"ID de questionário inválido: {questionario_id}")
             return None
 
+    async def update(self, id: str, data: Dict[str, Any]) -> bool:
+        return await self.update_questionnaire(id, data)
+
+    async def delete(self, id: str) -> bool:
+        try:
+            db = await get_db()
+            result = await db[self.collection_name].delete_one({"_id": ObjectId(id)})
+            return result.deleted_count > 0
+        except InvalidId:
+            logger.warning(f"ID de questionário inválido para remoção: {id}")
+            return False
+
+    async def get_active_questionnaire(
+        self, name: str = "CoPsoQ II"
+    ) -> Optional[Dict[str, Any]]:
+        db = await get_db()
+        return await db[self.collection_name].find_one({"nome": name, "ativo": True})
+
     async def list_questionnaires(self, only_active: bool = True) -> List[Dict[str, Any]]:
-        """
-        Lista questionários cadastrados.
-
-        Args:
-            only_active: Se True, retorna apenas questionários ativos.
-
-        Returns:
-            Lista de documentos de questionários.
-        """
         db = await get_db()
         query = {"ativo": True} if only_active else {}
         cursor = db[self.collection_name].find(query)
         return await cursor.to_list(length=100)
 
-
-class PerguntasRepo:
-    """Gerencia operações para a coleção de perguntas."""
-
-    def __init__(self):
-        self.collection_name = "perguntas"
-
-    async def get_questions(
-        self, id_questionario: str, only_active: bool = True
-    ) -> List[Dict[str, Any]]:
-        """
-        Busca todas as perguntas de um questionário, ordenadas por 'idPergunta'.
-
-        Args:
-            id_questionario: ID do questionário.
-            only_active: Se True, retorna apenas perguntas ativas.
-
-        Returns:
-            Lista de perguntas ordenadas.
-        """
-        try:
-            db = await get_db()
-            q_id = ObjectId(id_questionario)
-
-            query: Dict[str, Any] = {"idQuestionario": q_id}
-            if only_active:
-                query["ativo"] = True
-
-            cursor = db[self.collection_name].find(query).sort("idPergunta", 1)
-            return await cursor.to_list(length=200)
-        except InvalidId:
-            logger.warning(f"ID de questionário inválido: {id_questionario}")
-            return []
-
-    async def get_question_by_id(self, id_pergunta: str) -> Optional[Dict[str, Any]]:
-        """
-        Busca uma pergunta pelo seu idPergunta (campo de negócio, não _id).
-
-        Args:
-            id_pergunta: Identificador da pergunta no questionário.
-
-        Returns:
-            Documento da pergunta ou None.
-        """
+    async def create_questionnaire(self, data: Dict[str, Any]) -> str:
         db = await get_db()
-        return await db[self.collection_name].find_one({"idPergunta": id_pergunta})
+        payload = dict(data)
+        payload.setdefault("ativo", True)
+        result = await db[self.collection_name].insert_one(payload)
+        return str(result.inserted_id)
 
-    async def count_questions(self, id_questionario: str) -> int:
-        """
-        Conta o número de perguntas de um questionário.
-
-        Args:
-            id_questionario: ID do questionário.
-
-        Returns:
-            Número de perguntas.
-        """
+    async def update_questionnaire(self, id: str, data: Dict[str, Any]) -> bool:
         try:
             db = await get_db()
-            return await db[self.collection_name].count_documents(
-                {"idQuestionario": ObjectId(id_questionario), "ativo": True}
+            result = await db[self.collection_name].update_one(
+                {"_id": ObjectId(id)},
+                {"$set": dict(data)},
             )
+            return result.modified_count > 0
         except InvalidId:
-            logger.warning(f"ID de questionário inválido: {id_questionario}")
-            return 0
+            logger.warning(f"ID de questionário inválido para atualização: {id}")
+            return False
+
+    async def activate_questionnaire(self, id: str) -> bool:
+        return await self.update_questionnaire(id, {"ativo": True})
+
+    async def deactivate_questionnaire(self, id: str) -> bool:
+        return await self.update_questionnaire(id, {"ativo": False})
+
+    async def clone_questionnaire(self, id: str, new_name: str) -> Optional[str]:
+        original = await self.get_by_id(id)
+        if not original:
+            return None
+
+        clone = dict(original)
+        clone.pop("_id", None)
+        clone["nome"] = new_name
+        clone["ativo"] = False
+        result = await self.create_questionnaire(clone)
+        return result
+
+
+# Compatibilidade retroativa para imports existentes.
+from app.repositories.perguntas import PerguntasRepo  # noqa: E402
+

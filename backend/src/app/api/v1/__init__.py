@@ -1,7 +1,7 @@
 # API v1 routers
 from fastapi import APIRouter
 
-from . import auth, diagnosticos, organizacoes, questionarios, relatorios, respostas
+from . import auth, dashboard, diagnosticos, organizacoes, questionarios, relatorios, respostas
 
 api_router = APIRouter()
 
@@ -11,3 +11,4 @@ api_router.include_router(questionarios.router, prefix="/questionarios", tags=["
 api_router.include_router(respostas.router, prefix="/respostas", tags=["respostas"])
 api_router.include_router(diagnosticos.router, prefix="/diagnosticos", tags=["diagnosticos"])
 api_router.include_router(relatorios.router, prefix="/relatorios", tags=["relatorios"])
+api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])

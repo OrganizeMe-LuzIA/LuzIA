@@ -3,6 +3,7 @@ Repositório para gerenciamento de relatórios consolidados.
 """
 from typing import Optional, List, Dict, Any
 from app.core.database import get_db
+from app.repositories.base_repository import BaseRepository
 from bson import ObjectId
 from bson.errors import InvalidId
 from datetime import datetime
@@ -11,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RelatoriosRepo:
+class RelatoriosRepo(BaseRepository[Dict[str, Any]]):
     """Gerencia operações para a coleção de relatórios."""
 
     def __init__(self):
@@ -104,6 +105,21 @@ class RelatoriosRepo:
             logger.warning(f"ID de relatório inválido: {relatorio_id}")
             return None
 
+    async def update(self, id: str, data: Dict[str, Any]) -> bool:
+        try:
+            db = await get_db()
+            payload = dict(data)
+            for field in ["idQuestionario", "idOrganizacao", "idSetor"]:
+                self._ensure_object_id(payload, field)
+            result = await db[self.collection_name].update_one(
+                {"_id": ObjectId(id)},
+                {"$set": payload},
+            )
+            return result.modified_count > 0
+        except InvalidId:
+            logger.warning(f"ID de relatório inválido para atualização: {id}")
+            return False
+
     async def delete_relatorio(self, relatorio_id: str) -> bool:
         """
         Remove um relatório do banco de dados.
@@ -121,3 +137,12 @@ class RelatoriosRepo:
         except InvalidId:
             logger.warning(f"ID de relatório inválido para remoção: {relatorio_id}")
             return False
+
+    async def delete(self, id: str) -> bool:
+        return await self.delete_relatorio(id)
+
+    async def count_by_filter(self, query: Optional[Dict[str, Any]] = None) -> int:
+        db = await get_db()
+        return await db[self.collection_name].count_documents(query or {})
+    async def create(self, data: Dict[str, Any]) -> str:
+        return await self.create_relatorio(data)
