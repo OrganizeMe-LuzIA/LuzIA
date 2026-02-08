@@ -77,7 +77,7 @@ class TestInversaoValores:
         assert resultado == 5
     
     def test_pontuacao_item_curta_br_sem_inversoes(self, scoring_service):
-        """Versão curta brasileira não tem itens invertidos"""
+        """Versão curta brasileira (v3) não tem itens invertidos"""
         # VLT_CV_03 NÃO deve ser invertido na versão curta
         resultado = scoring_service.calcular_pontuacao_item(
             valor=5,

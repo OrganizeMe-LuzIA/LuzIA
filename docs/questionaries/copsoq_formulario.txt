@@ -1,5 +1,9 @@
 COPSOQ II - Gestão de Riscos Psicossociais
 
+NOTA (2026-02-08): este arquivo reflete a estrutura atualmente operacional no sistema.
+A atualização completa para a nova versão curta BR deve ser aplicada após consolidação
+final da extração e validação dos PDFs oficiais.
+
 Copenhagen Psychosocial Questionnaire - COPSOQ II (BR)
 Este questionário foi desenvolvido pelo National Research Centre for the Working Environment
 (NRCWE), de Copenhagen, Dinamarca. Este questionário avalia os fatores psicossociais no ambiente
@@ -169,6 +173,9 @@ degradante, do qual a vítima tem dificuldade para se defender.
 ( ) Sim, diariamente ( ) Sim, semanalmente ( ) Sim, mensalmente ( ) Sim, poucas vezes ( ) Não
 Se sim, de quem? (Você pode assinalar mais de uma opção)
 ( ) Colegas ( ) Gerente, supervisor ( ) Subordinados ( ) Clientes, fregueses, pacientes
+
+Não há mais perguntas.
+Nesta página você pode escrever mais sobre as suas condições de trabalho, estresse, saúde, etc.
 
 6
 

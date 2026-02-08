@@ -278,16 +278,24 @@ createIfNotExists("respostas", {
             "bsonType": "object",
             "properties": {
               "valor": {
-                "description": "Resposta (1 a 5) ou múltiplas respostas (ex: [1,3,5])",
+                "description": "Resposta numérica (0 a 5) ou múltiplas respostas (ex: [1,3,5]).",
                 "oneOf": [
-                  { "bsonType": "int", "minimum": 1, "maximum": 5 },
-                  { "bsonType": "array", "items": { "bsonType": "int", "minimum": 1, "maximum": 5 } }
+                  { "bsonType": "int", "minimum": 0, "maximum": 5 },
+                  { "bsonType": "array", "items": { "bsonType": "int", "minimum": 0, "maximum": 5 } }
                 ]
+              },
+              "valorTexto": {
+                "bsonType": "string",
+                "description": "Resposta de texto livre para perguntas abertas."
               },
               "idPergunta": { "bsonType": "string" }
             },
             "additionalProperties": false,
-            "required": ["valor", "idPergunta"]
+            "required": ["idPergunta"],
+            "oneOf": [
+              { "required": ["valor"] },
+              { "required": ["valorTexto"] }
+            ]
           }
         }
       },

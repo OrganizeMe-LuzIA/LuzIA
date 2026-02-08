@@ -1,5 +1,8 @@
 # Implementação do Questionário COPSOQ II - Plano Final
 
+> **Nota de atualização (2026-02-08):** foi incluído o script de migração `backend/mongo/migration_copsoq_v2_to_v3.js` e o seed `COPSOQ_CURTA_BR` foi versionado para `3.0`.  
+> A atualização integral do banco de itens da versão curta depende da consolidação final da extração dos PDFs oficiais.
+
 > **Versão:** 2.0  
 > **Data:** 2026-02-03  
 > **Status:** Aprovado para implementação

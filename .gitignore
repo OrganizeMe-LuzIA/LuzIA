@@ -43,3 +43,6 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache/
+
+# Temporary directories
+.tmp_pdfenv/

@@ -1,5 +1,8 @@
 # Status da Implementação COPSOQ II
 
+> **Atualização 2026-02-08:** iniciado ciclo v3 para `COPSOQ_CURTA_BR` com seed versionado (`versao: "3.0"`), script de migração (`backend/mongo/migration_copsoq_v2_to_v3.js`) e testes automatizados.  
+> **Observação:** o banco de itens da versão curta permanece na estrutura vigente do repositório até validação final dos PDFs oficiais.
+
 > **Última atualização:** 2026-02-07 15:36  
 > **Commit:** `0ca25eae7dc4ee4776c7463513752ed22f6c0c1d`  
 > **Branch:** `feat-questionary-logic`

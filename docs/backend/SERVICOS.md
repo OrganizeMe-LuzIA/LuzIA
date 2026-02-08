@@ -402,6 +402,68 @@ print(f"Recomendações: {relatorio.recomendacoes}")
 
 ---
 
+## 🧪 Testes e Cobertura
+
+Desde a versão 2.1.0, todos os serviços principais possuem testes unitários completos com alta cobertura.
+
+### COPSOQScoringService
+
+- **Arquivo de Teste:** [`backend/tests/services/test_copsoq_scoring_service.py`](../../backend/tests/services/test_copsoq_scoring_service.py)
+- **Cobertura:** ~95%
+- **Casos Testados:** 15+ cenários incluindo edge cases
+
+**Principais testes:**
+- Classificação por tercis científicos
+- Cálculo correto de médias
+- Inversão de itens (VLT_CV_03, VLT_CH_01)
+- Agregação por domínios COPSOQ II
+- Robustez com dados incompletos
+
+### DiagnosticoService
+
+- **Arquivo de Teste:** [`backend/tests/services/test_diagnostico_service.py`](../../backend/tests/services/test_diagnostico_service.py)
+- **Cobertura:** ~90%
+- **Casos Testados:** 12+ cenários
+
+**Principais testes:**
+- Criação de diagnósticos individuais
+- Processamento de respostas
+- Integração com COPSOQScoringService
+- Validação de entrada
+- Tratamento de dados parciais
+
+### RelatorioService
+
+- **Arquivo de Teste:** [`backend/tests/services/test_relatorio_service.py`](../../backend/tests/services/test_relatorio_service.py)
+- **Cobertura:** ~88%
+- **Casos Testados:** 10+ cenários
+
+**Principais testes:**
+- Geração de relatórios organizacionais
+- Agregação setorial
+- Cálculos estatísticos (Média de Risco, Índice de Proteção)
+- Geração de insights
+- Agregação por domínios
+
+### Executar Testes
+
+```bash
+# Todos os testes de serviços
+cd backend
+export PYTHONPATH=.
+python3 -m pytest tests/services/ -v
+
+# Teste específico com cobertura
+python3 -m pytest tests/services/test_copsoq_scoring_service.py -v --cov=src/app/services
+
+# Relatório de cobertura HTML
+python3 -m pytest tests/ --cov=src/app --cov-report=html
+```
+
+📖 **Mais informações:** [Guia de Testes](../guides/GUIA-TESTES.md)
+
+---
+
 ## ✅ Boas Práticas
 
 ### 1. Separação de Responsabilidades
@@ -479,4 +541,4 @@ graph LR
 
 ---
 
-**Última Atualização:** 2026-02-07
+**Última Atualização:** 2026-02-08

@@ -1,8 +1,9 @@
 /*
- * COPSOQ II - Versão Curta Brasileira (40 itens)
+ * COPSOQ II - Versão Curta Brasileira
  * 
  * Script de seed para MongoDB
  * Referência: Gonçalves, Moriguchi, Chaves & Sato (2021)
+ * Atualização: baseline v3.0 com estrutura vigente no repositório.
  * 
  * Uso: mongosh LuzIA < seed_copsoq_curta_br.js
  */
@@ -17,10 +18,10 @@ db.questionarios.deleteOne({ codigo: "COPSOQ_CURTA_BR" });
 const questionarioCurtaBR = db.questionarios.insertOne({
     nome: "COPSOQ II - Versão Curta Brasileira",
     codigo: "COPSOQ_CURTA_BR",
-    versao: "2.0",
+    versao: "3.0",
     tipo: "psicossocial",
     idioma: "pt-BR",
-    descricao: "Copenhagen Psychosocial Questionnaire II - Versão Curta validada para o Brasil (Gonçalves, Moriguchi, Chaves & Sato, 2021). 40 itens distribuídos em 7 domínios e 23 dimensões.",
+    descricao: "Copenhagen Psychosocial Questionnaire II - Versão Curta validada para o Brasil (Gonçalves, Moriguchi, Chaves & Sato, 2021). Estrutura vigente no sistema: 40 itens fechados + 1 item de texto livre, 8 domínios e 24 dimensões.",
     dominios: [
         { codigo: "EL", nome: "Exigências Laborais", ordem: 1 },
         { codigo: "OTC", nome: "Organização do Trabalho e Conteúdo", ordem: 2 },
@@ -28,10 +29,11 @@ const questionarioCurtaBR = db.questionarios.insertOne({
         { codigo: "ITI", nome: "Interface Trabalho-Indivíduo", ordem: 4 },
         { codigo: "VLT", nome: "Valores no Local de Trabalho", ordem: 5 },
         { codigo: "SBE", nome: "Saúde e Bem-Estar", ordem: 6 },
-        { codigo: "CO", nome: "Comportamentos Ofensivos", ordem: 7 }
+        { codigo: "CO", nome: "Comportamentos Ofensivos", ordem: 7 },
+        { codigo: "OBS", nome: "Observações finais", ordem: 8 }
     ],
-    escalasPossiveis: ["frequencia", "intensidade", "satisfacao", "conflito_tf", "saude_geral", "comportamento_ofensivo"],
-    totalPerguntas: 40,
+    escalasPossiveis: ["frequencia", "intensidade", "satisfacao", "conflito_tf", "saude_geral", "comportamento_ofensivo", "texto_livre"],
+    totalPerguntas: 41,
     ativo: true,
     dataCriacao: new Date()
 });
@@ -365,6 +367,12 @@ const perguntas = [
         texto: "Você foi exposto a \"bullying\" no seu local de trabalho nos últimos 12 meses?",
         tipoEscala: "comportamento_ofensivo", sinal: "risco",
         opcoesResposta: escalaComportamentoOfensivo, subPergunta: subPerguntaAgressor
+    },
+    {
+        codigoDominio: "OBS", dominio: "Observações finais", dimensao: "Relato livre",
+        idPergunta: "OBS_TL_01", ordem: 41,
+        texto: "Não há mais perguntas. Nesta página você pode escrever mais sobre as suas condições de trabalho, estresse, saúde, etc.",
+        tipoEscala: "texto_livre", sinal: "risco", opcoesResposta: null
     }
 ];
 
@@ -387,10 +395,11 @@ print("Inseridas " + resultado.insertedIds.length + " perguntas");
 
 // Validação
 const totalInserido = db.perguntas.countDocuments({ idQuestionario: idQuestionario });
-print("Total de perguntas no banco: " + totalInserido + "/40");
+const totalEsperado = perguntas.length;
+print("Total de perguntas no banco: " + totalInserido + "/" + totalEsperado);
 
-if (totalInserido === 40) {
+if (totalInserido === totalEsperado) {
     print("✅ Seed COPSOQ II Versão Curta Brasileira concluído com sucesso!");
 } else {
-    print("❌ ERRO: Esperado 40 perguntas, encontradas " + totalInserido);
+    print("❌ ERRO: Esperado " + totalEsperado + " perguntas, encontradas " + totalInserido);
 }
