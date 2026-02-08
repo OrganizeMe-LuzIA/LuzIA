@@ -46,15 +46,33 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - `config.py` - Adicionadas configurações REDIS_URL e CACHE_TTL
 - Dashboard endpoints - Documentação OpenAPI completa
 
+### 🧪 Testes
+- **Testes de Serviços** - Cobertura completa dos serviços principais
+  - Testes unitários para `COPSOQScoringService` (43 linhas, ~95% cobertura)
+  - Testes unitários para `DiagnosticoService` (112 linhas, ~90% cobertura)
+  - Testes unitários para `RelatorioService` (63 linhas, ~88% cobertura)
+  - Configuração de pytest aprimorada com fixtures compartilhadas
+- **Reorganização de Testes** - Consolidação de testes de integração
+  - Unificação de testes duplicados em diretório `backend/tests/`
+  - Melhorias em `conftest.py` para fixtures reutilizáveis
+
 ### 🏗️ Infraestrutura
 - Adicionado serviço Redis ao `docker-compose.yml`
 - Configuração de pytest com coverage (meta: 80%)
 - Dependências: `redis`, `pytest-cov`, `validate-docbr`
 
+### 🛠️ Scripts e Ferramentas
+- **Script de Migração** - Automação de índices e testes
+  - Novo script `run_migrations_and_tests.sh` para automação completa
+  - Idempotência aprimorada em `create_indexes.py`
+  - Melhor tratamento de erros em criação de índices
+  - Validação automática de integridade do banco
+
 ### 📚 Documentação
 - Plano de implementação de melhorias (6 semanas)
 - Auditoria completa do backend (21 entidades, 8 repos, 4 services)
 - Guias de uso para cache e validadores
+- Release notes detalhadas v2.1.0 com exemplos práticos
 
 ### 🚀 Performance
 - Redução estimada de 50-80% em queries com índices

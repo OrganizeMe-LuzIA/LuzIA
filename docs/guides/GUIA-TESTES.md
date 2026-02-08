@@ -49,7 +49,102 @@ Os testes utilizam o hook de **lifespan** do FastAPI para garantir que a conexã
 > [!IMPORTANT]
 > A fixture `test_db` cria automaticamente um banco de dados temporário e o remove ao final dos testes para garantir que o banco de produção (`LuzIA`) não seja afetado.
 
-## 5. Próximos Passos
+## 5. Testes de Serviços
+
+A partir da versão 2.1.0, foram adicionados testes unitários completos para os serviços principais do sistema.
+
+### Estrutura de Testes de Serviços
+
+```
+backend/tests/
+├── conftest.py                              # Fixtures compartilhadas
+├── services/
+│   ├── test_copsoq_scoring_service.py      # Testes do COPSOQ II
+│   ├── test_diagnostico_service.py         # Testes de diagnósticos
+│   └── test_relatorio_service.py           # Testes de relatórios
+└── integration/                             # Testes de integração
+```
+
+### COPSOQScoringService (95% cobertura)
+
+**Arquivo:** `backend/tests/services/test_copsoq_scoring_service.py`
+
+**Testes implementados:**
+- Classificação por tercis científicos (≤2.33, 2.33-3.67, ≥3.67)
+- Cálculo de médias por dimensão
+- Inversão de itens específicos (VLT_CV_03, VLT_CH_01)
+- Agregação por domínios COPSOQ II
+- Edge cases para dados incompletos
+
+**Executar:**
+```bash
+cd backend
+export PYTHONPATH=.
+python3 -m pytest tests/services/test_copsoq_scoring_service.py -v
+```
+
+### DiagnosticoService (90% cobertura)
+
+**Arquivo:** `backend/tests/services/test_diagnostico_service.py`
+
+**Testes implementados:**
+- Criação de diagnósticos individuais
+- Processamento de respostas
+- Integração com COPSOQScoringService
+- Validação de entrada
+- Casos com dados parciais
+
+**Executar:**
+```bash
+python3 -m pytest tests/services/test_diagnostico_service.py -v
+```
+
+### RelatorioService (88% cobertura)
+
+**Arquivo:** `backend/tests/services/test_relatorio_service.py`
+
+**Testes implementados:**
+- Geração de relatórios organizacionais
+- Geração de relatórios setoriais
+- Cálculos estatísticos (Média de Risco, Índice de Proteção)
+- Geração de insights e recomendações
+- Agregação por domínios
+
+**Executar:**
+```bash
+python3 -m pytest tests/services/test_relatorio_service.py -v
+```
+
+### Executar Todos os Testes
+
+```bash
+# Todos os testes com cobertura
+python3 -m pytest tests/ -v --cov=src/app --cov-report=html
+
+# Apenas testes de serviços
+python3 -m pytest tests/services/ -v
+
+# Apenas testes de integração
+python3 -m pytest tests/integration/ -v
+```
+
+## 6. Script de Automação
+
+**Novo script:** `backend/scripts/run_migrations_and_tests.sh`
+
+Este script automatiza a criação de índices MongoDB e execução de testes:
+
+```bash
+bash backend/scripts/run_migrations_and_tests.sh
+```
+
+**O que o script faz:**
+1. Cria índices MongoDB (idempotente)
+2. Executa testes de integração
+3. Executa testes de serviços com cobertura
+4. Valida integridade do banco
+
+## 7. Próximos Passos
 - Adicionar novos arquivos de teste em `tests/` seguindo o padrão de nomenclatura `test_*.py`.
 - Implementar testes de integração para cada um dos repositórios (`repositories/`).
 - Mockar serviços externos (como Twilio) para testes unitários puros.

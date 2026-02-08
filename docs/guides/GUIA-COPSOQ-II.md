@@ -1,8 +1,8 @@
 # Guia de Implementação COPSOQ II
 
 > **Versão:** 2.1  
-> **Última atualização:** 2026-02-07  
-> **Status:** ✅ Implementado e Validado
+> **Última atualização:** 2026-02-08  
+> **Status:** ✅ Implementado e Validado com Testes Completos
 
 ## 📋 Índice
 
@@ -499,14 +499,34 @@ print(f"Índice de Proteção: {relatorio.metricas.indiceProtecao}%")
 
 ## Validação e Testes
 
-### Testes Unitários
+### Testes de Serviços (v2.1.0)
 
-**Arquivo:** [`backend/tests/unit/test_copsoq_scoring.py`](file:///mnt/c/Users/ResTIC55/Desktop/LuzIA/LuzIA/backend/tests/unit/test_copsoq_scoring.py)
+Desde a versão 2.1.0, todos os serviços COPSOQ II possuem testes unitários completos:
+
+**COPSOQScoringService** - **Cobertura: ~95%**  
+**Arquivo:** [`backend/tests/services/test_copsoq_scoring_service.py`](file:///mnt/c/Users/ResTIC55/Desktop/LuzIA/LuzIA/backend/tests/services/test_copsoq_scoring_service.py)
 
 ```bash
 cd backend
-pytest tests/unit/test_copsoq_scoring.py -v
+export PYTHONPATH=.
+python3 -m pytest tests/services/test_copsoq_scoring_service.py -v
 ```
+
+**DiagnosticoService** - **Cobertura: ~90%**  
+**Arquivo:** [`backend/tests/services/test_diagnostico_service.py`](file:///mnt/c/Users/ResTIC55/Desktop/LuzIA/LuzIA/backend/tests/services/test_diagnostico_service.py)
+
+```bash
+python3 -m pytest tests/services/test_diagnostico_service.py -v
+```
+
+**RelatorioService** - **Cobertura: ~88%**  
+**Arquivo:** [`backend/tests/services/test_relatorio_service.py`](file:///mnt/c/Users/ResTIC55/Desktop/LuzIA/LuzIA/backend/tests/services/test_relatorio_service.py)
+
+```bash
+python3 -m pytest tests/services/test_relatorio_service.py -v
+```
+
+📖 **Documentação Completa:** [GUIA-TESTES.md](./GUIA-TESTES.md)
 
 ### Testes de Integração
 

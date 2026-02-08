@@ -25,7 +25,12 @@ class RespostasRepo(BaseRepository[Dict[str, Any]]):
         return value
 
     async def push_answer(
-        self, anon_id: str, id_questionario: str, id_pergunta: str, valor: int
+        self,
+        anon_id: str,
+        id_questionario: str,
+        id_pergunta: str,
+        valor: Any = None,
+        valor_texto: Optional[str] = None,
     ) -> bool:
         """
         Adiciona uma resposta ao array de respostas de uma sessão.
@@ -35,7 +40,8 @@ class RespostasRepo(BaseRepository[Dict[str, Any]]):
             anon_id: ID anônimo do respondente.
             id_questionario: ID do questionário.
             id_pergunta: ID da pergunta.
-            valor: Valor da resposta (0-4 para escala Likert).
+            valor: Valor da resposta numérica.
+            valor_texto: Resposta de texto livre.
 
         Returns:
             True se a operação foi bem-sucedida.
@@ -43,11 +49,18 @@ class RespostasRepo(BaseRepository[Dict[str, Any]]):
         try:
             db = await get_db()
             q_id = self._ensure_object_id(id_questionario)
+            resposta_payload: Dict[str, Any] = {"idPergunta": id_pergunta}
+            if valor is not None:
+                resposta_payload["valor"] = valor
+            if valor_texto:
+                resposta_payload["valorTexto"] = valor_texto
+            if len(resposta_payload) == 1:
+                return False
 
             result = await db[self.collection_name].update_one(
                 {"anonId": anon_id, "idQuestionario": q_id},
                 {
-                    "$push": {"respostas": {"valor": valor, "idPergunta": id_pergunta}},
+                    "$push": {"respostas": resposta_payload},
                     "$set": {"data": datetime.utcnow()}
                 },
                 upsert=True

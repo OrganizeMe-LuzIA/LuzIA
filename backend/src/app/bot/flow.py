@@ -69,6 +69,7 @@ class BotFlow:
         if not user:
             return "Usuário não cadastrado no sistema. Fale com o administrador."
 
+        raw_text = (incoming_text or "").strip()
         text = self._normalize(incoming_text)
 
         # Comando de reset para desenvolvimento/UX
@@ -131,6 +132,37 @@ class BotFlow:
                 return self._final_message()
 
             current_q = questions[indice]
+            tipo_escala = str(current_q.get("tipoEscala") or "")
+
+            if tipo_escala == "texto_livre":
+                if not raw_text:
+                    return "Resposta inválida. Envie um texto curto."
+                if len(raw_text) > 1000:
+                    return "Resposta muito longa. Envie no máximo 1000 caracteres."
+
+                anon_id = user.get("anonId")
+                if not anon_id:
+                    return "Erro de cadastro: usuário sem anonId. Fale com o administrador."
+
+                await self.respostas_repo.push_answer(
+                    anon_id=anon_id,
+                    id_questionario=id_questionario,
+                    id_pergunta=str(current_q.get("idPergunta")),
+                    valor=None,
+                    valor_texto=raw_text,
+                )
+
+                next_index = indice + 1
+                if next_index >= len(questions):
+                    await self.users_repo.update_chat_state(
+                        phone,
+                        {"statusChat": "FINALIZADO", "indicePergunta": next_index},
+                    )
+                    return self._final_message()
+
+                await self.users_repo.update_chat_state(phone, {"indicePergunta": next_index})
+                next_q = questions[next_index]
+                return next_q.get("texto", "(Pergunta sem texto)")
 
             # Range (se existir no doc). Caso contrário, padrão 1..5.
             min_v = int(current_q.get("min", 1))

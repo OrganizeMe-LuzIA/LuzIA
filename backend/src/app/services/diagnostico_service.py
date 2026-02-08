@@ -9,7 +9,10 @@ class DiagnosticoService:
     def _detectar_escala_max(self, respostas: List[RespostaItem]) -> int:
         if not respostas:
             return 4
-        return 5 if max(r.valor for r in respostas) > 4 else 4
+        valores_numericos = [r.valor for r in respostas if isinstance(r.valor, int)]
+        if not valores_numericos:
+            return 4
+        return 5 if max(valores_numericos) > 4 else 4
 
     def _resultado_global(
         self, dimensoes: List[DiagnosticoDimensao]
@@ -44,6 +47,10 @@ class DiagnosticoService:
             p = perguntas_map.get(resp.idPergunta)
             if not p:
                 continue
+            if p.get("tipoEscala") == "texto_livre":
+                continue
+            if not isinstance(resp.valor, int):
+                continue
 
             key = (
                 p.get("codigoDominio") or p.get("dominio", "sem_dominio"),
@@ -53,7 +60,7 @@ class DiagnosticoService:
             )
             if key not in domain_scores:
                 domain_scores[key] = []
-            domain_scores[key].append({"id_pergunta": resp.idPergunta, "valor": resp.valor})
+            domain_scores[key].append({"id_pergunta": resp.idPergunta, "valor": int(resp.valor)})
 
         dimensoes_result: List[DiagnosticoDimensao] = []
 

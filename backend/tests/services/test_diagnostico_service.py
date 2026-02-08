@@ -110,3 +110,34 @@ def test_dimensoes_vazias():
     resultado, pontuacao = service._resultado_global([])
     assert resultado == "intermediario"
     assert pontuacao == 0.0
+
+
+def test_ignora_resposta_texto_livre_no_score():
+    service = DiagnosticoService()
+    questionario = {"_id": "q1", "codigo": "COPSOQ_CURTA_BR"}
+    perguntas = [
+        {
+            "idPergunta": "OTC_IT_01A",
+            "codigoDominio": "OTC",
+            "dominio": "Organização do Trabalho e Conteúdo",
+            "dimensao": "Influência no trabalho",
+            "sinal": "protecao",
+            "tipoEscala": "frequencia",
+        },
+        {
+            "idPergunta": "OBS_TL_01",
+            "codigoDominio": "OBS",
+            "dominio": "Observações finais",
+            "dimensao": "Relato livre",
+            "sinal": "risco",
+            "tipoEscala": "texto_livre",
+        },
+    ]
+    respostas = [
+        RespostaItem(idPergunta="OTC_IT_01A", valor=4),
+        RespostaItem(idPergunta="OBS_TL_01", valorTexto="Ambiente com pressão alta."),
+    ]
+
+    resultado = service.calculate_score(respostas, questionario, perguntas)
+    assert len(resultado.dimensoes) == 1
+    assert resultado.dimensoes[0].dimensao == "Influência no trabalho"

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 from typing import Optional, List, Dict, Any, Union
 from datetime import datetime
 from bson import ObjectId
@@ -124,7 +124,7 @@ class Questionario(BaseModel):
     Questionário COPSOQ II.
     
     Suporta duas versões:
-    - COPSOQ_CURTA_BR: Versão curta brasileira (40 itens)
+    - COPSOQ_CURTA_BR: Versão curta brasileira
     - COPSOQ_MEDIA_PT: Versão média portuguesa (76 perguntas)
     """
     nome: str
@@ -140,8 +140,25 @@ class Questionario(BaseModel):
     ativo: bool = True
 
 class RespostaItem(BaseModel):
-    valor: int = Field(ge=0, le=4)
+    valor: Optional[Union[int, List[int]]] = Field(default=None)
+    valorTexto: Optional[str] = Field(default=None, min_length=1, max_length=1000)
     idPergunta: str
+
+    @model_validator(mode="after")
+    def validate_resposta(self):
+        if self.valor is None and not self.valorTexto:
+            raise ValueError("Informe 'valor' ou 'valorTexto'.")
+
+        if isinstance(self.valor, int):
+            if self.valor < 0 or self.valor > 5:
+                raise ValueError("'valor' deve estar entre 0 e 5.")
+        elif isinstance(self.valor, list):
+            if not self.valor:
+                raise ValueError("'valor' não pode ser lista vazia.")
+            if any((not isinstance(v, int) or v < 0 or v > 5) for v in self.valor):
+                raise ValueError("Todos os itens de 'valor' devem ser inteiros entre 0 e 5.")
+
+        return self
 
 class Respostas(BaseModel):
     anonId: str

@@ -3,7 +3,7 @@ Serviço de Scoring para o Questionário COPSOQ II
 
 Este serviço implementa a lógica de cálculo de pontuação e classificação
 por tercis (verde/amarelo/vermelho) para ambas as versões do COPSOQ II:
-- COPSOQ_CURTA_BR: Versão curta brasileira (40 itens)
+- COPSOQ_CURTA_BR: Versão curta brasileira (seed versionada como 3.0)
 - COPSOQ_MEDIA_PT: Versão média portuguesa (76 perguntas)
 
 Referências:
