@@ -282,3 +282,56 @@ class TestIdentificacaoDimensoes:
         assert scoring_service.eh_dimensao_protecao("Burnout") is False
         assert scoring_service.eh_dimensao_protecao("Stress") is False
         assert scoring_service.eh_dimensao_protecao("Conflito trabalho-família") is False
+
+
+class TestFaixasOficiaisCurtaBR:
+    """Testes das faixas por soma da pontuação oficial BR."""
+
+    def test_curta_br_ritmo_intermediario_por_soma(self, scoring_service):
+        respostas = [
+            {"id_pergunta": "EL_RT_01A", "valor": 3},
+            {"id_pergunta": "EL_RT_01B", "valor": 2},
+        ]  # soma=5 -> intermediário
+        resultado = scoring_service.processar_dimensao(
+            dimensao="Ritmo de trabalho",
+            dominio="Exigências Laborais",
+            respostas=respostas,
+            codigo_questionario="COPSOQ_CURTA_BR",
+        )
+        assert resultado.classificacao == ClassificacaoTercil.INTERMEDIARIO
+
+    def test_curta_br_influencia_favoravel_por_soma(self, scoring_service):
+        respostas = [
+            {"id_pergunta": "OTC_IT_01A", "valor": 4},
+            {"id_pergunta": "OTC_IT_01B", "valor": 4},
+        ]  # soma=8 -> favorável
+        resultado = scoring_service.processar_dimensao(
+            dimensao="Influência no trabalho",
+            dominio="Organização do Trabalho e Conteúdo",
+            respostas=respostas,
+            codigo_questionario="COPSOQ_CURTA_BR",
+        )
+        assert resultado.classificacao == ClassificacaoTercil.FAVORAVEL
+
+    def test_curta_br_burnout_intermediario_por_soma(self, scoring_service):
+        respostas = [
+            {"id_pergunta": "SBE_BO_01A", "valor": 2},
+            {"id_pergunta": "SBE_BO_01B", "valor": 1},
+        ]  # soma=3 -> intermediário
+        resultado = scoring_service.processar_dimensao(
+            dimensao="Burnout",
+            dominio="Saúde e Bem-Estar",
+            respostas=respostas,
+            codigo_questionario="COPSOQ_CURTA_BR",
+        )
+        assert resultado.classificacao == ClassificacaoTercil.INTERMEDIARIO
+
+    def test_curta_br_ofensivo_sim_e_risco(self, scoring_service):
+        respostas = [{"id_pergunta": "CO_AV_01", "valor": 1}]  # sim
+        resultado = scoring_service.processar_dimensao(
+            dimensao="Ameaças de violência",
+            dominio="Comportamentos Ofensivos",
+            respostas=respostas,
+            codigo_questionario="COPSOQ_CURTA_BR",
+        )
+        assert resultado.classificacao == ClassificacaoTercil.RISCO

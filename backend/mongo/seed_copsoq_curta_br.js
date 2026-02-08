@@ -33,6 +33,7 @@ const questionarioCurtaBR = db.questionarios.insertOne({
         { codigo: "OBS", nome: "Observações finais", ordem: 8 }
     ],
     escalasPossiveis: ["frequencia", "intensidade", "satisfacao", "conflito_tf", "saude_geral", "comportamento_ofensivo", "texto_livre"],
+    metodoPontuacao: "faixas_soma_copsoq_curta_br_pdf2",
     totalPerguntas: 41,
     ativo: true,
     dataCriacao: new Date()

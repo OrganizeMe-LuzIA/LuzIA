@@ -80,6 +80,66 @@ class COPSOQScoringService:
         # Saúde e Bem-Estar
         "Saúde geral",
     }
+
+    # Faixas oficiais de classificação por soma para COPSOQ_CURTA_BR (PDF de pontuação BR).
+    # Regras aplicadas apenas quando os IDs de pergunta batem com o mapeamento esperado.
+    REGRAS_SOMA_CURTA_BR: Dict[str, Dict[str, object]] = {
+        "Exigências quantitativas": {"ids": {"EL_EQ_01A", "EL_EQ_01B"}, "favoravel": [(0, 3)], "intermediario": [(4, 4)], "risco": [(5, 8)]},
+        "Ritmo de trabalho": {"ids": {"EL_RT_01A", "EL_RT_01B"}, "favoravel": [(0, 3)], "intermediario": [(4, 5)], "risco": [(6, 8)]},
+        "Exigências emocionais": {"ids": {"EL_EE_01A", "EL_EE_01B"}, "favoravel": [(0, 3)], "intermediario": [(4, 4)], "risco": [(5, 8)]},
+        "Influência no trabalho": {"ids": {"OTC_IT_01A", "OTC_IT_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Possibilidades de desenvolvimento": {"ids": {"OTC_PD_01A", "OTC_PD_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Significado do trabalho": {"ids": {"OTC_ST_01A", "OTC_ST_01B"}, "favoravel": [(6, 8)], "intermediario": [(5, 5)], "risco": [(0, 4)]},
+        "Compromisso com local de trabalho": {"ids": {"OTC_CLT_01A", "OTC_CLT_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Previsibilidade": {"ids": {"RSL_PR_01A", "RSL_PR_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Recompensas": {"ids": {"RSL_RE_01A", "RSL_RE_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Transparência do papel": {"ids": {"RSL_TP_01A", "RSL_TP_01B"}, "favoravel": [(6, 8)], "intermediario": [(4, 5)], "risco": [(0, 3)]},
+        "Qualidade da liderança": {"ids": {"RSL_QL_01A", "RSL_QL_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Apoio social de superiores": {"ids": {"RSL_ASS_01A", "RSL_ASS_01B"}, "favoravel": [(6, 8)], "intermediario": [(4, 5)], "risco": [(0, 3)]},
+        "Satisfação no trabalho": {"ids": {"ITI_ST_01"}, "favoravel": [(2, 3)], "intermediario": [], "risco": [(0, 1)]},
+        "Conflito trabalho-família": {"ids": {"ITI_CTF_01A", "ITI_CTF_01B"}, "favoravel": [(0, 2)], "intermediario": [(3, 3)], "risco": [(4, 6)]},
+        "Confiança vertical": {"ids": {"VLT_CV_01A", "VLT_CV_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Justiça e respeito": {"ids": {"VLT_JR_01A", "VLT_JR_01B"}, "favoravel": [(5, 8)], "intermediario": [(4, 4)], "risco": [(0, 3)]},
+        "Saúde geral": {"ids": {"SBE_SG_01"}, "favoravel": [(3, 4)], "intermediario": [(2, 2)], "risco": [(0, 1)]},
+        "Burnout": {"ids": {"SBE_BO_01A", "SBE_BO_01B"}, "favoravel": [(0, 2)], "intermediario": [(3, 3)], "risco": [(4, 8)]},
+        "Stress": {"ids": {"SBE_ST_01A", "SBE_ST_01B"}, "favoravel": [(0, 2)], "intermediario": [(3, 3)], "risco": [(4, 8)]},
+        "Atenção sexual indesejada": {"ids": {"CO_ASI_01"}, "favoravel": [(0, 0)], "intermediario": [], "risco": [(1, 4)]},
+        "Ameaças de violência": {"ids": {"CO_AV_01"}, "favoravel": [(0, 0)], "intermediario": [], "risco": [(1, 4)]},
+        "Violência física": {"ids": {"CO_VF_01"}, "favoravel": [(0, 0)], "intermediario": [], "risco": [(1, 4)]},
+        "Bullying": {"ids": {"CO_BU_01"}, "favoravel": [(0, 0)], "intermediario": [], "risco": [(1, 4)]},
+    }
+
+    @staticmethod
+    def _valor_em_faixas(valor: int, faixas: List[tuple]) -> bool:
+        return any(inicio <= valor <= fim for inicio, fim in faixas)
+
+    def _classificar_curta_br_por_soma(
+        self,
+        dimensao: str,
+        respostas: List[Dict[str, int]],
+        escala_max: int = 4,
+    ) -> Optional[ClassificacaoTercil]:
+        regra = self.REGRAS_SOMA_CURTA_BR.get(dimensao)
+        if not regra:
+            return None
+
+        ids_esperados = regra["ids"]  # type: ignore[index]
+        ids_resposta = {r["id_pergunta"] for r in respostas if "id_pergunta" in r}
+        if not ids_resposta or not ids_resposta.issubset(ids_esperados):  # type: ignore[arg-type]
+            return None
+
+        soma = sum(int(r["valor"]) for r in respostas)
+        favoravel = regra["favoravel"]  # type: ignore[index]
+        intermediario = regra["intermediario"]  # type: ignore[index]
+        risco = regra["risco"]  # type: ignore[index]
+
+        if self._valor_em_faixas(soma, favoravel):
+            return ClassificacaoTercil.FAVORAVEL
+        if self._valor_em_faixas(soma, intermediario):
+            return ClassificacaoTercil.INTERMEDIARIO
+        if self._valor_em_faixas(soma, risco):
+            return ClassificacaoTercil.RISCO
+        return None
     
     def inverter_valor(self, valor: int, escala_max: int = 5) -> int:
         """
@@ -234,7 +294,15 @@ class COPSOQScoringService:
             escala_max
         )
         
-        classificacao = self.classificar_tercil(media, dimensao)
+        classificacao = None
+        if codigo_questionario == "COPSOQ_CURTA_BR":
+            classificacao = self._classificar_curta_br_por_soma(
+                dimensao=dimensao,
+                respostas=respostas,
+                escala_max=escala_max,
+            )
+        if classificacao is None:
+            classificacao = self.classificar_tercil(media, dimensao)
         
         return ResultadoDimensao(
             dimensao=dimensao,
