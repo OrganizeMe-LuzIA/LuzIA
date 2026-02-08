@@ -86,6 +86,7 @@ db.questionarios.updateOne(
       versao: VERSAO_DESTINO,
       totalPerguntas: totalPerguntas,
       dataAtualizacao: DATA_MIGRACAO,
+      metodoPontuacao: "faixas_soma_copsoq_curta_br_pdf2",
       escalasPossiveis: [
         "frequencia",
         "intensidade",
