@@ -4,7 +4,7 @@ Cria índices recomendados para o MongoDB do LuzIA.
 """
 
 import os
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from pymongo import ASCENDING, DESCENDING, MongoClient
 from pymongo.collection import Collection
@@ -22,9 +22,31 @@ def _db_name() -> str:
     return os.getenv("MONGO_DB_NAME", "LuzIA")
 
 
+def _normalized_options(options: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "unique": bool(options.get("unique", False)),
+        "sparse": bool(options.get("sparse", False)),
+    }
+
+
+def _has_equivalent_index(collection: Collection, keys: List[Tuple[str, int]], options: Dict[str, Any]) -> bool:
+    wanted_keys = list(keys)
+    wanted_opts = _normalized_options(options)
+    for idx in collection.list_indexes():
+        idx_keys = list(idx.get("key", {}).items())
+        if idx_keys != wanted_keys:
+            continue
+        existing_opts = _normalized_options(idx)
+        if existing_opts == wanted_opts:
+            return True
+    return False
+
+
 def _ensure_indexes(collection: Collection, specs: List[IndexSpec]) -> List[str]:
     created: List[str] = []
     for keys, options in specs:
+        if _has_equivalent_index(collection, keys, options):
+            continue
         name = collection.create_index(keys, **options)
         created.append(name)
     return created

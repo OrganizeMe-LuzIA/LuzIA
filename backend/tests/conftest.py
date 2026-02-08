@@ -1,5 +1,4 @@
 import pytest
-import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import settings
 from app.core.database import db
@@ -9,30 +8,27 @@ from app.models.base import Usuario, StatusEnum
 from app.core.security import create_access_token
 from datetime import timedelta
 
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create an instance of the default event loop for each test case."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def test_db():
     """
     Fixture for the test database.
     Uses a separate database name for testing to avoid data loss.
     """
     test_db_name = f"{settings.MONGO_DB_NAME}_test"
-    
-    # Ensure connection is established (if not already by lifespan)
-    if db.client is None:
-        db.client = AsyncIOMotorClient(settings.MONGO_URI)
-    
-    database = db.client[test_db_name]
+    original_db_name = settings.MONGO_DB_NAME
+
+    client = AsyncIOMotorClient(settings.MONGO_URI)
+    db.client = client
+    settings.MONGO_DB_NAME = test_db_name
+    database = client[test_db_name]
     yield database
-    
-    # Cleanup: Drop the test database after tests
-    await db.client.drop_database(test_db_name)
+
+    # Cleanup isolado por teste para evitar vazamento de estado e loop fechado.
+    await client.drop_database(test_db_name)
+    client.close()
+    settings.MONGO_DB_NAME = original_db_name
+    if db.client is client:
+        db.client = None
 
 @pytest.fixture(scope="session")
 async def test_client():
@@ -109,4 +105,3 @@ def auth_headers(auth_token) -> dict:
 def admin_headers(admin_token) -> dict:
     """Returns authorization headers for an admin user."""
     return {"Authorization": f"Bearer {admin_token}"}
-

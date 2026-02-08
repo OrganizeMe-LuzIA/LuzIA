@@ -27,7 +27,7 @@ def test_get_my_diagnosticos_success(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.diagnosticos.DiagnosticosRepo') as MockRepo:
+    with patch('app.api.v1.diagnosticos.DiagnosticosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_anon_id = AsyncMock(return_value=[
             {
@@ -61,7 +61,7 @@ def test_get_my_diagnosticos_empty(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.diagnosticos.DiagnosticosRepo') as MockRepo:
+    with patch('app.api.v1.diagnosticos.DiagnosticosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_anon_id = AsyncMock(return_value=[])
         
@@ -93,7 +93,7 @@ def test_get_diagnostico_by_id_success(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.diagnosticos.DiagnosticosRepo') as MockRepo:
+    with patch('app.api.v1.diagnosticos.DiagnosticosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_id = AsyncMock(return_value={
             "_id": "diag123",
@@ -120,7 +120,7 @@ def test_get_diagnostico_not_found(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.diagnosticos.DiagnosticosRepo') as MockRepo:
+    with patch('app.api.v1.diagnosticos.DiagnosticosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_id = AsyncMock(return_value=None)
         
@@ -138,7 +138,7 @@ def test_get_diagnostico_wrong_user(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.diagnosticos.DiagnosticosRepo') as MockRepo:
+    with patch('app.api.v1.diagnosticos.DiagnosticosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         # Return a diagnostic that belongs to a different user
         mock_repo.get_by_id = AsyncMock(return_value={

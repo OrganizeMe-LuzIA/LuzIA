@@ -78,6 +78,12 @@ class DiagnosticosRepo(BaseRepository[Dict[str, Any]]):
         cursor = db[self.collection_name].find(query).sort("dataAnalise", -1)
         return await cursor.to_list(length=100)
 
+    async def list_by_user(self, anon_id: str) -> List[Dict[str, Any]]:
+        """
+        Alias legado para compatibilidade com testes antigos.
+        """
+        return await self.get_by_anon_id(anon_id)
+
     async def get_latest_by_anon_id(
         self, anon_id: str, questionario_id: str
     ) -> Optional[Dict[str, Any]]:

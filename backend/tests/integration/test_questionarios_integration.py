@@ -28,7 +28,7 @@ def test_list_questionarios_authenticated(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.questionarios.QuestionariosRepo') as MockRepo:
+    with patch('app.api.v1.questionarios.QuestionariosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.list_questionnaires = AsyncMock(return_value=[
             {"_id": "q1", "nome": "CoPsoQ II", "versao": "1.0", "ativo": True},
@@ -54,7 +54,7 @@ def test_list_questionarios_empty(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.questionarios.QuestionariosRepo') as MockRepo:
+    with patch('app.api.v1.questionarios.QuestionariosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.list_questionnaires = AsyncMock(return_value=[])
         
@@ -86,7 +86,7 @@ def test_get_questionario_success(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.questionarios.QuestionariosRepo') as MockRepo:
+    with patch('app.api.v1.questionarios.QuestionariosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_id = AsyncMock(return_value={
             "_id": "q123",
@@ -113,7 +113,7 @@ def test_get_questionario_not_found(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.questionarios.QuestionariosRepo') as MockRepo:
+    with patch('app.api.v1.questionarios.QuestionariosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_id = AsyncMock(return_value=None)
         
@@ -136,8 +136,8 @@ def test_list_perguntas_success(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.questionarios.QuestionariosRepo') as MockQRepo, \
-         patch('app.routers.questionarios.PerguntasRepo') as MockPRepo:
+    with patch('app.api.v1.questionarios.QuestionariosRepo') as MockQRepo, \
+         patch('app.api.v1.questionarios.PerguntasRepo') as MockPRepo:
         
         mock_q_repo = MockQRepo.return_value
         mock_q_repo.get_by_id = AsyncMock(return_value={"_id": "q123", "nome": "Test"})
@@ -165,7 +165,7 @@ def test_list_perguntas_questionario_not_found(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.questionarios.QuestionariosRepo') as MockRepo:
+    with patch('app.api.v1.questionarios.QuestionariosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_id = AsyncMock(return_value=None)
         
