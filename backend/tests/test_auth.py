@@ -11,14 +11,14 @@ from datetime import timedelta
 from jose import jwt
 from pydantic import ValidationError
 
-from app.auth import (
+from app.core.security import (
     create_access_token, 
     verify_token, 
     AuthRequest,
     TokenData,
     ALGORITHM
 )
-from app.config import settings
+from app.core.config import settings
 
 
 class TestAuthRequest:

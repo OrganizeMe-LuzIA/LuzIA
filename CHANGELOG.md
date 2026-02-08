@@ -17,6 +17,52 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [2.1.0] - 2026-02-07
+
+### ✨ Adicionado
+- **Sistema de Cache Redis** - Otimização de performance para dashboard
+  - Cache de métrica de overview com TTL configurável (5 minutos)
+  - Invalidação automática em operações de escrita
+  - Suporte a padrões de cache flexíveis
+- **Script de Índices MongoDB** - Otimização de queries
+  - Índices unique para `usuarios.telefone` e `usuarios.anonId`
+  - Índices compound para filtros hierárquicos
+  - Script de migração idempotente com rollback
+  - Documentação de índices criados
+- **Validadores de Domínio** - Validação robusta de dados
+  - Validação de CNPJ (formato e algoritmo)
+  - Validação de telefone E.164
+  - Validators reutilizáveis em módulo centralizado
+- **Documentação OpenAPI Enriquecida**
+  - Metadata detalhada com descrição e contato
+  - Tags organizadas por funcionalidade
+  - Exemplos de request/response em endpoints
+  - Licença e versão do projeto
+
+### 🔧 Modificado
+- `DashboardService.get_overview()` - Integração com cache Redis
+- `Organizacao` model - Validação de CNPJ obrigatória
+- `Usuario` model - Validação de formato telefone E.164
+- `config.py` - Adicionadas configurações REDIS_URL e CACHE_TTL
+- Dashboard endpoints - Documentação OpenAPI completa
+
+### 🏗️ Infraestrutura
+- Adicionado serviço Redis ao `docker-compose.yml`
+- Configuração de pytest com coverage (meta: 80%)
+- Dependências: `redis`, `pytest-cov`, `validate-docbr`
+
+### 📚 Documentação
+- Plano de implementação de melhorias (6 semanas)
+- Auditoria completa do backend (21 entidades, 8 repos, 4 services)
+- Guias de uso para cache e validadores
+
+### 🚀 Performance
+- Redução estimada de 50-80% em queries com índices
+- Cache elimina recálculo de overview a cada requisição
+- TTL de 5 minutos balanceia atualização vs carga
+
+---
+
 ## [2.0.0] - 2026-02-07
 
 ### ✨ Adicionado

@@ -48,14 +48,14 @@ def test_create_organization_as_admin(mock_admin_user):
     
     app.dependency_overrides[get_current_admin_user] = override
     
-    with patch('app.routers.organizacoes.OrganizacoesRepo') as MockRepo:
+    with patch('app.api.v1.organizacoes.OrganizacoesRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.find_by_cnpj = AsyncMock(return_value=None)
         mock_repo.create_organization = AsyncMock(return_value="new_org_id_123")
         
         response = client.post(
             "/api/v1/organizacoes/",
-            json={"cnpj": "12.345.678/0001-99", "nome": "Empresa Teste"}
+            json={"cnpj": "11.222.333/0001-81", "nome": "Empresa Teste"}
         )
         
         assert response.status_code == 201
@@ -73,13 +73,13 @@ def test_create_organization_duplicate_cnpj(mock_admin_user):
     
     app.dependency_overrides[get_current_admin_user] = override
     
-    with patch('app.routers.organizacoes.OrganizacoesRepo') as MockRepo:
+    with patch('app.api.v1.organizacoes.OrganizacoesRepo') as MockRepo:
         mock_repo = MockRepo.return_value
-        mock_repo.find_by_cnpj = AsyncMock(return_value={"cnpj": "12.345.678/0001-99", "nome": "Existente"})
+        mock_repo.find_by_cnpj = AsyncMock(return_value={"cnpj": "11.222.333/0001-81", "nome": "Existente"})
         
         response = client.post(
             "/api/v1/organizacoes/",
-            json={"cnpj": "12.345.678/0001-99", "nome": "Duplicada"}
+            json={"cnpj": "11.222.333/0001-81", "nome": "Duplicada"}
         )
         
         assert response.status_code == 400
@@ -103,7 +103,7 @@ def test_create_organization_as_user_forbidden(mock_user):
     
     response = client.post(
         "/api/v1/organizacoes/",
-        json={"cnpj": "12.345.678/0001-99", "nome": "Empresa Teste"}
+        json={"cnpj": "11.222.333/0001-81", "nome": "Empresa Teste"}
     )
     
     # Should be 403 Forbidden (admin check fails) or 401 if token validation runs
@@ -123,11 +123,11 @@ def test_list_organizations_as_admin(mock_admin_user):
     
     app.dependency_overrides[get_current_admin_user] = override
     
-    with patch('app.routers.organizacoes.OrganizacoesRepo') as MockRepo:
+    with patch('app.api.v1.organizacoes.OrganizacoesRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.list_organizations = AsyncMock(return_value=[
-            {"_id": "org1", "cnpj": "11.111.111/0001-11", "nome": "Org 1"},
-            {"_id": "org2", "cnpj": "22.222.222/0001-22", "nome": "Org 2"},
+            {"_id": "org1", "cnpj": "22.333.444/0001-81", "nome": "Org 1"},
+            {"_id": "org2", "cnpj": "33.444.555/0001-81", "nome": "Org 2"},
         ])
         
         response = client.get("/api/v1/organizacoes/")
@@ -152,11 +152,11 @@ def test_get_organization_success(mock_admin_user):
     
     app.dependency_overrides[get_current_admin_user] = override
     
-    with patch('app.routers.organizacoes.OrganizacoesRepo') as MockRepo:
+    with patch('app.api.v1.organizacoes.OrganizacoesRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_organization = AsyncMock(return_value={
             "_id": "org123",
-            "cnpj": "33.333.333/0001-33",
+            "cnpj": "44.555.666/0001-81",
             "nome": "Org Encontrada"
         })
         
@@ -177,7 +177,7 @@ def test_get_organization_not_found(mock_admin_user):
     
     app.dependency_overrides[get_current_admin_user] = override
     
-    with patch('app.routers.organizacoes.OrganizacoesRepo') as MockRepo:
+    with patch('app.api.v1.organizacoes.OrganizacoesRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_organization = AsyncMock(return_value=None)
         
@@ -202,7 +202,7 @@ def test_create_organization_missing_fields(mock_admin_user):
     
     response = client.post(
         "/api/v1/organizacoes/",
-        json={"cnpj": "12.345.678/0001-99"}  # Falta 'nome'
+        json={"cnpj": "11.222.333/0001-81"}  # Falta 'nome'
     )
     
     assert response.status_code == 422

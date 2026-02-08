@@ -25,7 +25,7 @@ async def test_organizacoes_repo_create(test_db):
     repo = OrganizacoesRepo()
     
     org_data = {
-        "cnpj": "11.111.111/0001-11",
+        "cnpj": "22.333.444/0001-81",
         "nome": "Empresa Teste Repo"
     }
     
@@ -42,12 +42,12 @@ async def test_organizacoes_repo_find_by_cnpj(test_db):
     repo = OrganizacoesRepo()
     
     org_data = {
-        "cnpj": "22.222.222/0001-22",
+        "cnpj": "33.444.555/0001-81",
         "nome": "Empresa Busca CNPJ"
     }
     await repo.create_organization(org_data)
     
-    found = await repo.find_by_cnpj("22.222.222/0001-22")
+    found = await repo.find_by_cnpj("33.444.555/0001-81")
     
     assert found is not None
     assert found["nome"] == "Empresa Busca CNPJ"
@@ -69,7 +69,7 @@ async def test_organizacoes_repo_get_by_id(test_db):
     repo = OrganizacoesRepo()
     
     org_data = {
-        "cnpj": "33.333.333/0001-33",
+        "cnpj": "44.555.666/0001-81",
         "nome": "Empresa ID"
     }
     org_id = await repo.create_organization(org_data)
@@ -77,7 +77,7 @@ async def test_organizacoes_repo_get_by_id(test_db):
     found = await repo.get_organization(org_id)
     
     assert found is not None
-    assert found["cnpj"] == "33.333.333/0001-33"
+    assert found["cnpj"] == "44.555.666/0001-81"
 
 
 @pytest.mark.asyncio
@@ -96,8 +96,8 @@ async def test_organizacoes_repo_list(test_db):
     repo = OrganizacoesRepo()
     
     # Create some orgs
-    await repo.create_organization({"cnpj": "44.444.444/0001-44", "nome": "Org List 1"})
-    await repo.create_organization({"cnpj": "55.555.555/0001-55", "nome": "Org List 2"})
+    await repo.create_organization({"cnpj": "55.666.777/0001-81", "nome": "Org List 1"})
+    await repo.create_organization({"cnpj": "66.777.888/0001-81", "nome": "Org List 2"})
     
     orgs = await repo.list_organizations(limit=10)
     
@@ -111,7 +111,7 @@ async def test_organizacoes_repo_update(test_db):
     repo = OrganizacoesRepo()
     
     org_id = await repo.create_organization({
-        "cnpj": "66.666.666/0001-66",
+        "cnpj": "77.888.999/0001-81",
         "nome": "Org Original"
     })
     
@@ -129,7 +129,7 @@ async def test_organizacoes_repo_delete(test_db):
     repo = OrganizacoesRepo()
     
     org_id = await repo.create_organization({
-        "cnpj": "77.777.777/0001-77",
+        "cnpj": "88.999.000/0001-98",
         "nome": "Org Para Deletar"
     })
     

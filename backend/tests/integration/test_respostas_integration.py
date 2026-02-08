@@ -27,15 +27,16 @@ def test_submit_respostas_valid(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.respostas.QuestionariosRepo') as MockQRepo, \
-         patch('app.routers.respostas.RespostasRepo') as MockRRepo, \
-         patch('app.routers.respostas.run_diagnostic_calculation') as mock_diag:
+    with patch('app.api.v1.respostas.QuestionariosRepo') as MockQRepo, \
+         patch('app.api.v1.respostas.RespostasRepo') as MockRRepo, \
+         patch('app.api.v1.respostas.calculate_diagnostico') as mock_diag:
         
         mock_q_repo = MockQRepo.return_value
         mock_q_repo.get_by_id = AsyncMock(return_value={"_id": "q123", "nome": "Test"})
         
         mock_r_repo = MockRRepo.return_value
         mock_r_repo.save_all_answers = AsyncMock(return_value=True)
+        mock_diag.delay.return_value.id = "task-123"
         
         response = client.post(
             "/api/v1/respostas/",
@@ -62,7 +63,7 @@ def test_submit_respostas_invalid_questionario(mock_user):
     
     app.dependency_overrides[get_current_active_user] = override
     
-    with patch('app.routers.respostas.QuestionariosRepo') as MockRepo:
+    with patch('app.api.v1.respostas.QuestionariosRepo') as MockRepo:
         mock_repo = MockRepo.return_value
         mock_repo.get_by_id = AsyncMock(return_value=None)
         

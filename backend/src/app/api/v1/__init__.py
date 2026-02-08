@@ -5,10 +5,10 @@ from . import auth, dashboard, diagnosticos, organizacoes, questionarios, relato
 
 api_router = APIRouter()
 
-api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
-api_router.include_router(organizacoes.router, prefix="/organizacoes", tags=["organizacoes"])
-api_router.include_router(questionarios.router, prefix="/questionarios", tags=["questionarios"])
-api_router.include_router(respostas.router, prefix="/respostas", tags=["respostas"])
-api_router.include_router(diagnosticos.router, prefix="/diagnosticos", tags=["diagnosticos"])
-api_router.include_router(relatorios.router, prefix="/relatorios", tags=["relatorios"])
-api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
+api_router.include_router(auth.router, tags=["auth"])
+api_router.include_router(organizacoes.router, tags=["organizacoes"])
+api_router.include_router(questionarios.router, tags=["questionarios"])
+api_router.include_router(respostas.router, tags=["respostas"])
+api_router.include_router(diagnosticos.router, tags=["diagnosticos"])
+api_router.include_router(relatorios.router, tags=["relatorios"])
+api_router.include_router(dashboard.router, tags=["dashboard"])

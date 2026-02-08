@@ -80,6 +80,14 @@ class RespostasRepo(BaseRepository[Dict[str, Any]]):
             logger.warning(f"ID de questionário inválido: {id_questionario}")
             return None
 
+    async def get_all_answers(
+        self, anon_id: str, id_questionario: str
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Alias legada para compatibilidade com testes antigos.
+        """
+        return await self.get_answers(anon_id, id_questionario)
+
     async def get_all_answers_for_questionnaire(
         self, id_questionario: str
     ) -> List[Dict[str, Any]]:
