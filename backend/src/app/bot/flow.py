@@ -154,8 +154,8 @@ class BotFlow:
                 numero_atual=numero_atual,
                 total=total,
             )
-            if sid:
-                return ""
+            # Mesmo que a mensagem interativa seja enviada, retornamos o texto
+            # como fallback para garantir que o usuário veja a pergunta via TwiML
 
         base = f"{numero_atual}/{total} - {texto}"
         if not opcoes:
