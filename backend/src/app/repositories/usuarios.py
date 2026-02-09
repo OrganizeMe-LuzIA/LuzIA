@@ -152,6 +152,45 @@ class UsuariosRepo(BaseRepository[Dict[str, Any]]):
             logger.warning(f"ID inválido: {e}")
             return []
 
+    async def update_org_setor(
+        self,
+        phone: str,
+        org_id: str,
+        setor_id: str,
+        unidade: Optional[str] = None,
+    ) -> bool:
+        """
+        Atualiza organização, setor e unidade do usuário.
+
+        Args:
+            phone: Número de telefone do usuário.
+            org_id: ID da organização.
+            setor_id: ID do setor.
+            unidade: Número da unidade (opcional).
+
+        Returns:
+            True se a atualização foi bem-sucedida.
+        """
+        try:
+            update: Dict[str, Any] = {
+                "idOrganizacao": ObjectId(org_id),
+                "idSetor": ObjectId(setor_id),
+            }
+            if unidade:
+                update["numeroUnidade"] = unidade
+            else:
+                update["numeroUnidade"] = None
+
+            db = await get_db()
+            result = await db[self.collection_name].update_one(
+                {"telefone": phone},
+                {"$set": update},
+            )
+            return result.modified_count > 0
+        except InvalidId as e:
+            logger.warning(f"ID inválido ao atualizar organização/setor do usuário: {e}")
+            return False
+
     async def delete_user(self, phone: str) -> bool:
         """
         Remove um usuário pelo número de telefone.

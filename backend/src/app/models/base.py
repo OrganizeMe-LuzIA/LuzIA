@@ -53,6 +53,7 @@ class UserState(BaseModel):
 class Organizacao(BaseModel):
     cnpj: str
     nome: str
+    codigo: Optional[str] = None
 
     @field_validator("cnpj")
     @classmethod
@@ -71,6 +72,7 @@ class Usuario(BaseModel):
     telefone: str
     idOrganizacao: Any  # MongoDB ObjectId
     idSetor: Optional[Any] = None
+    numeroUnidade: Optional[str] = None
     status: StatusEnum = StatusEnum.AGUARDANDO_CONFIRMACAO
     respondido: bool = False
     anonId: str

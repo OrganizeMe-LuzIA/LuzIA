@@ -3,8 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
+from app.repositories.organizacoes import OrganizacoesRepo
 from app.repositories.questionarios import QuestionariosRepo, PerguntasRepo
 from app.repositories.respostas import RespostasRepo
+from app.repositories.setores import SetoresRepo
 from app.repositories.usuarios import UsuariosRepo
 from app.services.twilio_content_service import TwilioContentService
 
@@ -16,6 +18,8 @@ class BotFlow:
 
     def __init__(self):
         self.users_repo = UsuariosRepo()
+        self.organizacoes_repo = OrganizacoesRepo()
+        self.setores_repo = SetoresRepo()
         self.questionarios_repo = QuestionariosRepo()
         self.perguntas_repo = PerguntasRepo()
         self.respostas_repo = RespostasRepo()
@@ -25,18 +29,61 @@ class BotFlow:
         return (text or "").strip().lower()
 
     def _intro_message(self) -> str:
-        return (
-            "Olá! Eu sou o LuzIA\n\n"
-            "Vou te enviar um questionário rápido e suas respostas serão armazenadas de forma segura.\n\n"
-            "Para começar, responda: SIM\n\n"
-            "(Se você quiser recomeçar a qualquer momento, envie: REINICIAR)"
-        )
+        return "Olá! Por favor, informe o código da sua empresa:"
 
     def _final_message(self) -> str:
         return "Obrigado! Suas respostas foram registradas com sucesso."
 
     def _invalid_confirm_message(self) -> str:
         return "Para iniciar o questionário, responda apenas: SIM"
+
+    def _empresa_invalida_message(self) -> str:
+        return "Empresa não encontrada. Verifique o código e tente novamente."
+
+    def _setor_invalido_message(self) -> str:
+        return "Setor não encontrado. Digite o número da opção ou o nome do setor."
+
+    def _unidade_prompt_message(self) -> str:
+        return "Informe o número da sua unidade (ou 'pular' se não aplicável):"
+
+    def _is_skip_unidade(self, text: str) -> bool:
+        return self._normalize(text) in {"pular", "skip", "na", "n/a", "nao", "não"}
+
+    @staticmethod
+    def _formatar_setores(setores: List[Dict[str, Any]]) -> str:
+        linhas = [f"{i} - {str(setor.get('nome') or '').strip()}" for i, setor in enumerate(setores, start=1)]
+        return "\n".join(linhas)
+
+    def _confirmacao_cadastro_message(
+        self,
+        org_nome: str,
+        setor_nome: str,
+        unidade: Optional[str],
+    ) -> str:
+        unidade_label = unidade if unidade else "não informada"
+        return (
+            "Pronto! Você está cadastrado como:\n"
+            f"Empresa: {org_nome}\n"
+            f"Setor: {setor_nome}\n"
+            f"Unidade: {unidade_label}\n\n"
+            "Para iniciar o questionário, responda: SIM"
+        )
+
+    async def _resolver_setor_por_input(
+        self, org_id: str, raw_text: str, setores: List[Dict[str, Any]]
+    ) -> Optional[Dict[str, Any]]:
+        entrada = (raw_text or "").strip()
+        if not entrada:
+            return None
+
+        try:
+            idx = int(entrada)
+            if 1 <= idx <= len(setores):
+                return setores[idx - 1]
+        except ValueError:
+            pass
+
+        return await self.setores_repo.find_by_name_and_org(entrada, org_id)
 
     def _invalid_answer_message(self, min_v: int, max_v: int) -> str:
         return f"Resposta inválida. Envie apenas um número entre {min_v} e {max_v}."
@@ -253,6 +300,28 @@ class BotFlow:
                 "idQuestionario": None,
                 "dataInicio": None,
                 "subPerguntaPendente": None,
+                "idOrganizacaoTemp": None,
+                "idSetorTemp": None,
+                "numeroUnidade": None,
+                "organizacaoNomeTemp": None,
+                "setorNomeTemp": None,
+            },
+        )
+
+    async def _start_validation_flow(self, phone: str) -> None:
+        await self.users_repo.update_chat_state(
+            phone,
+            {
+                "statusChat": "VALIDACAO_EMPRESA",
+                "indicePergunta": 0,
+                "idQuestionario": None,
+                "dataInicio": None,
+                "subPerguntaPendente": None,
+                "idOrganizacaoTemp": None,
+                "idSetorTemp": None,
+                "numeroUnidade": None,
+                "organizacaoNomeTemp": None,
+                "setorNomeTemp": None,
             },
         )
 
@@ -274,6 +343,7 @@ class BotFlow:
 
         if text in {"reiniciar", "recomecar", "recomeçar", "reset"}:
             await self._reset_user_chat(phone)
+            await self._start_validation_flow(phone)
             return self._intro_message()
 
         chat_state: Dict[str, Any] = (user.get("metadata") or {}).get("chat_state") or {}
@@ -282,8 +352,86 @@ class BotFlow:
         id_questionario: Optional[str] = chat_state.get("idQuestionario")
 
         if status == "INATIVO":
-            await self._save_chat_state(phone, chat_state, statusChat="AGUARDANDO_CONFIRMACAO")
+            await self._start_validation_flow(phone)
             return self._intro_message()
+
+        if status == "VALIDACAO_EMPRESA":
+            org = await self.organizacoes_repo.find_by_code(raw_text)
+            if not org:
+                return self._empresa_invalida_message()
+
+            org_id = str(org.get("_id"))
+            setores = await self.setores_repo.get_sectors_by_org(org_id)
+            if not setores:
+                return "Não encontrei setores cadastrados para essa empresa. Fale com o administrador."
+
+            setores_txt = self._formatar_setores(setores)
+            await self._save_chat_state(
+                phone,
+                chat_state,
+                statusChat="VALIDACAO_SETOR",
+                idOrganizacaoTemp=org_id,
+                idSetorTemp=None,
+                numeroUnidade=None,
+                organizacaoNomeTemp=str(org.get("nome") or "Empresa"),
+                setorNomeTemp=None,
+            )
+            return f"Empresa confirmada: {str(org.get('nome') or 'Empresa')}.\n\nEscolha seu setor:\n{setores_txt}"
+
+        if status == "VALIDACAO_SETOR":
+            org_id = chat_state.get("idOrganizacaoTemp")
+            if not org_id:
+                await self._save_chat_state(phone, chat_state, statusChat="VALIDACAO_EMPRESA")
+                return self._intro_message()
+
+            setores = await self.setores_repo.get_sectors_by_org(str(org_id))
+            if not setores:
+                await self._save_chat_state(phone, chat_state, statusChat="VALIDACAO_EMPRESA")
+                return "Não encontrei setores para essa empresa. Informe novamente o código da empresa."
+
+            setor = await self._resolver_setor_por_input(str(org_id), raw_text, setores)
+            if not setor:
+                return self._setor_invalido_message()
+
+            await self._save_chat_state(
+                phone,
+                chat_state,
+                statusChat="VALIDACAO_UNIDADE",
+                idSetorTemp=str(setor.get("_id")),
+                setorNomeTemp=str(setor.get("nome") or "Setor"),
+            )
+            return self._unidade_prompt_message()
+
+        if status == "VALIDACAO_UNIDADE":
+            org_id = chat_state.get("idOrganizacaoTemp")
+            setor_id = chat_state.get("idSetorTemp")
+            org_nome = str(chat_state.get("organizacaoNomeTemp") or "Empresa")
+            setor_nome = str(chat_state.get("setorNomeTemp") or "Setor")
+            if not org_id or not setor_id:
+                await self._save_chat_state(phone, chat_state, statusChat="VALIDACAO_EMPRESA")
+                return self._intro_message()
+
+            unidade: Optional[str] = None
+            if raw_text:
+                unidade = None if self._is_skip_unidade(raw_text) else raw_text
+
+            await self.users_repo.update_org_setor(
+                phone=phone,
+                org_id=str(org_id),
+                setor_id=str(setor_id),
+                unidade=unidade,
+            )
+            await self._save_chat_state(
+                phone,
+                chat_state,
+                statusChat="AGUARDANDO_CONFIRMACAO",
+                idOrganizacaoTemp=None,
+                idSetorTemp=None,
+                numeroUnidade=unidade,
+                organizacaoNomeTemp=None,
+                setorNomeTemp=None,
+            )
+            return self._confirmacao_cadastro_message(org_nome=org_nome, setor_nome=setor_nome, unidade=unidade)
 
         if status == "AGUARDANDO_CONFIRMACAO":
             if text == "sim":

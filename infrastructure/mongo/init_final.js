@@ -16,6 +16,11 @@ function ensureIndexes() {
   // Índice para usuários
   db.usuarios.createIndex({ "anonId": 1 }, { unique: true });
   db.usuarios.createIndex({ "telefone": 1 }, { unique: true });
+  db.usuarios.createIndex({ "idOrganizacao": 1, "idSetor": 1 });
+  
+  // Índices para organizações
+  db.organizacoes.createIndex({ "cnpj": 1 }, { unique: true });
+  db.organizacoes.createIndex({ "codigo": 1 }, { unique: true, sparse: true });
   
   // Índices para setores
   db.setores.createIndex({ "idOrganizacao": 1 });
@@ -75,7 +80,8 @@ createIfNotExists("organizacoes", {
       "properties": {
         "_id": { "bsonType": "objectId" },
         "cnpj": { "bsonType": "string" },
-        "nome": { "bsonType": "string" }
+        "nome": { "bsonType": "string" },
+        "codigo": { "bsonType": "string" }
       },
       "additionalProperties": false,
       "required": ["cnpj", "nome"]
@@ -125,6 +131,10 @@ createIfNotExists("usuarios", {
         "idSetor": {
           "bsonType": ["objectId", "null"],
           "description": "Referência opcional ao setor do usuário"
+        },
+        "numeroUnidade": {
+          "bsonType": ["string", "null"],
+          "description": "Número opcional da unidade do usuário"
         },
         "status": { 
           "bsonType": "string", 
