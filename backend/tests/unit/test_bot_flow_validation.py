@@ -137,3 +137,39 @@ async def test_pular_unidade():
         setor_id="set2",
         unidade=None,
     )
+
+
+@pytest.mark.asyncio
+async def test_inicio_fluxo_exibe_apresentacao_antes_da_empresa():
+    flow = BotFlow()
+    phone = "+5511999999999"
+    flow.users_repo.find_by_phone = AsyncMock(
+        return_value={"anonId": "anon-1", "metadata": {"chat_state": {"statusChat": "INATIVO"}}}
+    )
+    flow.users_repo.update_chat_state = AsyncMock(return_value=True)
+
+    reply = await flow.handle_incoming(phone, "oi")
+
+    assert "Olá! Eu sou a LuzIA!" in reply
+    assert "informe o código da sua empresa" in reply.lower()
+    saved_state = flow.users_repo.update_chat_state.await_args.args[1]
+    assert saved_state["statusChat"] == "VALIDACAO_EMPRESA"
+
+
+@pytest.mark.asyncio
+async def test_reiniciar_reexibe_apresentacao_inicial():
+    flow = BotFlow()
+    phone = "+5511999999999"
+    flow.users_repo.find_by_phone = AsyncMock(
+        return_value={
+            "anonId": "anon-1",
+            "metadata": {"chat_state": {"statusChat": "EM_CURSO", "indicePergunta": 3, "idQuestionario": "q1"}},
+        }
+    )
+    flow.users_repo.update_chat_state = AsyncMock(return_value=True)
+
+    reply = await flow.handle_incoming(phone, "reiniciar")
+
+    assert "Olá! Eu sou a LuzIA!" in reply
+    assert "informe o código da sua empresa" in reply.lower()
+    assert flow.users_repo.update_chat_state.await_count == 2

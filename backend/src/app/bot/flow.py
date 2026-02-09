@@ -29,7 +29,16 @@ class BotFlow:
         return (text or "").strip().lower()
 
     def _intro_message(self) -> str:
-        return "Olá! Por favor, informe o código da sua empresa:"
+        return (
+            "Olá! Eu sou a LuzIA!\n"
+            "Sua guia virtual de saúde mental nas empresas.\n\n"
+            "Reserve de 5 a 7 minutos para o questionário. Responda com sinceridade: "
+            "suas respostas são armazenadas de forma segura e analisadas somente em conjunto.\n\n"
+            "Para começar, informe o código da sua empresa:"
+        )
+
+    def _empresa_prompt_message(self) -> str:
+        return "Por favor, informe o código da sua empresa:"
 
     def _final_message(self) -> str:
         return "Obrigado! Suas respostas foram registradas com sucesso."
@@ -62,13 +71,7 @@ class BotFlow:
     ) -> str:
         unidade_label = unidade if unidade else "não informada"
         return (
-            "Olá! Eu sou a LuzIA! \n"
-            "Sua guia virtual de saúde mental nas empresas \n\n"
-            "Reserve de 5 a 7 minutos para o questionário que vou te enviar a seguir. "
-            "Responda com sinceridade e não se preocupe: você não pode ser identificado "
-            "e seus dados serão armazenados de forma segura. Ninguém terá acesso as "
-            "respostas individuais, elas serão contabilizadas em conjunto para diagnosticar "
-            "como está sua empresa.\n\n"
+            "Pronto! Você está cadastrado como:\n"
             f"Empresa: {org_nome}\n"
             f"Setor: {setor_nome}\n"
             f"Unidade: {unidade_label}\n\n"
@@ -388,7 +391,7 @@ class BotFlow:
             org_id = chat_state.get("idOrganizacaoTemp")
             if not org_id:
                 await self._save_chat_state(phone, chat_state, statusChat="VALIDACAO_EMPRESA")
-                return self._intro_message()
+                return self._empresa_prompt_message()
 
             setores = await self.setores_repo.get_sectors_by_org(str(org_id))
             if not setores:
@@ -415,7 +418,7 @@ class BotFlow:
             setor_nome = str(chat_state.get("setorNomeTemp") or "Setor")
             if not org_id or not setor_id:
                 await self._save_chat_state(phone, chat_state, statusChat="VALIDACAO_EMPRESA")
-                return self._intro_message()
+                return self._empresa_prompt_message()
 
             unidade: Optional[str] = None
             if raw_text:
@@ -474,7 +477,7 @@ class BotFlow:
         if status == "EM_CURSO":
             if not id_questionario:
                 await self._reset_user_chat(phone)
-                return self._intro_message()
+                return self._empresa_prompt_message()
 
             questions = await self.perguntas_repo.get_questions(id_questionario)
             if not questions:
@@ -624,4 +627,4 @@ class BotFlow:
             return "Você já finalizou o questionário! Se quiser responder novamente, envie: REINICIAR"
 
         await self._reset_user_chat(phone)
-        return self._intro_message()
+        return self._empresa_prompt_message()
