@@ -46,7 +46,7 @@ class PerguntasRepo(BaseRepository[Dict[str, Any]]):
             query: Dict[str, Any] = {"idQuestionario": q_id}
             if only_active:
                 query["ativo"] = True
-            cursor = db[self.collection_name].find(query).sort("idPergunta", 1)
+            cursor = db[self.collection_name].find(query).sort("ordem", 1)
             return await cursor.to_list(length=200)
         except InvalidId:
             logger.warning(f"ID de questionário inválido: {id_questionario}")

@@ -62,7 +62,13 @@ class BotFlow:
     ) -> str:
         unidade_label = unidade if unidade else "não informada"
         return (
-            "Pronto! Você está cadastrado como:\n"
+            "Olá! Eu sou a LuzIA! \n"
+            "Sua guia virtual de saúde mental nas empresas \n\n"
+            "Reserve de 5 a 7 minutos para o questionário que vou te enviar a seguir. "
+            "Responda com sinceridade e não se preocupe: você não pode ser identificado "
+            "e seus dados serão armazenados de forma segura. Ninguém terá acesso as "
+            "respostas individuais, elas serão contabilizadas em conjunto para diagnosticar "
+            "como está sua empresa.\n\n"
             f"Empresa: {org_nome}\n"
             f"Setor: {setor_nome}\n"
             f"Unidade: {unidade_label}\n\n"
