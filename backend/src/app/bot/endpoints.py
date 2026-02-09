@@ -55,6 +55,10 @@ async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends
     form = await request.form()
     from_ = str(form.get("From", "")).strip()
     body = str(form.get("Body", "")).strip()
+    list_id = str(form.get("ListId", "")).strip()
+    list_title = str(form.get("ListTitle", "")).strip()
+    button_payload_raw = str(form.get("ButtonPayload", "")).strip()
+    button_text = str(form.get("ButtonText", "")).strip()
 
     if not from_:
         raise HTTPException(status_code=400, detail="Campo 'From' ausente.")
@@ -73,9 +77,20 @@ async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends
 
     # Normaliza o numero
     phone = from_.replace("whatsapp:", "")
+    button_payload = None
+    if list_id:
+        button_payload = {"listId": list_id, "body": list_title or body}
+    elif button_payload_raw:
+        button_payload = {"buttonPayload": button_payload_raw, "body": button_text or body}
 
-    reply = await bot_flow.handle_incoming(phone, body)
+    reply = await bot_flow.handle_incoming(
+        phone=phone,
+        incoming_text=body,
+        button_payload=button_payload,
+        send_interactive=True,
+    )
 
     resp = MessagingResponse()
-    resp.message(reply)
+    if reply:
+        resp.message(reply)
     return PlainTextResponse(str(resp), media_type="application/xml")
