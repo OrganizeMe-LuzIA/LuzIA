@@ -52,6 +52,9 @@ async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends
       - Body: texto da mensagem
     Retornamos TwiML XML com a resposta do bot.
     """
+    import logging
+    logger = logging.getLogger(__name__)
+    
     form = await request.form()
     from_ = str(form.get("From", "")).strip()
     body = str(form.get("Body", "")).strip()
@@ -59,6 +62,8 @@ async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends
     list_title = str(form.get("ListTitle", "")).strip()
     button_payload_raw = str(form.get("ButtonPayload", "")).strip()
     button_text = str(form.get("ButtonText", "")).strip()
+
+    logger.info(f"[TWILIO] From={from_} Body='{body}' ListId={list_id}")
 
     if not from_:
         raise HTTPException(status_code=400, detail="Campo 'From' ausente.")
@@ -90,7 +95,10 @@ async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends
         send_interactive=True,
     )
 
+    logger.info(f"[TWILIO] Reply length={len(reply)} first_50={reply[:50] if reply else 'EMPTY'}")
+
     resp = MessagingResponse()
     if reply:
         resp.message(reply)
     return PlainTextResponse(str(resp), media_type="application/xml")
+
