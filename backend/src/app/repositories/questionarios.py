@@ -43,10 +43,13 @@ class QuestionariosRepo(BaseRepository[Dict[str, Any]]):
             return False
 
     async def get_active_questionnaire(
-        self, name: str = "CoPsoQ II"
+        self, name: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
         db = await get_db()
-        return await db[self.collection_name].find_one({"nome": name, "ativo": True})
+        query: Dict[str, Any] = {"ativo": True}
+        if name:
+            query["nome"] = name
+        return await db[self.collection_name].find_one(query)
 
     async def list_questionnaires(self, only_active: bool = True) -> List[Dict[str, Any]]:
         db = await get_db()
