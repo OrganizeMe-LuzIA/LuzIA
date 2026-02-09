@@ -97,6 +97,29 @@ class SetoresRepo(BaseRepository[Dict[str, Any]]):
             logger.warning(f"ID de setor inválido para atualização: {sector_id}")
             return False
 
+    async def find_by_name_and_org(self, nome: str, org_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Busca um setor por nome dentro de uma organização.
+
+        Args:
+            nome: Nome do setor (case-insensitive).
+            org_id: ID da organização.
+
+        Returns:
+            Documento do setor ou None.
+        """
+        try:
+            db = await get_db()
+            return await db[self.collection_name].find_one(
+                {
+                    "idOrganizacao": ObjectId(org_id),
+                    "nome": {"$regex": f"^{nome.strip()}$", "$options": "i"},
+                }
+            )
+        except InvalidId:
+            logger.warning(f"ID de organização inválido: {org_id}")
+            return None
+
     async def delete_sector(self, sector_id: str) -> bool:
         """
         Remove um setor do banco de dados.

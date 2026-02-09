@@ -1,6 +1,7 @@
 """
 Repositório para gerenciamento de organizações.
 """
+import re
 from typing import Optional, List, Dict, Any
 from app.core.database import get_db
 from app.repositories.base_repository import BaseRepository
@@ -73,6 +74,32 @@ class OrganizacoesRepo(BaseRepository[Dict[str, Any]]):
         """
         db = await get_db()
         return await db[self.collection_name].find_one({"cnpj": cnpj})
+
+    async def find_by_code(self, code: str) -> Optional[Dict[str, Any]]:
+        """
+        Busca uma organização por código curto ou CNPJ.
+
+        Args:
+            code: Código da organização (ex.: EMP001) ou CNPJ.
+
+        Returns:
+            Documento da organização ou None.
+        """
+        raw = (code or "").strip()
+        if not raw:
+            return None
+
+        codigo = raw.upper()
+        cnpj_digits = re.sub(r"\D", "", raw)
+        db = await get_db()
+
+        or_filters: List[Dict[str, Any]] = [{"codigo": codigo}]
+        if cnpj_digits:
+            or_filters.append({"cnpj": cnpj_digits})
+        if raw != cnpj_digits:
+            or_filters.append({"cnpj": raw})
+
+        return await db[self.collection_name].find_one({"$or": or_filters})
 
     async def list_organizations(self, limit: int = 100) -> List[Dict[str, Any]]:
         """
