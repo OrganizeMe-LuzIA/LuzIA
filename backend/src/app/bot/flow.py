@@ -34,11 +34,11 @@ class BotFlow:
             "Sua guia virtual de saúde mental nas empresas.\n\n"
             "Reserve de 5 a 7 minutos para o questionário. Responda com sinceridade: "
             "suas respostas são armazenadas de forma segura e analisadas somente em conjunto.\n\n"
-            "Para começar, informe o código da sua empresa:"
+            "Para começar, informe o nome da sua empresa:"
         )
 
     def _empresa_prompt_message(self) -> str:
-        return "Por favor, informe o código da sua empresa:"
+        return "Por favor, informe o nome da sua empresa:"
 
     def _final_message(self) -> str:
         return "Obrigado! Suas respostas foram registradas com sucesso."
@@ -47,7 +47,7 @@ class BotFlow:
         return "Para iniciar o questionário, responda apenas: SIM"
 
     def _empresa_invalida_message(self) -> str:
-        return "Empresa não encontrada. Verifique o código e tente novamente."
+        return "Empresa não encontrada. Verifique o nome e tente novamente."
 
     def _setor_invalido_message(self) -> str:
         return "Setor não encontrado. Digite o número da opção ou o nome do setor."
@@ -60,7 +60,12 @@ class BotFlow:
 
     @staticmethod
     def _formatar_setores(setores: List[Dict[str, Any]]) -> str:
-        linhas = [f"{i} - {str(setor.get('nome') or '').strip()}" for i, setor in enumerate(setores, start=1)]
+        linhas = [f"{i} - {str(setor.get('nome') or '').strip()}" for i, setor in enumerate(setores)]
+        return "\n".join(linhas)
+
+    @staticmethod
+    def _formatar_empresas(empresas: List[Dict[str, str]]) -> str:
+        linhas = [f"{i} - {e['nome']}" for i, e in enumerate(empresas)]
         return "\n".join(linhas)
 
     def _confirmacao_cadastro_message(
@@ -87,12 +92,32 @@ class BotFlow:
 
         try:
             idx = int(entrada)
-            if 1 <= idx <= len(setores):
-                return setores[idx - 1]
+            if 0 <= idx < len(setores):
+                return setores[idx]
         except ValueError:
             pass
 
         return await self.setores_repo.find_by_name_and_org(entrada, org_id)
+
+    @staticmethod
+    def _resolver_empresa_por_input(
+        raw_text: str, empresas: List[Dict[str, str]]
+    ) -> Optional[Dict[str, str]]:
+        entrada = (raw_text or "").strip()
+        if not entrada:
+            return None
+
+        try:
+            idx = int(entrada)
+            if 0 <= idx < len(empresas):
+                return empresas[idx]
+        except ValueError:
+            pass
+
+        for e in empresas:
+            if e["nome"].lower() == entrada.lower():
+                return e
+        return None
 
     def _invalid_answer_message(self, min_v: int, max_v: int) -> str:
         return f"Resposta inválida. Envie apenas um número entre {min_v} e {max_v}."
@@ -314,6 +339,7 @@ class BotFlow:
                 "numeroUnidade": None,
                 "organizacaoNomeTemp": None,
                 "setorNomeTemp": None,
+                "empresasCandidatas": None,
             },
         )
 
@@ -331,6 +357,7 @@ class BotFlow:
                 "numeroUnidade": None,
                 "organizacaoNomeTemp": None,
                 "setorNomeTemp": None,
+                "empresasCandidatas": None,
             },
         )
 
@@ -365,11 +392,62 @@ class BotFlow:
             return self._intro_message()
 
         if status == "VALIDACAO_EMPRESA":
-            org = await self.organizacoes_repo.find_by_code(raw_text)
-            if not org:
+            empresas = await self.organizacoes_repo.find_by_name(raw_text)
+            if not empresas:
                 return self._empresa_invalida_message()
 
-            org_id = str(org.get("_id"))
+            if len(empresas) == 1:
+                org = empresas[0]
+                org_id = str(org.get("_id"))
+                setores = await self.setores_repo.get_sectors_by_org(org_id)
+                if not setores:
+                    return "Não encontrei setores cadastrados para essa empresa. Fale com o administrador."
+
+                setores_txt = self._formatar_setores(setores)
+                await self._save_chat_state(
+                    phone,
+                    chat_state,
+                    statusChat="VALIDACAO_SETOR",
+                    idOrganizacaoTemp=org_id,
+                    idSetorTemp=None,
+                    numeroUnidade=None,
+                    organizacaoNomeTemp=str(org.get("nome") or "Empresa"),
+                    setorNomeTemp=None,
+                    empresasCandidatas=None,
+                )
+                return f"Empresa confirmada: {str(org.get('nome') or 'Empresa')}.\n\nEscolha seu setor:\n{setores_txt}"
+
+            candidatas = [
+                {"id": str(e["_id"]), "nome": str(e.get("nome") or "Empresa")}
+                for e in empresas
+            ]
+            empresas_txt = self._formatar_empresas(candidatas)
+            await self._save_chat_state(
+                phone,
+                chat_state,
+                statusChat="SELECAO_EMPRESA",
+                empresasCandidatas=candidatas,
+            )
+            return (
+                "Encontrei mais de uma empresa com esse nome.\n\n"
+                f"Digite o número da empresa desejada:\n{empresas_txt}"
+            )
+
+        if status == "SELECAO_EMPRESA":
+            candidatas = chat_state.get("empresasCandidatas") or []
+            if not candidatas:
+                await self._save_chat_state(
+                    phone, chat_state, statusChat="VALIDACAO_EMPRESA", empresasCandidatas=None
+                )
+                return self._empresa_prompt_message()
+
+            org_data = self._resolver_empresa_por_input(raw_text, candidatas)
+            if not org_data:
+                empresas_txt = self._formatar_empresas(candidatas)
+                return f"Opção inválida. Digite o número da empresa desejada:\n{empresas_txt}"
+
+            org_id = org_data["id"]
+            org_nome = org_data["nome"]
             setores = await self.setores_repo.get_sectors_by_org(org_id)
             if not setores:
                 return "Não encontrei setores cadastrados para essa empresa. Fale com o administrador."
@@ -380,12 +458,13 @@ class BotFlow:
                 chat_state,
                 statusChat="VALIDACAO_SETOR",
                 idOrganizacaoTemp=org_id,
+                organizacaoNomeTemp=org_nome,
                 idSetorTemp=None,
                 numeroUnidade=None,
-                organizacaoNomeTemp=str(org.get("nome") or "Empresa"),
                 setorNomeTemp=None,
+                empresasCandidatas=None,
             )
-            return f"Empresa confirmada: {str(org.get('nome') or 'Empresa')}.\n\nEscolha seu setor:\n{setores_txt}"
+            return f"Empresa confirmada: {org_nome}.\n\nEscolha seu setor:\n{setores_txt}"
 
         if status == "VALIDACAO_SETOR":
             org_id = chat_state.get("idOrganizacaoTemp")
@@ -396,7 +475,7 @@ class BotFlow:
             setores = await self.setores_repo.get_sectors_by_org(str(org_id))
             if not setores:
                 await self._save_chat_state(phone, chat_state, statusChat="VALIDACAO_EMPRESA")
-                return "Não encontrei setores para essa empresa. Informe novamente o código da empresa."
+                return "Não encontrei setores para essa empresa. Informe novamente o nome da empresa."
 
             setor = await self._resolver_setor_por_input(str(org_id), raw_text, setores)
             if not setor:

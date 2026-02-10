@@ -101,6 +101,30 @@ class OrganizacoesRepo(BaseRepository[Dict[str, Any]]):
 
         return await db[self.collection_name].find_one({"$or": or_filters})
 
+    async def find_by_name(self, name: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Busca organizações por nome (parcial, case-insensitive).
+
+        Tolera erros de digitação usando busca parcial (substring).
+
+        Args:
+            name: Nome (ou parte do nome) da organização.
+            limit: Número máximo de resultados (padrão: 10).
+
+        Returns:
+            Lista de documentos de organizações que correspondem à busca.
+        """
+        raw = (name or "").strip()
+        if not raw:
+            return []
+
+        escaped = re.escape(raw)
+        db = await get_db()
+        cursor = db[self.collection_name].find(
+            {"nome": {"$regex": escaped, "$options": "i"}}
+        )
+        return await cursor.to_list(length=limit)
+
     async def list_organizations(self, limit: int = 100) -> List[Dict[str, Any]]:
         """
         Lista todas as organizações cadastradas.

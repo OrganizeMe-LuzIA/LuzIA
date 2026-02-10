@@ -6,22 +6,83 @@ from app.bot.flow import BotFlow
 
 
 @pytest.mark.asyncio
-async def test_validacao_empresa_valida():
+async def test_validacao_empresa_valida_unica():
     flow = BotFlow()
     phone = "+5511999999999"
     flow.users_repo.find_by_phone = AsyncMock(
         return_value={"anonId": "anon-1", "metadata": {"chat_state": {"statusChat": "VALIDACAO_EMPRESA"}}}
     )
-    flow.organizacoes_repo.find_by_code = AsyncMock(return_value={"_id": "org1", "nome": "Empresa ABC"})
+    flow.organizacoes_repo.find_by_name = AsyncMock(
+        return_value=[{"_id": "org1", "nome": "Empresa ABC"}]
+    )
     flow.setores_repo.get_sectors_by_org = AsyncMock(
         return_value=[{"_id": "set1", "nome": "TI"}, {"_id": "set2", "nome": "RH"}]
     )
     flow.users_repo.update_chat_state = AsyncMock(return_value=True)
 
-    reply = await flow.handle_incoming(phone, "EMP001")
+    reply = await flow.handle_incoming(phone, "Empresa ABC")
 
     assert "Empresa confirmada: Empresa ABC." in reply
-    assert "1 - TI" in reply
+    assert "0 - TI" in reply
+    assert "1 - RH" in reply
+    saved_state = flow.users_repo.update_chat_state.await_args.args[1]
+    assert saved_state["statusChat"] == "VALIDACAO_SETOR"
+    assert saved_state["idOrganizacaoTemp"] == "org1"
+
+
+@pytest.mark.asyncio
+async def test_validacao_empresa_multiplas_correspondencias():
+    flow = BotFlow()
+    phone = "+5511999999999"
+    flow.users_repo.find_by_phone = AsyncMock(
+        return_value={"anonId": "anon-1", "metadata": {"chat_state": {"statusChat": "VALIDACAO_EMPRESA"}}}
+    )
+    flow.organizacoes_repo.find_by_name = AsyncMock(
+        return_value=[
+            {"_id": "org1", "nome": "Empresa ABC"},
+            {"_id": "org2", "nome": "Empresa ABCD"},
+        ]
+    )
+    flow.users_repo.update_chat_state = AsyncMock(return_value=True)
+
+    reply = await flow.handle_incoming(phone, "Empresa ABC")
+
+    assert "Encontrei mais de uma empresa" in reply
+    assert "0 - Empresa ABC" in reply
+    assert "1 - Empresa ABCD" in reply
+    saved_state = flow.users_repo.update_chat_state.await_args.args[1]
+    assert saved_state["statusChat"] == "SELECAO_EMPRESA"
+    assert len(saved_state["empresasCandidatas"]) == 2
+
+
+@pytest.mark.asyncio
+async def test_selecao_empresa_por_numero():
+    flow = BotFlow()
+    phone = "+5511999999999"
+    candidatas = [
+        {"id": "org1", "nome": "Empresa ABC"},
+        {"id": "org2", "nome": "Empresa ABCD"},
+    ]
+    flow.users_repo.find_by_phone = AsyncMock(
+        return_value={
+            "anonId": "anon-1",
+            "metadata": {
+                "chat_state": {
+                    "statusChat": "SELECAO_EMPRESA",
+                    "empresasCandidatas": candidatas,
+                }
+            },
+        }
+    )
+    flow.setores_repo.get_sectors_by_org = AsyncMock(
+        return_value=[{"_id": "set1", "nome": "TI"}, {"_id": "set2", "nome": "RH"}]
+    )
+    flow.users_repo.update_chat_state = AsyncMock(return_value=True)
+
+    reply = await flow.handle_incoming(phone, "0")
+
+    assert "Empresa confirmada: Empresa ABC." in reply
+    assert "0 - TI" in reply
     saved_state = flow.users_repo.update_chat_state.await_args.args[1]
     assert saved_state["statusChat"] == "VALIDACAO_SETOR"
     assert saved_state["idOrganizacaoTemp"] == "org1"
@@ -34,12 +95,12 @@ async def test_validacao_empresa_invalida():
     flow.users_repo.find_by_phone = AsyncMock(
         return_value={"anonId": "anon-1", "metadata": {"chat_state": {"statusChat": "VALIDACAO_EMPRESA"}}}
     )
-    flow.organizacoes_repo.find_by_code = AsyncMock(return_value=None)
+    flow.organizacoes_repo.find_by_name = AsyncMock(return_value=[])
     flow.users_repo.update_chat_state = AsyncMock(return_value=True)
 
     reply = await flow.handle_incoming(phone, "INEXISTENTE")
 
-    assert reply == "Empresa não encontrada. Verifique o código e tente novamente."
+    assert reply == "Empresa não encontrada. Verifique o nome e tente novamente."
     flow.users_repo.update_chat_state.assert_not_awaited()
 
 
@@ -65,7 +126,7 @@ async def test_validacao_setor_por_numero():
     flow.setores_repo.find_by_name_and_org = AsyncMock(return_value=None)
     flow.users_repo.update_chat_state = AsyncMock(return_value=True)
 
-    reply = await flow.handle_incoming(phone, "2")
+    reply = await flow.handle_incoming(phone, "1")
 
     assert reply == "Informe o número da sua unidade (ou 'pular' se não aplicável):"
     saved_state = flow.users_repo.update_chat_state.await_args.args[1]
@@ -151,7 +212,7 @@ async def test_inicio_fluxo_exibe_apresentacao_antes_da_empresa():
     reply = await flow.handle_incoming(phone, "oi")
 
     assert "Olá! Eu sou a LuzIA!" in reply
-    assert "informe o código da sua empresa" in reply.lower()
+    assert "informe o nome da sua empresa" in reply.lower()
     saved_state = flow.users_repo.update_chat_state.await_args.args[1]
     assert saved_state["statusChat"] == "VALIDACAO_EMPRESA"
 
@@ -171,5 +232,5 @@ async def test_reiniciar_reexibe_apresentacao_inicial():
     reply = await flow.handle_incoming(phone, "reiniciar")
 
     assert "Olá! Eu sou a LuzIA!" in reply
-    assert "informe o código da sua empresa" in reply.lower()
+    assert "informe o nome da sua empresa" in reply.lower()
     assert flow.users_repo.update_chat_state.await_count == 2
