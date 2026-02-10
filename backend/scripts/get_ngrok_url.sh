@@ -1,4 +1,6 @@
 #!/bin/bash
+
+
 # Script para obter a URL pública do ngrok e exibir o webhook do Twilio
 #
 # Uso:
