@@ -413,11 +413,6 @@ class BotFlow:
         text = self._normalize(incoming_text)
 
         if text == "#reset":
-            chat_state_pre = (user.get("metadata") or {}).get("chat_state") or {}
-            anon_id = user.get("anonId")
-            q_id = chat_state_pre.get("idQuestionario")
-            if anon_id and q_id:
-                await self.respostas_repo.delete_answers(anon_id, str(q_id))
             await self._reset_user_chat(phone)
             await self._start_validation_flow(phone)
             return self._intro_message()
