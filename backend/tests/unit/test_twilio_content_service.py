@@ -21,16 +21,9 @@ def test_formatar_pergunta_com_progresso():
 
 
 @pytest.mark.asyncio
-async def test_enviar_pergunta_interativa_fallback_texto(monkeypatch):
+async def test_enviar_pergunta_interativa_sem_client_retorna_vazio():
+    """Sem client configurado, retorna '' para que o TwiML envie a pergunta."""
     service = TwilioContentService(client=None)
-
-    async def _fake_texto(telefone: str, texto: str) -> str:
-        assert telefone == "+5511999999999"
-        assert "1/41 -" in texto
-        assert "4 - Sempre" in texto
-        return "SM123"
-
-    monkeypatch.setattr(service, "enviar_mensagem_texto", _fake_texto)
 
     sid = await service.enviar_pergunta_interativa(
         telefone="+5511999999999",
@@ -44,4 +37,4 @@ async def test_enviar_pergunta_interativa_fallback_texto(monkeypatch):
         total=41,
     )
 
-    assert sid == "SM123"
+    assert sid == ""

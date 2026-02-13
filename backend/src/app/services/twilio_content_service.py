@@ -117,41 +117,46 @@ class TwilioContentService:
         numero_atual: int,
         total: int,
     ) -> str:
-        """Envia pergunta usando Content Template; se indisponível, usa fallback em texto."""
+        """Envia pergunta usando Content Template.
+
+        Returns:
+            SID da mensagem se o template foi enviado com sucesso, "" caso contrário.
+            Quando retorna "", o chamador deve enviar a pergunta via TwiML.
+        """
+
+        templates = await self.criar_content_templates()
+        content_sid = templates.get(tipo_escala)
+        if not content_sid:
+            return ""
+
+        client = self._get_client()
+        if not client:
+            return ""
 
         texto_base = self._montar_texto_pergunta(texto_pergunta, numero_atual, total)
         opcoes_texto = self._montar_opcoes_texto(opcoes)
 
-        templates = await self.criar_content_templates()
-        content_sid = templates.get(tipo_escala)
+        params: Dict[str, Any] = {
+            "to": self._normalize_to(telefone),
+            "content_sid": content_sid,
+            "content_variables": json.dumps(
+                {
+                    "1": texto_base,
+                    "2": opcoes_texto,
+                },
+                ensure_ascii=False,
+            ),
+        }
+        if self.settings.TWILIO_MESSAGING_SERVICE_SID:
+            params["messaging_service_sid"] = self.settings.TWILIO_MESSAGING_SERVICE_SID
+        else:
+            from_ = self._from_sender()
+            if from_:
+                params["from_"] = from_
 
-        client = self._get_client()
-        if client and content_sid:
-            params: Dict[str, Any] = {
-                "to": self._normalize_to(telefone),
-                "content_sid": content_sid,
-                "content_variables": json.dumps(
-                    {
-                        "1": texto_base,
-                        "2": opcoes_texto,
-                    },
-                    ensure_ascii=False,
-                ),
-            }
-            if self.settings.TWILIO_MESSAGING_SERVICE_SID:
-                params["messaging_service_sid"] = self.settings.TWILIO_MESSAGING_SERVICE_SID
-            else:
-                from_ = self._from_sender()
-                if from_:
-                    params["from_"] = from_
-
-            try:
-                message = client.messages.create(**params)
-                return str(message.sid)
-            except Exception as exc:
-                logger.warning(f"Falha ao enviar template interativo; usando fallback texto. Erro: {exc}")
-
-        fallback = texto_base
-        if opcoes_texto:
-            fallback = f"{fallback}\n\n{opcoes_texto}"
-        return await self.enviar_mensagem_texto(telefone, fallback)
+        try:
+            message = client.messages.create(**params)
+            return str(message.sid)
+        except Exception as exc:
+            logger.warning(f"Falha ao enviar template interativo; fallback TwiML. Erro: {exc}")
+            return ""
