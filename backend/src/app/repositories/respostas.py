@@ -33,18 +33,9 @@ class RespostasRepo(BaseRepository[Dict[str, Any]]):
         valor_texto: Optional[str] = None,
     ) -> bool:
         """
-        Adiciona uma resposta ao array de respostas de uma sessão.
+        Adiciona ou atualiza uma resposta no array de respostas de uma sessão.
+        Se já existir resposta para o mesmo idPergunta, sobrescreve (evita duplicatas).
         Cria a sessão se não existir (upsert).
-
-        Args:
-            anon_id: ID anônimo do respondente.
-            id_questionario: ID do questionário.
-            id_pergunta: ID da pergunta.
-            valor: Valor da resposta numérica.
-            valor_texto: Resposta de texto livre.
-
-        Returns:
-            True se a operação foi bem-sucedida.
         """
         try:
             db = await get_db()
@@ -57,13 +48,30 @@ class RespostasRepo(BaseRepository[Dict[str, Any]]):
             if len(resposta_payload) == 1:
                 return False
 
-            result = await db[self.collection_name].update_one(
-                {"anonId": anon_id, "idQuestionario": q_id},
+            col = db[self.collection_name]
+            filter_doc = {"anonId": anon_id, "idQuestionario": q_id}
+
+            # Tenta atualizar elemento existente no array
+            result = await col.update_one(
+                {**filter_doc, "respostas.idPergunta": id_pergunta},
+                {
+                    "$set": {
+                        "respostas.$": resposta_payload,
+                        "data": datetime.utcnow(),
+                    }
+                },
+            )
+            if result.matched_count > 0:
+                return result.acknowledged
+
+            # Elemento não existe — insere no array (com upsert para criar doc)
+            result = await col.update_one(
+                filter_doc,
                 {
                     "$push": {"respostas": resposta_payload},
-                    "$set": {"data": datetime.utcnow()}
+                    "$set": {"data": datetime.utcnow()},
                 },
-                upsert=True
+                upsert=True,
             )
             return result.acknowledged
         except InvalidId:

@@ -37,6 +37,8 @@ class PerguntasRepo(BaseRepository[Dict[str, Any]]):
             logger.warning(f"Erro removendo pergunta {id}: {exc}")
             return False
 
+    MAX_QUESTIONS = 500
+
     async def get_questions(
         self, id_questionario: str, only_active: bool = True
     ) -> List[Dict[str, Any]]:
@@ -46,8 +48,15 @@ class PerguntasRepo(BaseRepository[Dict[str, Any]]):
             query: Dict[str, Any] = {"idQuestionario": q_id}
             if only_active:
                 query["ativo"] = True
+            total = await db[self.collection_name].count_documents(query)
+            if total > self.MAX_QUESTIONS:
+                logger.warning(
+                    "Questionário %s tem %d perguntas (limite: %d). "
+                    "Algumas perguntas serão ignoradas.",
+                    id_questionario, total, self.MAX_QUESTIONS,
+                )
             cursor = db[self.collection_name].find(query).sort("ordem", 1)
-            return await cursor.to_list(length=200)
+            return await cursor.to_list(length=self.MAX_QUESTIONS)
         except InvalidId:
             logger.warning(f"ID de questionário inválido: {id_questionario}")
             return []

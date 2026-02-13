@@ -244,14 +244,42 @@ class BotFlow:
         return f"{base}\n\n{self._formatar_opcoes(opcoes)}"
 
     @staticmethod
-    def _deve_subpergunta(pergunta: Dict[str, Any], valor: LikertValue) -> bool:
+    def _parse_condicao(condicao: str) -> tuple:
+        """Parses conditions like 'valor > 0', 'valor >= 3', 'valor == 1'."""
+        import re
+        m = re.match(r"^valor\s*(>=|<=|!=|==|>|<)\s*(-?\d+)$", condicao.strip())
+        if not m:
+            return (">", 0)
+        return (m.group(1), int(m.group(2)))
+
+    @staticmethod
+    def _avaliar_condicao(v: int, op: str, threshold: int) -> bool:
+        if op == ">":
+            return v > threshold
+        if op == ">=":
+            return v >= threshold
+        if op == "<":
+            return v < threshold
+        if op == "<=":
+            return v <= threshold
+        if op == "==":
+            return v == threshold
+        if op == "!=":
+            return v != threshold
+        return v > 0
+
+    @classmethod
+    def _deve_subpergunta(cls, pergunta: Dict[str, Any], valor: LikertValue) -> bool:
         sub = pergunta.get("subPergunta")
         if not sub:
             return False
 
+        condicao = str(sub.get("condicao") or "valor > 0").strip()
+        op, threshold = cls._parse_condicao(condicao)
+
         if isinstance(valor, list):
-            return any(int(v) > 0 for v in valor)
-        return int(valor) > 0
+            return any(cls._avaliar_condicao(int(v), op, threshold) for v in valor)
+        return cls._avaliar_condicao(int(valor), op, threshold)
 
     @staticmethod
     def _build_subpergunta_state(pergunta: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -378,6 +406,11 @@ class BotFlow:
         text = self._normalize(incoming_text)
 
         if text in {"reiniciar", "recomecar", "recomeçar", "reset"}:
+            chat_state_pre = (user.get("metadata") or {}).get("chat_state") or {}
+            anon_id = user.get("anonId")
+            q_id = chat_state_pre.get("idQuestionario")
+            if anon_id and q_id:
+                await self.respostas_repo.delete_answers(anon_id, str(q_id))
             await self._reset_user_chat(phone)
             await self._start_validation_flow(phone)
             return self._intro_message()

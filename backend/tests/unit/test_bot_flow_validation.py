@@ -228,9 +228,11 @@ async def test_reiniciar_reexibe_apresentacao_inicial():
         }
     )
     flow.users_repo.update_chat_state = AsyncMock(return_value=True)
+    flow.respostas_repo.delete_answers = AsyncMock(return_value=True)
 
     reply = await flow.handle_incoming(phone, "reiniciar")
 
     assert "Olá! Eu sou a LuzIA!" in reply
     assert "informe o nome da sua empresa" in reply.lower()
     assert flow.users_repo.update_chat_state.await_count == 2
+    flow.respostas_repo.delete_answers.assert_awaited_once_with("anon-1", "q1")

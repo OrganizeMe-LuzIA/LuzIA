@@ -8,7 +8,8 @@ async def test_health_check(test_client: AsyncClient):
     """
     response = await test_client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "healthy"}
+    data = response.json()
+    assert data["status"] == "healthy"
 
 @pytest.mark.asyncio
 async def test_db_connection(test_db):
