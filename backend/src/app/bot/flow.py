@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
@@ -400,12 +401,18 @@ class BotFlow:
 
         user = await self.users_repo.find_by_phone(phone)
         if not user:
-            return "Usuário não cadastrado no sistema. Fale com o administrador."
+            anon_id = f"anon-{uuid.uuid4().hex[:12]}"
+            await self.users_repo.create_user({
+                "telefone": phone,
+                "anonId": anon_id,
+                "metadata": {"chat_state": {"statusChat": "INATIVO"}},
+            })
+            user = await self.users_repo.find_by_phone(phone)
 
         raw_text = (incoming_text or "").strip()
         text = self._normalize(incoming_text)
 
-        if text in {"reiniciar", "recomecar", "recomeçar", "reset"}:
+        if text == "#reset":
             chat_state_pre = (user.get("metadata") or {}).get("chat_state") or {}
             anon_id = user.get("anonId")
             q_id = chat_state_pre.get("idQuestionario")
@@ -736,7 +743,7 @@ class BotFlow:
             )
 
         if status == "FINALIZADO":
-            return "Você já finalizou o questionário! Se quiser responder novamente, envie: REINICIAR"
+            return "Você já finalizou o questionário! Se quiser responder novamente, envie: #reset"
 
         await self._reset_user_chat(phone)
         return self._empresa_prompt_message()

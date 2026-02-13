@@ -230,7 +230,7 @@ async def test_reiniciar_reexibe_apresentacao_inicial():
     flow.users_repo.update_chat_state = AsyncMock(return_value=True)
     flow.respostas_repo.delete_answers = AsyncMock(return_value=True)
 
-    reply = await flow.handle_incoming(phone, "reiniciar")
+    reply = await flow.handle_incoming(phone, "#reset")
 
     assert "Olá! Eu sou a LuzIA!" in reply
     assert "informe o nome da sua empresa" in reply.lower()
