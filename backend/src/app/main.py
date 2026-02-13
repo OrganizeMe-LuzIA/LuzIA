@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.database import connect_to_mongo, close_mongo_connection
+from app.core.database import connect_to_mongo, close_mongo_connection, db
 from app.api.v1 import api_router
 from app.bot.endpoints import router as bot_router
 from app.core.config import settings
@@ -66,4 +66,4 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "mongo": "connected" if db.connected else "disconnected"}
