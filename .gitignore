@@ -46,3 +46,4 @@ __pycache__/
 
 # Temporary directories
 .tmp_pdfenv/
+tmp/
