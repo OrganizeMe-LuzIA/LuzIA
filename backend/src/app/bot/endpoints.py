@@ -26,21 +26,28 @@ async def dev_incoming(payload: DevIncoming):
 @router.get("/dev/user/{phone}")
 async def dev_user_info(phone: str):
     """Endpoint de desenvolvimento para consultar dados do usuário."""
+    from app.core.database import get_db
+
     user = await bot_flow.users_repo.find_by_phone(phone)
     if not user:
         return {"error": "Usuário não encontrado"}
 
     anon_id = user.get("anonId")
     chat_state = (user.get("metadata") or {}).get("chat_state") or {}
-    q_id = chat_state.get("idQuestionario")
 
-    respostas = None
-    if anon_id and q_id:
-        respostas_doc = await bot_flow.respostas_repo.get_answers(anon_id, str(q_id))
-        if respostas_doc:
-            respostas = respostas_doc.get("respostas", [])
+    # Busca TODAS as respostas desse anonId (independente do questionário)
+    all_respostas = []
+    if anon_id:
+        db = await get_db()
+        cursor = db["respostas"].find({"anonId": anon_id})
+        docs = await cursor.to_list(length=50)
+        for doc in docs:
+            all_respostas.append({
+                "idQuestionario": str(doc.get("idQuestionario", "")),
+                "total": len(doc.get("respostas", [])),
+                "respostas": doc.get("respostas", []),
+            })
 
-    user.pop("_id", None)
     return {
         "telefone": user.get("telefone"),
         "anonId": anon_id,
@@ -48,8 +55,7 @@ async def dev_user_info(phone: str):
         "idSetor": str(user.get("idSetor", "")),
         "numeroUnidade": user.get("numeroUnidade"),
         "chat_state": chat_state,
-        "total_respostas": len(respostas) if respostas else 0,
-        "respostas": respostas,
+        "respostas_por_questionario": all_respostas,
     }
 
 
