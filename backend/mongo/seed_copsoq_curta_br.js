@@ -372,7 +372,7 @@ const perguntas = [
     {
         codigoDominio: "OBS", dominio: "Observações finais", dimensao: "Relato livre",
         idPergunta: "OBS_TL_01", ordem: 41,
-        texto: "Não há mais perguntas. Nesta página você pode escrever mais sobre as suas condições de trabalho, estresse, saúde, etc.",
+        texto: "Não há mais perguntas. Nesta seção você pode escrever mais sobre as suas condições de trabalho, estresse, saúde, etc.",
         tipoEscala: "texto_livre", sinal: "risco", opcoesResposta: null
     }
 ];
