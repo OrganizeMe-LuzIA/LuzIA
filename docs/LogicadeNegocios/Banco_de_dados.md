@@ -28,7 +28,7 @@ Processo que protege a identidade da pessoa usando códigos em vez de nomes.
 
 ##  Estrutura do Banco de Dados
 
-O banco de dados do LuzIA é dividido em **coleções**, cada uma responsável por um tipo de informação.
+O banco de dados do LuzIA é dividido em **coleções**, cada uma responsável por um tipo de informação, sendo elas:
 
 
 ###  Organizações
