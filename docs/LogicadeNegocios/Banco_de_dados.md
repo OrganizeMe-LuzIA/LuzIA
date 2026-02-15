@@ -41,11 +41,7 @@ Empresas ou instituições que utilizam o sistema.
 - Nome da organização
 - CNPJ (identificador único)
 
- Termos relacionados:  
-[Collection](#collection-coleção), [Documento](#documento), [ID](#id--identificador)
-
-
-
+ 
 ###  Setores
 
  **O que é?**  
