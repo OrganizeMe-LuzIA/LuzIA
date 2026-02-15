@@ -6,18 +6,6 @@ O **LuzIA** é um sistema que organiza informações de **empresas, pessoas e qu
 
 Esta documentação foi escrita para **pessoas não técnicas**, explicando todos os conceitos de forma simples e intuitiva.
 
----
-
-## Navegação rápida
-
-1. [Conceitos Básicos](#-conceitos-básicos)
-2. [Estrutura do Banco de Dados](#-estrutura-do-banco-de-dados)
-3. [Fluxo de Funcionamento](#-fluxo-de-funcionamento)
-4. [Resumo em uma frase](#-resumo-em-uma-frase)
-5. [Glossário de Termos Técnicos](#-glossário-de-termos-técnicos)
-
----
-
 ##  Conceitos Básicos
 
 Antes de entender o sistema, é importante conhecer alguns termos:
@@ -30,13 +18,11 @@ Antes de entender o sistema, é importante conhecer alguns termos:
 
  Todos esses termos estão explicados em detalhes no [Glossário](#-glossário-de-termos-técnicos).
 
----
 
 ##  Estrutura do Banco de Dados
 
 O banco de dados do LuzIA é dividido em **coleções**, cada uma responsável por um tipo de informação.
 
----
 
 ###  Organizações
 
@@ -53,7 +39,7 @@ Empresas ou instituições que utilizam o sistema.
  Termos relacionados:  
 [Collection](#collection-coleção), [Documento](#documento), [ID](#id--identificador)
 
----
+
 
 ###  Setores
 
@@ -72,7 +58,6 @@ Todo setor pertence a uma organização.
  Termos relacionados:  
 [Relacionamento](#relacionamento), [ID](#id--identificador)
 
----
 
 ###  Usuários
 
@@ -97,7 +82,7 @@ O sistema **não usa o nome da pessoa nos resultados**, apenas um código anôni
  Termos relacionados:  
 [Anonimização](#anonimização), [Documento](#documento)
 
----
+
 
 ###  Questionários
 
@@ -116,7 +101,7 @@ Avaliar riscos, percepções ou outros aspectos definidos pela organização.
 - Total de perguntas
 - Status (ativo ou não)
 
----
+
 
 ### Perguntas
 
@@ -137,7 +122,7 @@ Coletar uma resposta específica do usuário.
  **Regra importante:**  
 Toda pergunta pertence a um questionário.
 
----
+
 
 ###  Respostas
 
@@ -152,7 +137,7 @@ Registrar o que foi respondido, quando e para qual pergunta.
 - Contém várias respostas de perguntas
 - Cada resposta tem um valor numérico
 
----
+
 
 ###  Diagnósticos
 
@@ -168,7 +153,6 @@ Transformar respostas em conclusões compreensíveis.
 - Nível de risco
 - Data da análise
 
----
 
 ###  Relatórios
 
@@ -191,7 +175,7 @@ A consolidação final das informações para leitura humana.
  **Importante:**  
 Relatórios **não coletam dados**, eles **resumem e explicam**.
 
----
+
 
 ##  Fluxo de Funcionamento
 
@@ -204,42 +188,43 @@ Relatórios **não coletam dados**, eles **resumem e explicam**.
 7. O sistema gera diagnósticos  
 8. Relatórios são produzidos  
 
----
+
 
 ##  Resumo em uma frase
 
 > O LuzIA organiza respostas de questionários para gerar diagnósticos e relatórios claros, mantendo a privacidade das pessoas e permitindo análises em vários níveis.
 
----
+
 
 ##  Glossário de Termos Técnicos
 
 ### Collection (Coleção)
 Uma coleção é como uma **gaveta** ou uma **planilha** que guarda informações do mesmo tipo.
 
----
+
 
 ### Documento
 Um documento é um **registro individual** dentro de uma coleção.  
 Exemplo: uma empresa, uma pessoa ou uma resposta.
 
----
+
+
 
 ### ID / Identificador
 Código único usado para identificar algo e ligar informações entre si.
 
----
+
 
 ### Relacionamento
 Ligação entre informações.  
 Exemplo: um usuário pertence a uma organização.
 
----
+
 
 ### Anonimização
 Processo que protege a identidade da pessoa usando códigos em vez de nomes.
 
----
+
 
  **Fim da documentação**
 
