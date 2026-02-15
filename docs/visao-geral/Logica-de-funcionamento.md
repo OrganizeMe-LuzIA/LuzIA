@@ -24,35 +24,35 @@ Nenhuma resposta ou diagnóstico utiliza identificadores pessoais (telefone, ema
 
 #### Cada organização:
 
-Possui múltiplos usuários
+Possui múltiplos usuários;
 
-Pode gerar relatórios consolidados
+Pode gerar relatórios consolidados;
 
-Serve como unidade principal para análises estratégicas
+Serve como unidade principal para análises estratégicas.
 
 ### 📋 Questionários e Estrutura Psicossocial
 
 Os instrumentos de avaliação são definidos na collection questionarios.
 
-Cada questionário:
+#### Cada questionário:
 
-Possui versão, idioma e código único
+Possui versão, idioma e código único;
 
-É composto por domínios e dimensões psicossociais
+É composto por domínios e dimensões psicossociais;
 
-Pode ser ativado ou desativado conforme a necessidade
+Pode ser ativado ou desativado conforme a necessidade;
 
 As perguntas associadas ficam na collection perguntas, organizadas por:
 
-Domínio
+ - Domínio;
 
-Dimensão
+ - Dimensão;
 
-Ordem de aplicação
+ - Ordem de aplicação;
 
-Tipo de escala (frequência, intensidade, etc.)
+ - Tipo de escala (frequência, intensidade, etc.);
 
-Indicação de risco ou proteção
+ - Indicação de risco ou proteção.
 
 ### 📌 Regra de negócio:
 A estrutura do questionário define como as respostas serão interpretadas posteriormente no diagnóstico.
@@ -63,11 +63,11 @@ As respostas dos usuários são armazenadas na collection respostas.
 
 ##### Fluxo conceitual:
 
-O usuário responde o questionário
+O usuário responde o questionário;
 
-As respostas são vinculadas apenas ao anonId
+As respostas são vinculadas apenas ao anonId;
 
-Cada usuário pode responder uma única vez por questionário
+Cada usuário pode responder uma única vez por questionário.
 
 #### 📌 Validação de negócio:
 O sistema impede múltiplas respostas do mesmo usuário para o mesmo questionário, garantindo integridade estatística.
@@ -78,24 +78,25 @@ Após a submissão das respostas, o sistema gera um diagnóstico individual, arm
 
 O diagnóstico inclui:
 
-Pontuação global
+ - Pontuação global;
 
-Classificação geral (ex.: baixo, intermediário, alto risco)
+ - Classificação geral (ex.: baixo, intermediário, alto risco);
 
-Pontuação por domínio e dimensão
+ - Pontuação por domínio e dimensão;
 
-Quantidade de itens respondidos
+ - Quantidade de itens respondidos.
 
 ### 📌 Lógica central:
+
 As pontuações consideram:
 
-Tipo de escala
+ - Tipo de escala;
 
-Itens invertidos
+ - Itens invertidos;
 
-Sinal de risco ou proteção
+ - Sinal de risco ou proteção;
 
-Quantidade válida de respostas
+ - Quantidade válida de respostas.
 
 📊 Relatórios Organizacionais
 
@@ -103,35 +104,35 @@ Os dados individuais são consolidados na collection relatorios, com foco organi
 
 Os relatórios apresentam:
 
-Indicadores globais de risco
+ - Indicadores globais de risco;
 
-Índices de proteção
+ - Índices de proteção;
 
-Número de respondentes
+ - Número de respondentes;
 
-Análises por domínio e dimensão
+ - Análises por domínio e dimensão.
 
-Recomendações gerais
+## Recomendações gerais:
 
 ### 📌 Regra de negócio crítica:
 Relatórios não expõem diagnósticos individuais, apenas métricas agregadas, preservando o anonimato dos colaboradores.
 
 #### 🔄 Evolução e Consistência de Dados
 
-O sistema permite evolução do modelo de dados sem impacto direto nos usuários.
+O sistema permite evolução do modelo de dados sem impacto direto nos usuários;
 
-Alterações de estrutura são validadas em tempo de execução
+Alterações de estrutura são validadas em tempo de execução;
 
-Versões de questionários garantem comparabilidade histórica
+Versões de questionários garantem comparabilidade histórica;
 
-Dados antigos permanecem íntegros mesmo com ajustes futuros
+Dados antigos permanecem íntegros mesmo com ajustes futuros.
 
 ### 🎯 Benefícios do Modelo de Negócio
 
-Privacidade e anonimato garantidos
+ - Privacidade e anonimato garantidos;
 
-Escalabilidade para múltiplas organizações
+ - Escalabilidade para múltiplas organizações;
 
-Clareza entre dado bruto, diagnóstico e relatório
+ - Clareza entre dado bruto, diagnóstico e relatório;
 
-Base sólida para decisões estratégicas em saúde ocupacional
+ - Base sólida para decisões estratégicas em saúde ocupacional.
