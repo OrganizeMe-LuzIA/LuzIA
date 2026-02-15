@@ -58,9 +58,6 @@ Permite analisar informações por área da empresa.
  **Regra importante:**  
 Todo setor pertence a uma organização.
 
- Termos relacionados:  
-[Relacionamento](#relacionamento), [ID](#id--identificador)
-
 
 ###  Usuários
 
@@ -81,10 +78,6 @@ Registrar quem participou, sem expor a identidade real.
 
  **Importante:**  
 O sistema **não usa o nome da pessoa nos resultados**, apenas um código anônimo.
-
- Termos relacionados:  
-[Anonimização](#anonimização), [Documento](#documento)
-
 
 
 ###  Questionários
@@ -182,21 +175,18 @@ Relatórios **não coletam dados**, eles **resumem e explicam**.
 
 ##  Fluxo de Funcionamento
 
-1. Cadastra-se uma organização  
-2. Criam-se setores  
-3. Cadastram-se usuários  
-4. Criam-se questionários  
-5. Definem-se perguntas  
-6. Usuários respondem  
-7. O sistema gera diagnósticos  
-8. Relatórios são produzidos  
+1. Cadastra-se uma organização;
+2. Criam-se setores;
+3. Cadastram-se usuários;
+4. O Bot aplica o questionário;
+5. Usuários respondem;
+6. O Bot envia as respostas para o banco de dados;
+7. O banco armazena as informações anonimamente e gera diagnósticos;
+8. Relatórios são produzidos;
 
 
 
 ##  Resumo em uma frase
 
-> O LuzIA organiza respostas de questionários para gerar diagnósticos e relatórios claros, mantendo a privacidade das pessoas e permitindo análises em vários níveis.
-
-
- **Fim da documentação**
+> O Banco de dados da LuzIA organiza respostas de questionários para gerar diagnósticos e relatórios claros, mantendo a privacidade das pessoas e permitindo análises em vários níveis.
 
