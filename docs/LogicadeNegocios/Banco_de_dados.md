@@ -1,10 +1,8 @@
-#  LuzIA – Documentação de Lógica de Negócios
+#  LuzIA – Banco de dados
 
 ## Visão Geral
 
-O **LuzIA** é um sistema que organiza informações de **empresas, pessoas e questionários**, com o objetivo de **coletar respostas, analisar resultados e gerar relatórios claros**.
-
-Esta documentação foi escrita para **pessoas não técnicas**, explicando todos os conceitos de forma simples e intuitiva.
+O banco de dados da **LuzIA** é um sistema que organiza informações de **empresas, pessoas e questionários**, com o objetivo de **coletar respostas, analisar resultados e gerar relatórios claros**.
 
 ##  Conceitos Básicos
 
