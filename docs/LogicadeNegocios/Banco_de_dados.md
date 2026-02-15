@@ -10,17 +10,21 @@ Esta documentação foi escrita para **pessoas não técnicas**, explicando todo
 
 Antes de entender o sistema, é importante conhecer alguns termos:
 
-### Collection (Coleção)
+#### Collection (Coleção);
 Uma coleção é como uma **gaveta** ou uma **planilha** que guarda informações do mesmo tipo.
-### Documento
+
+#### Documento
 Um documento é um **registro individual** dentro de uma coleção.  
 Exemplo: uma empresa, uma pessoa ou uma resposta.
-### ID / Identificador
+
+#### ID / Identificador
 Código único usado para identificar algo e ligar informações entre si.
-### Relacionamento
+
+#### Relacionamento
 Ligação entre informações.  
 Exemplo: um usuário pertence a uma organização.
-### Anonimização
+
+#### Anonimização
 Processo que protege a identidade da pessoa usando códigos em vez de nomes.
 
 
