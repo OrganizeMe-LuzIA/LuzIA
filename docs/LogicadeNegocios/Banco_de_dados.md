@@ -10,13 +10,18 @@ Esta documentação foi escrita para **pessoas não técnicas**, explicando todo
 
 Antes de entender o sistema, é importante conhecer alguns termos:
 
-- [Collection (Coleção)](#collection-coleção)
-- [Documento](#documento)
-- [ID / Identificador](#id--identificador)
-- [Relacionamento](#relacionamento)
-- [Anonimização](#anonimização)
-
- Todos esses termos estão explicados em detalhes no [Glossário](#-glossário-de-termos-técnicos).
+### Collection (Coleção)
+Uma coleção é como uma **gaveta** ou uma **planilha** que guarda informações do mesmo tipo.
+### Documento
+Um documento é um **registro individual** dentro de uma coleção.  
+Exemplo: uma empresa, uma pessoa ou uma resposta.
+### ID / Identificador
+Código único usado para identificar algo e ligar informações entre si.
+### Relacionamento
+Ligação entre informações.  
+Exemplo: um usuário pertence a uma organização.
+### Anonimização
+Processo que protege a identidade da pessoa usando códigos em vez de nomes.
 
 
 ##  Estrutura do Banco de Dados
@@ -193,37 +198,6 @@ Relatórios **não coletam dados**, eles **resumem e explicam**.
 ##  Resumo em uma frase
 
 > O LuzIA organiza respostas de questionários para gerar diagnósticos e relatórios claros, mantendo a privacidade das pessoas e permitindo análises em vários níveis.
-
-
-
-##  Glossário de Termos Técnicos
-
-### Collection (Coleção)
-Uma coleção é como uma **gaveta** ou uma **planilha** que guarda informações do mesmo tipo.
-
-
-
-### Documento
-Um documento é um **registro individual** dentro de uma coleção.  
-Exemplo: uma empresa, uma pessoa ou uma resposta.
-
-
-
-
-### ID / Identificador
-Código único usado para identificar algo e ligar informações entre si.
-
-
-
-### Relacionamento
-Ligação entre informações.  
-Exemplo: um usuário pertence a uma organização.
-
-
-
-### Anonimização
-Processo que protege a identidade da pessoa usando códigos em vez de nomes.
-
 
 
  **Fim da documentação**
