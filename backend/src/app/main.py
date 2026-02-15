@@ -31,7 +31,7 @@ Funcionalidades:
 """,
     version="2.1.0",
     contact={"name": "LuzIA Team", "email": "contato@luzia.example.com"},
-    license_info={"name": "Proprietary"},
+    license_info={"name": "MIT"},
     lifespan=lifespan
 )
 

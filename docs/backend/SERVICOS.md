@@ -376,13 +376,13 @@ print(f"Recomendações: {relatorio.recomendacoes}")
 
 ## 🔧 Outros Serviços (Futuros)
 
-### WhatsApp Service
+### WhatsApp Service (TwilioContentService)
 
 **Responsabilidades:**
-- Gerenciar sessões do Baileys
-- Enviar mensagens
-- Processar respostas de usuários
-- Gerenciar estado de conversação
+- Enviar mensagens e Content Templates via Twilio API
+- Processar respostas de usuários via webhook
+- Gerenciar estado de conversação (BotFlow)
+- Fallback para texto simples quando templates não configurados
 
 ### Notification Service
 

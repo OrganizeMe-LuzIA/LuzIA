@@ -18,7 +18,7 @@
 
 - ✅ **COPSOQ II Completo** - Implementação validada do Copenhagen Psychosocial Questionnaire (versões curta brasileira e média portuguesa)
 - 🔒 **Privacidade por Design** - Respostas 100% anônimas com conformidade LGPD
-- 💬 **WhatsApp Integration** - Interação natural via WhatsApp usando Baileys
+- 💬 **WhatsApp Integration** - Interação natural via WhatsApp usando Twilio
 - 📊 **Relatórios Inteligentes** - Diagnósticos individuais e organizacionais com insights acionáveis
 - 🎨 **Classificação por Tercis** - Análise baseada em metodologia científica (verde/amarelo/vermelho)
 - 🏢 **Multi-tenant** - Suporte a organizações, setores e usuários
@@ -97,7 +97,9 @@ make test         # Executa todos os testes
 make test-unit    # Apenas testes unitários
 make test-int     # Apenas testes de integração
 make lint         # Verifica código com ruff
-make format       # Formata código
+make clean        # Remove arquivos temporários
+make docker-up    # Inicia containers Docker
+make docker-down  # Para containers Docker
 ```
 
 ---
@@ -106,28 +108,38 @@ make format       # Formata código
 
 ```
 LuzIA/
-├── backend/                    # API Backend (FastAPI)
+├── backend/                    # API Backend (FastAPI + Python 3.10+)
 │   ├── src/app/
-│   │   ├── api/v1/            # Endpoints da API
-│   │   ├── core/              # Configuração, DB, Security
+│   │   ├── api/v1/            # Endpoints da API REST
+│   │   ├── core/              # Configuração, DB, Security, Cache
 │   │   ├── models/            # Modelos Pydantic
-│   │   ├── repositories/      # Camada de acesso a dados
+│   │   ├── repositories/      # Camada de acesso a dados (9 repos)
 │   │   ├── services/          # Lógica de negócio
 │   │   │   ├── copsoq_scoring_service.py  # ✨ COPSOQ II
 │   │   │   ├── diagnostico_service.py
-│   │   │   └── relatorio_service.py
-│   │   ├── bot/               # Integração WhatsApp
+│   │   │   ├── relatorio_service.py
+│   │   │   ├── dashboard_service.py
+│   │   │   └── twilio_content_service.py
+│   │   ├── bot/               # Integração WhatsApp (Twilio)
 │   │   └── workers/           # Tarefas Celery
-│   └── tests/                 # Testes (unit/integration)
+│   ├── tests/                 # Testes (unit/integration/services)
+│   ├── mongo/                 # Seeds e scripts MongoDB
+│   └── Dockerfile             # Imagem Docker multi-stage
 │
-├── frontend/                   # Interface web (em desenvolvimento)
-├── infrastructure/             # Docker, CI/CD
 ├── docs/                       # Documentação completa
 │   ├── guides/                # Guias técnicos
 │   ├── backend/               # Docs de arquitetura
 │   ├── integracoes/           # WhatsApp, Celery, Redis
+│   ├── infra/                 # Banco de dados
 │   └── api/                   # Referência da API
-└── Makefile                    # Automação
+│
+├── infrastructure/             # Docker Compose alternativo
+├── .github/workflows/          # CI/CD (GitHub Actions)
+├── docker-compose.yml          # Stack local (Backend + MongoDB + Redis)
+├── render.yaml                 # Deploy Render.com
+├── Makefile                    # Automação de tarefas
+├── CHANGELOG.md                # Histórico de versões
+└── CONTRIBUTING.md             # Guia de contribuição
 ```
 
 ---
@@ -139,24 +151,25 @@ LuzIA/
 - [📖 Guia de Instalação](docs/guides/GUIA-INSTALACAO.md)
 - [⚙️ Guia de Configuração](docs/guides/GUIA-CONFIGURACAO.md)
 - [🚢 Deployment](docs/DEPLOYMENT.md)
+- [☁️ Deploy no Render + MongoDB Atlas](docs/DEPLOY-RENDER.md)
 
 ### 🏗️ Arquitetura e Desenvolvimento
 
 - [🏛️ Arquitetura do Backend](docs/backend/ARQUITETURA.md)
 - [⚡ Serviços](docs/backend/SERVICOS.md)
-- [🗄️ Banco de Dados](docs/DATABASE.md)
+- [🗄️ Banco de Dados](docs/infra/DATABASE.md)
 - [🔌 API Reference](docs/api/API.md)
 
 ### 🎯 Funcionalidades Principais
 
 - [✅ **COPSOQ II - Guia Completo**](docs/guides/GUIA-COPSOQ-II.md)
-- [📊 Status da Implementação COPSOQ](docs/STATUS_IMPLEMENTACAO_COPSOQ.md)
+- [📊 Status da Implementação COPSOQ](docs/questionaries/STATUS_IMPLEMENTACAO_COPSOQ.md)
 - [🔐 Autenticação](docs/backend/AUTENTICACAO.md)
 - [🏢 Organizações e Setores](docs/backend/ORGANIZACOES.md)
 
 ### 🔗 Integrações
 
-- [💬 WhatsApp/Baileys](docs/integracoes/WHATSAPP.md)
+- [💬 WhatsApp/Twilio](docs/integracoes/WHATSAPP.md)
 - [⚙️ Celery](docs/integracoes/CELERY.md)
 - [🗃️ Redis](docs/integracoes/REDIS.md)
 
@@ -189,8 +202,8 @@ pytest tests/unit/
 # Apenas integração
 pytest tests/integration/
 
-# Teste específico
-pytest tests/unit/test_copsoq_scoring.py -v
+# Testes de serviço
+pytest tests/services/ -v
 ```
 
 ---
@@ -201,24 +214,25 @@ Principais variáveis de configuração (`backend/.env`):
 
 ```env
 # MongoDB
-MONGODB_URL=mongodb://localhost:27017
-MONGODB_DB_NAME=luzia
+MONGO_URI=mongodb://localhost:27017
+MONGO_DB_NAME=LuzIA
 
 # JWT
 SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+ACCESS_TOKEN_EXPIRE_MINUTES=120
 
-# WhatsApp (Baileys)
-WHATSAPP_SESSION_PATH=./sessions
-WHATSAPP_ENABLED=true
+# Twilio / WhatsApp
+TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+TWILIO_AUTH_TOKEN=your_auth_token_here
+TWILIO_WHATSAPP_FROM=whatsapp:+1XXXXXXXXXX
+TWILIO_WHATSAPP_NUMBER=whatsapp:+1XXXXXXXXXX
 
 # Redis (opcional)
 REDIS_URL=redis://localhost:6379
 
-# Celery (opcional)
-CELERY_BROKER_URL=redis://localhost:6379/0
-CELERY_RESULT_BACKEND=redis://localhost:6379/1
+# Ambiente
+ENVIRONMENT=development
+LOG_LEVEL=INFO
 ```
 
 Veja [Guia de Configuração](docs/guides/GUIA-CONFIGURACAO.md) para detalhes completos.
@@ -282,4 +296,4 @@ Desenvolvido com ❤️ para facilitar avaliações de saúde mental no trabalho
 
 **Status do Projeto:** 🟢 Ativo e em desenvolvimento
 
-**Última Atualização:** 2026-02-08
+**Última Atualização:** 2026-02-15

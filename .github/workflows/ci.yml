@@ -36,7 +36,7 @@ jobs:
           
       - name: Run tests
         env:
-          MONGODB_URL: mongodb://localhost:27017/luzia_test
+          MONGO_URI: mongodb://localhost:27017/luzia_test
           SECRET_KEY: test-secret-key
         run: |
           cd backend

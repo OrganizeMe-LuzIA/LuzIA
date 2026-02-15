@@ -17,6 +17,33 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [2.1.1] - 2026-02-15
+
+### Documentação
+- **Correção geral da documentação** - Alinhamento completo com o código real
+  - Corrigido: referências a "Baileys" substituídas por "Twilio" em toda a documentação
+  - Corrigido: variáveis de ambiente (`MONGODB_URL` → `MONGO_URI`, `MONGODB_DB_NAME` → `MONGO_DB_NAME`)
+  - Corrigido: links quebrados no README e índice de documentação
+  - Corrigido: estrutura de diretórios na ARQUITETURA.md (bot/, workers/, repositories/, services/, core/)
+  - Corrigido: licença no FastAPI metadata (Proprietary → MIT)
+  - Corrigido: variável de ambiente no CI/CD (`MONGODB_URL` → `MONGO_URI`)
+- **Novo: [DEPLOY-RENDER.md](docs/DEPLOY-RENDER.md)** - Guia completo de deploy no Render.com + MongoDB Atlas
+  - Configuração passo a passo do MongoDB Atlas (cluster, acesso, connection string)
+  - Configuração do Render.com (Blueprint, serviços, variáveis)
+  - Documentação do render.yaml e Dockerfile de produção
+  - Limitações dos planos free e troubleshooting
+  - Guia de backup e restauração do MongoDB Atlas
+- **Reescrita: [WHATSAPP.md](docs/integracoes/WHATSAPP.md)** - Documentação da integração Twilio
+  - Endpoints reais (webhook, dev/incoming, dev/user)
+  - Configuração de variáveis Twilio e Content Templates
+  - Fluxo conversacional completo do bot
+  - Segurança (validação de assinatura) e troubleshooting
+- **Atualização: [DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Reestruturado com seção de produção
+- **Atualização: [docs/README.md](docs/README.md)** - Índice corrigido com paths reais
+- **Atualização: [README.md](README.md)** - Estrutura, variáveis e links corrigidos
+
+---
+
 ## [2.1.0] - 2026-02-07
 
 ### ✨ Adicionado
@@ -122,7 +149,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - API Backend com FastAPI
 - Autenticação JWT
 - Sistema de organizações e setores
-- Integração WhatsApp (Baileys)
+- Integração WhatsApp (Twilio)
 - CRUD de questionários e respostas
 - Repositórios com MongoDB
 

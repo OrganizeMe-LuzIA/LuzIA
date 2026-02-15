@@ -20,7 +20,7 @@ O backend do LuzIA é construído usando **FastAPI** com arquitetura em camadas,
 | **JWT** | - | Autenticação |
 | **Celery** | 5.0+ | Tarefas assíncronas |
 | **Redis** | 7.0+ | Cache e message broker |
-| **Baileys** | - | WhatsApp integration |
+| **Twilio** | 8.0+ | WhatsApp integration |
 
 ---
 
@@ -41,7 +41,7 @@ graph TB
     Services --> Rel[Relatorio Service]
     
     API --> Bot[WhatsApp Bot]
-    Bot --> Baileys[Baileys Client]
+    Bot --> Twilio[Twilio API]
     
     Services --> Workers[Celery Workers]
     Workers --> Redis[(Redis)]
@@ -63,13 +63,13 @@ Responsável por:
 - Tratamento de erros HTTP
 
 **Endpoints principais:**
-- `/auth` - Autenticação
-- `/usuarios` - Gestão de usuários
+- `/auth` - Autenticação (login, registro, tokens JWT)
 - `/organizacoes` - Gestão de organizações
 - `/questionarios` - CRUD de questionários
 - `/respostas` - Submissão de respostas
 - `/diagnosticos` - Consulta de diagnósticos
 - `/relatorios` - Geração de relatórios
+- `/dashboard` - Dashboard analítico com métricas
 
 #### 2. **Service Layer** (`src/app/services/`)
 
@@ -83,6 +83,8 @@ Responsável por:
 - `COPSOQScoringService` - Cálculo de scores COPSOQ II
 - `DiagnosticoService` - Processamento de diagnósticos
 - `RelatorioService` - Geração de relatórios organizacionais
+- `DashboardService` - Métricas e KPIs com cache Redis
+- `TwilioContentService` - Templates de conteúdo WhatsApp
 
 #### 3. **Repository Layer** (`src/app/repositories/`)
 
@@ -93,12 +95,15 @@ Responsável por:
 - Conversão entre modelos DB e domínio
 
 **Repositórios:**
+- `BaseRepository` - CRUD genérico
 - `UsuariosRepo`
 - `OrganizacoesRepo`
 - `QuestionariosRepo`
+- `PerguntasRepo`
 - `RespostasRepo`
 - `DiagnosticosRepo`
 - `RelatoriosRepo`
+- `SetoresRepo`
 
 #### 4. **Models Layer** (`src/app/models/`)
 
@@ -122,56 +127,61 @@ Responsável por:
 ```
 backend/src/app/
 ├── __init__.py
-├── main.py                    # Ponto de entrada da aplicação
+├── main.py                        # Ponto de entrada da aplicação
 │
-├── api/                       # Camada de API
-│   ├── __init__.py
-│   ├── deps.py               # Dependências (auth, db)
-│   └── v1/                   # Endpoints versionados
+├── api/                           # Camada de API
+│   └── v1/                       # Endpoints versionados
 │       ├── __init__.py
-│       ├── auth.py           # Login, register, tokens
-│       ├── usuarios.py       # CRUD usuários
-│       ├── organizacoes.py   # CRUD organizações
-│       ├── questionarios.py  # CRUD questionários
-│       ├── respostas.py      # Submissão de respostas
-│       ├── diagnosticos.py   # Consulta diagnósticos
-│       └── relatorios.py     # Geração de relatórios
+│       ├── auth.py               # Login, register, tokens
+│       ├── organizacoes.py       # CRUD organizações
+│       ├── questionarios.py      # CRUD questionários
+│       ├── respostas.py          # Submissão de respostas
+│       ├── diagnosticos.py       # Consulta diagnósticos
+│       ├── relatorios.py         # Geração de relatórios
+│       └── dashboard.py          # Dashboard analítico
 │
-├── core/                      # Configurações centrais
+├── core/                          # Configurações centrais
 │   ├── __init__.py
-│   ├── config.py             # Settings (Pydantic BaseSettings)
-│   ├── database.py           # Conexão MongoDB
-│   └── security.py           # JWT, hashing, auth
+│   ├── config.py                 # Settings (Pydantic BaseSettings)
+│   ├── database.py               # Conexão MongoDB (Motor async)
+│   ├── security.py               # JWT, hashing, auth
+│   ├── cache.py                  # Cache Redis (TTL configurável)
+│   └── validators.py            # Validadores de domínio (CNPJ, telefone)
 │
-├── models/                    # Schemas Pydantic
+├── models/                        # Schemas Pydantic
 │   ├── __init__.py
-│   ├── base.py               # Modelos principais
-│   └── auth.py               # Modelos de autenticação
+│   ├── base.py                   # Modelos principais
+│   └── dashboard.py              # Modelos de dashboard
 │
-├── repositories/              # Acesso a dados
+├── repositories/                  # Acesso a dados
 │   ├── __init__.py
-│   ├── base.py               # Repositório base
+│   ├── base_repository.py        # Repositório base (CRUD genérico)
 │   ├── usuarios.py
 │   ├── organizacoes.py
 │   ├── questionarios.py
+│   ├── perguntas.py
 │   ├── respostas.py
 │   ├── diagnosticos.py
-│   └── relatorios.py
+│   ├── relatorios.py
+│   └── setores.py
 │
-├── services/                  # Lógica de negócio
-│   ├── __init__.py
-│   ├── copsoq_scoring_service.py  # ⭐ COPSOQ II
-│   ├── diagnostico_service.py     # Processamento
-│   └── relatorio_service.py       # Agregação
+├── services/                      # Lógica de negócio
+│   ├── copsoq_scoring_service.py      # ⭐ COPSOQ II scoring
+│   ├── diagnostico_service.py         # Processamento de diagnósticos
+│   ├── relatorio_service.py           # Agregação organizacional
+│   ├── dashboard_service.py           # Métricas e KPIs
+│   └── twilio_content_service.py      # Templates WhatsApp
 │
-├── bot/                       # Integração WhatsApp
-│   ├── __init__.py
-│   ├── baileys_client.py     # Cliente Baileys
-│   └── handlers.py           # Handlers de mensagens
+├── bot/                           # Integração WhatsApp (Twilio)
+│   ├── endpoints.py              # Webhook Twilio
+│   ├── flow.py                   # Fluxo conversacional do bot
+│   └── parsers.py                # Parsing de mensagens
 │
-└── workers/                   # Tarefas Celery
+└── workers/                       # Tarefas Celery
     ├── __init__.py
-    └── tasks.py              # Tarefas assíncronas
+    ├── celery_app.py             # Configuração Celery
+    ├── diagnostico_tasks.py      # Tasks de diagnóstico
+    └── relatorio_tasks.py        # Tasks de relatório
 ```
 
 ---
@@ -284,7 +294,7 @@ class DiagnosticoService:
 ```python
 # Dependência de database
 async def get_db():
-    db = client[settings.MONGODB_DB_NAME]
+    db = client[settings.MONGO_DB_NAME]
     try:
         yield db
     finally:
@@ -314,11 +324,13 @@ async def read_users_me(
 
 ```python
 # Índices principais criados
-await db.usuarios.create_index("email", unique=True)
+await db.usuarios.create_index("telefone", unique=True)
+await db.usuarios.create_index("anonId", unique=True)
 await db.questionarios.create_index("codigo", unique=True)
-await db.respostas.create_index([("anonId", 1), ("idQuestionario", 1)])
+await db.respostas.create_index([("anonId", 1), ("idQuestionario", 1)], unique=True)
 await db.diagnosticos.create_index("anonId")
-await db.organizacoes.create_index("nome")
+await db.organizacoes.create_index("cnpj", unique=True)
+await db.perguntas.create_index("idPergunta", unique=True)
 ```
 
 ### Caching com Redis
@@ -345,14 +357,20 @@ Operações pesadas são delegadas ao Celery:
 
 ```
 tests/
-├── unit/                      # Testes unitários
-│   ├── test_copsoq_scoring.py
-│   └── test_services.py
+├── services/                  # Testes de serviços
+│   ├── test_copsoq_scoring_service.py
+│   ├── test_diagnostico_service.py
+│   └── test_relatorio_service.py
 │
 ├── integration/               # Testes de integração
-│   ├── test_auth_integration.py
-│   ├── test_respostas_integration.py
-│   └── test_diagnosticos_integration.py
+│   ├── test_copsoq_v3_migration.py
+│   ├── test_diagnosticos_integration.py
+│   ├── test_organizacoes_integration.py
+│   ├── test_questionarios_integration.py
+│   ├── test_repositories_integration.py
+│   └── test_respostas_integration.py
+│
+├── unit/                      # Testes unitários
 │
 └── conftest.py               # Fixtures compartilhadas
 ```
@@ -397,10 +415,10 @@ logger = logging.getLogger(__name__)
 - [🗄️ Modelos de Dados](MODELOS.md)
 - [🔐 Autenticação](AUTENTICACAO.md)
 - [🏢 Organizações](ORGANIZACOES.md)
-- [🗄️ Banco de Dados](../DATABASE.md)
+- [🗄️ Banco de Dados](../infra/DATABASE.md)
 - [🔌 API Reference](../api/API.md)
 - [✅ COPSOQ II](../guides/GUIA-COPSOQ-II.md)
 
 ---
 
-**Última Atualização:** 2026-02-07
+**Última Atualização:** 2026-02-15
