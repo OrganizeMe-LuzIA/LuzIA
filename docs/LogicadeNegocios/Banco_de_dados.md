@@ -1,6 +1,6 @@
-# 📘 LuzIA – Documentação de Lógica de Negócios
+#  LuzIA – Documentação de Lógica de Negócios
 
-## 📌 Visão Geral
+## Visão Geral
 
 O **LuzIA** é um sistema que organiza informações de **empresas, pessoas e questionários**, com o objetivo de **coletar respostas, analisar resultados e gerar relatórios claros**.
 
@@ -8,7 +8,7 @@ Esta documentação foi escrita para **pessoas não técnicas**, explicando todo
 
 ---
 
-## 🧭 Navegação rápida
+## Navegação rápida
 
 1. [Conceitos Básicos](#-conceitos-básicos)
 2. [Estrutura do Banco de Dados](#-estrutura-do-banco-de-dados)
@@ -18,7 +18,7 @@ Esta documentação foi escrita para **pessoas não técnicas**, explicando todo
 
 ---
 
-## 🧠 Conceitos Básicos
+##  Conceitos Básicos
 
 Antes de entender o sistema, é importante conhecer alguns termos:
 
@@ -28,61 +28,61 @@ Antes de entender o sistema, é importante conhecer alguns termos:
 - [Relacionamento](#relacionamento)
 - [Anonimização](#anonimização)
 
-👉 Todos esses termos estão explicados em detalhes no [Glossário](#-glossário-de-termos-técnicos).
+ Todos esses termos estão explicados em detalhes no [Glossário](#-glossário-de-termos-técnicos).
 
 ---
 
-## 🗂 Estrutura do Banco de Dados
+##  Estrutura do Banco de Dados
 
 O banco de dados do LuzIA é dividido em **coleções**, cada uma responsável por um tipo de informação.
 
 ---
 
-### 🏢 Organizações
+###  Organizações
 
-📌 **O que é?**  
+ **O que é?**  
 Empresas ou instituições que utilizam o sistema.
 
-📌 **Para que serve?**  
+ **Para que serve?**  
 É a base de todo o sistema. Todas as outras informações se relacionam a uma organização.
 
-📌 **Principais dados:**
+ **Principais dados:**
 - Nome da organização
 - CNPJ (identificador único)
 
-🔗 Termos relacionados:  
+ Termos relacionados:  
 [Collection](#collection-coleção), [Documento](#documento), [ID](#id--identificador)
 
 ---
 
-### 🧩 Setores
+###  Setores
 
-📌 **O que é?**  
+ **O que é?**  
 Departamentos dentro de uma organização.
 
-📌 **Exemplos:**  
+ **Exemplos:**  
 RH, Financeiro, Operações.
 
-📌 **Para que serve?**  
+ **Para que serve?**  
 Permite analisar informações por área da empresa.
 
-📌 **Regra importante:**  
+ **Regra importante:**  
 Todo setor pertence a uma organização.
 
-🔗 Termos relacionados:  
+ Termos relacionados:  
 [Relacionamento](#relacionamento), [ID](#id--identificador)
 
 ---
 
-### 👤 Usuários
+###  Usuários
 
-📌 **O que é?**  
+ **O que é?**  
 Pessoas que respondem os questionários.
 
-📌 **Para que serve?**  
+ **Para que serve?**  
 Registrar quem participou, sem expor a identidade real.
 
-📌 **Principais dados:**
+ **Principais dados:**
 - Telefone
 - Organização
 - Setor (opcional)
@@ -91,23 +91,23 @@ Registrar quem participou, sem expor a identidade real.
 - Data de cadastro
 - Indicador se já respondeu
 
-📌 **Importante:**  
+ **Importante:**  
 O sistema **não usa o nome da pessoa nos resultados**, apenas um código anônimo.
 
-🔗 Termos relacionados:  
+ Termos relacionados:  
 [Anonimização](#anonimização), [Documento](#documento)
 
 ---
 
-### 📝 Questionários
+###  Questionários
 
-📌 **O que é?**  
+ **O que é?**  
 Conjunto de perguntas aplicadas aos usuários.
 
-📌 **Para que serve?**  
+ **Para que serve?**  
 Avaliar riscos, percepções ou outros aspectos definidos pela organização.
 
-📌 **Principais dados:**
+ **Principais dados:**
 - Nome
 - Versão
 - Descrição
@@ -118,15 +118,15 @@ Avaliar riscos, percepções ou outros aspectos definidos pela organização.
 
 ---
 
-### ❓ Perguntas
+### Perguntas
 
-📌 **O que é?**  
+ **O que é?**  
 Cada pergunta individual dentro de um questionário.
 
-📌 **Para que serve?**  
+ **Para que serve?**  
 Coletar uma resposta específica do usuário.
 
-📌 **Principais dados:**
+ **Principais dados:**
 - Texto da pergunta
 - Tipo
 - Domínio e dimensão
@@ -134,35 +134,35 @@ Coletar uma resposta específica do usuário.
 - Escala de resposta
 - Item invertido (quando a lógica da resposta é inversa)
 
-📌 **Regra importante:**  
+ **Regra importante:**  
 Toda pergunta pertence a um questionário.
 
 ---
 
-### ✍️ Respostas
+###  Respostas
 
-📌 **O que é?**  
+ **O que é?**  
 As respostas dadas por um usuário a um questionário.
 
-📌 **Para que serve?**  
+ **Para que serve?**  
 Registrar o que foi respondido, quando e para qual pergunta.
 
-📌 **Como funciona?**
+ **Como funciona?**
 - Cada resposta está ligada a um usuário (anonId)
 - Contém várias respostas de perguntas
 - Cada resposta tem um valor numérico
 
 ---
 
-### 🧠 Diagnósticos
+###  Diagnósticos
 
-📌 **O que é?**  
+ **O que é?**  
 O resultado da análise das respostas.
 
-📌 **Para que serve?**  
+ **Para que serve?**  
 Transformar respostas em conclusões compreensíveis.
 
-📌 **Pode conter:**
+ **Pode conter:**
 - Resultado global
 - Avaliação por dimensões
 - Nível de risco
@@ -170,17 +170,17 @@ Transformar respostas em conclusões compreensíveis.
 
 ---
 
-### 📊 Relatórios
+###  Relatórios
 
-📌 **O que é?**  
+ **O que é?**  
 A consolidação final das informações para leitura humana.
 
-📌 **Tipos de relatório:**
+ **Tipos de relatório:**
 - Organizacional
 - Setorial
 - Individual (anônimo)
 
-📌 **Pode conter:**
+ **Pode conter:**
 - Métricas gerais
 - Médias de risco
 - Índices de proteção
@@ -188,12 +188,12 @@ A consolidação final das informações para leitura humana.
 - Recomendações
 - Observações finais
 
-📌 **Importante:**  
+ **Importante:**  
 Relatórios **não coletam dados**, eles **resumem e explicam**.
 
 ---
 
-## 🔄 Fluxo de Funcionamento
+##  Fluxo de Funcionamento
 
 1. Cadastra-se uma organização  
 2. Criam-se setores  
@@ -206,13 +206,13 @@ Relatórios **não coletam dados**, eles **resumem e explicam**.
 
 ---
 
-## 🧾 Resumo em uma frase
+##  Resumo em uma frase
 
 > O LuzIA organiza respostas de questionários para gerar diagnósticos e relatórios claros, mantendo a privacidade das pessoas e permitindo análises em vários níveis.
 
 ---
 
-## 📚 Glossário de Termos Técnicos
+##  Glossário de Termos Técnicos
 
 ### Collection (Coleção)
 Uma coleção é como uma **gaveta** ou uma **planilha** que guarda informações do mesmo tipo.
@@ -241,5 +241,5 @@ Processo que protege a identidade da pessoa usando códigos em vez de nomes.
 
 ---
 
-📌 **Fim da documentação**
+ **Fim da documentação**
 
