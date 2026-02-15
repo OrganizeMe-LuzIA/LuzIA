@@ -19,7 +19,12 @@ class DevIncoming(BaseModel):
 @router.post("/dev/incoming")
 async def dev_incoming(payload: DevIncoming):
     """Endpoint de desenvolvimento para testar o bot via JSON (sem Twilio)."""
-    reply = await bot_flow.handle_incoming(payload.phone, payload.text)
+    try:
+        reply = await bot_flow.handle_incoming(payload.phone, payload.text)
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).exception(f"[DEV] Erro ao processar mensagem: {exc}")
+        reply = "Ocorreu um erro interno. Tente novamente em alguns instantes."
     return {"reply": reply}
 
 
@@ -124,12 +129,16 @@ async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends
     elif button_payload_raw:
         button_payload = {"buttonPayload": button_payload_raw, "body": button_text or body}
 
-    reply = await bot_flow.handle_incoming(
-        phone=phone,
-        incoming_text=body,
-        button_payload=button_payload,
-        send_interactive=True,
-    )
+    try:
+        reply = await bot_flow.handle_incoming(
+            phone=phone,
+            incoming_text=body,
+            button_payload=button_payload,
+            send_interactive=True,
+        )
+    except Exception as exc:
+        logger.exception(f"[TWILIO] Erro ao processar mensagem de {phone}: {exc}")
+        reply = "Ocorreu um erro interno. Por favor, tente novamente em alguns instantes."
 
     logger.info(f"[TWILIO] Reply length={len(reply)} first_50={reply[:50] if reply else 'EMPTY'}")
 

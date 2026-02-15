@@ -116,6 +116,7 @@ class TwilioContentService:
         opcoes: List[Dict[str, Any]],
         numero_atual: int,
         total: int,
+        orientacao: str = "",
     ) -> str:
         """Envia pergunta usando Content Template.
 
@@ -123,6 +124,10 @@ class TwilioContentService:
             SID da mensagem se o template foi enviado com sucesso, "" caso contrário.
             Quando retorna "", o chamador deve enviar a pergunta via TwiML.
         """
+
+        # Se há orientação, envia como mensagem de texto separada antes da pergunta
+        if orientacao:
+            await self.enviar_mensagem_texto(telefone, orientacao)
 
         templates = await self.criar_content_templates()
         content_sid = templates.get(tipo_escala)

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 
+from app.core.config import get_settings
 from app.repositories.organizacoes import OrganizacoesRepo
 from app.repositories.questionarios import QuestionariosRepo, PerguntasRepo
 from app.repositories.respostas import RespostasRepo
@@ -25,6 +27,33 @@ class BotFlow:
         self.perguntas_repo = PerguntasRepo()
         self.respostas_repo = RespostasRepo()
         self.twilio_service = TwilioContentService()
+
+    ORIENTACOES = {
+        1: (
+            "Por favor, escolha a resposta que mais descreve "
+            "seu ambiente psicossocial de trabalho:"
+        ),
+        26: (
+            "As próximas duas perguntas são sobre a forma como "
+            "seu trabalho afeta sua vida particular e familiar."
+        ),
+        28: (
+            "As próximas 4 perguntas não são sobre seu próprio "
+            "trabalho, mas sobre a empresa em que você trabalha."
+        ),
+        32: (
+            "As próximas 5 perguntas são sobre sua própria saúde e bem-estar. "
+            "Por favor, tente não distinguir entre sintomas que são causados pelo "
+            "trabalho e sintomas que se devem a outras causas. Descreva como você "
+            "está no geral. As perguntas são sobre sua saúde e bem-estar nas "
+            "últimas 4 semanas:"
+        ),
+        40: (
+            "Bullying significa que uma pessoa é repetidamente exposta a "
+            "tratamento desagradável ou degradante, do qual a vítima tem "
+            "dificuldade para se defender."
+        ),
+    }
 
     GREETINGS = {
         "oi", "olá", "ola", "oie", "oii", "oiii",
@@ -56,6 +85,27 @@ class BotFlow:
 
     def _final_message(self) -> str:
         return "Obrigado! Suas respostas foram registradas com sucesso."
+
+    def _timeout_message(self) -> str:
+        timeout_min = get_settings().QUESTIONNAIRE_TIMEOUT_MINUTES
+        horas = timeout_min // 60
+        return (
+            f"Sua sessão expirou após {horas}h.\n"
+            "Para garantir a qualidade das respostas, é necessário recomeçar.\n\n"
+            "Envie qualquer mensagem para iniciar novamente."
+        )
+
+    def _is_session_expired(self, chat_state: Dict[str, Any]) -> bool:
+        data_inicio = chat_state.get("dataInicio")
+        if not data_inicio:
+            return False
+        if isinstance(data_inicio, str):
+            try:
+                data_inicio = datetime.fromisoformat(data_inicio)
+            except (ValueError, TypeError):
+                return False
+        timeout = timedelta(minutes=get_settings().QUESTIONNAIRE_TIMEOUT_MINUTES)
+        return datetime.utcnow() - data_inicio > timeout
 
     def _invalid_confirm_message(self) -> str:
         return "Para iniciar o questionário, responda apenas: SIM"
@@ -223,6 +273,10 @@ class BotFlow:
             linhas.append(f"{o['valor']} - {o['texto']}")
         return "\n".join(linhas)
 
+    def _get_orientacao(self, pergunta: Dict[str, Any]) -> str:
+        ordem = int(pergunta.get("ordem") or 0)
+        return self.ORIENTACOES.get(ordem, "")
+
     async def _enviar_pergunta_formatada(
         self,
         phone: str,
@@ -234,9 +288,11 @@ class BotFlow:
         texto = str(pergunta.get("texto") or "(Pergunta sem texto)")
         tipo_escala = str(pergunta.get("tipoEscala") or "")
         numero_atual = indice + 1
+        orientacao = self._get_orientacao(pergunta)
 
         if tipo_escala == "texto_livre":
-            return f"{numero_atual}/{total} - {texto}"
+            corpo = f"{numero_atual}/{total} - {texto}"
+            return f"{orientacao}\n\n{corpo}" if orientacao else corpo
 
         opcoes = self._coletar_opcoes(pergunta)
 
@@ -248,11 +304,14 @@ class BotFlow:
                 opcoes=opcoes,
                 numero_atual=numero_atual,
                 total=total,
+                orientacao=orientacao,
             )
             if sid:
                 return ""
 
         base = f"{numero_atual}/{total} - {texto}"
+        if orientacao:
+            base = f"{orientacao}\n\n{base}"
         if not opcoes:
             return base
         return f"{base}\n\n{self._formatar_opcoes(opcoes)}"
@@ -605,6 +664,10 @@ class BotFlow:
             return self._invalid_confirm_message()
 
         if status == "EM_CURSO":
+            if self._is_session_expired(chat_state):
+                await self._reset_user_chat(phone)
+                return self._timeout_message()
+
             if not id_questionario:
                 await self._reset_user_chat(phone)
                 return self._empresa_prompt_message()

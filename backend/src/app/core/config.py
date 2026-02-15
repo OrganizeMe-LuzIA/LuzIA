@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     TWILIO_TEMPLATE_SAUDE_GERAL: str = os.getenv("TWILIO_TEMPLATE_SAUDE_GERAL", "")
     TWILIO_TEMPLATE_COMPORTAMENTO_OFENSIVO: str = os.getenv("TWILIO_TEMPLATE_COMPORTAMENTO_OFENSIVO", "")
 
+    # Timeout do questionário (minutos) — padrão 24h
+    QUESTIONNAIRE_TIMEOUT_MINUTES: int = int(os.getenv("QUESTIONNAIRE_TIMEOUT_MINUTES", "1440"))
+
     # Configurações Celery
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
     CACHE_TTL: int = int(os.getenv("CACHE_TTL", "300"))
