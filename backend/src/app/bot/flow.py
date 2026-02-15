@@ -26,6 +26,19 @@ class BotFlow:
         self.respostas_repo = RespostasRepo()
         self.twilio_service = TwilioContentService()
 
+    GREETINGS = {
+        "oi", "olá", "ola", "oie", "oii", "oiii",
+        "hello", "hi", "hey",
+        "tudo bem", "tudo bom", "bom dia", "boa tarde", "boa noite",
+        "e aí", "e ai", "eai", "eaí",
+        "salve", "fala", "opa",
+        "iniciar", "começar", "comecar", "start",
+    }
+
+    def _is_greeting(self, text: str) -> bool:
+        normalized = self._normalize(text)
+        return normalized in self.GREETINGS
+
     def _normalize(self, text: str) -> str:
         return (text or "").strip().lower()
 
@@ -422,7 +435,10 @@ class BotFlow:
         indice: int = int(chat_state.get("indicePergunta") or 0)
         id_questionario: Optional[str] = chat_state.get("idQuestionario")
 
-        if status == "INATIVO":
+        if status == "INATIVO" or (
+            self._is_greeting(raw_text) and status not in ("EM_CURSO", "AGUARDANDO_CONFIRMACAO")
+        ):
+            await self._reset_user_chat(phone)
             await self._start_validation_flow(phone)
             return self._intro_message()
 
