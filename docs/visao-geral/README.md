@@ -16,6 +16,6 @@ Grande parte das avaliações ainda é realizada por meio de métodos tradiciona
 
 Além disso, esses métodos geralmente dependem de processos manuais ou semi manuais, tanto na aplicação dos questionários quanto na análise das respostas. Isso aumenta o tempo necessário para obter diagnósticos, eleva a chance de erros e dificulta o acompanhamento sistemático da evolução dos indicadores ao longo do tempo.
 
-### Conteúdo
+### Conteúdo:
 
 ➡️ Próximo: [Objetivo do Projeto](./objetivo.md)  
