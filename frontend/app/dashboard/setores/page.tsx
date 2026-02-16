@@ -30,6 +30,11 @@ type RiscoMedio = "favoravel" | "intermediario" | "risco";
 
 type SetorRow = SetorDashboard & { risco_medio: RiscoMedio };
 
+function toFiniteNumber(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function getRiscoMedio(taxaResposta: number): RiscoMedio {
   if (taxaResposta >= 80) {
     return "favoravel";
@@ -67,7 +72,7 @@ export default function SetoresPage() {
     const setores = await dashboardApi.listSetores(token, filters.orgId || undefined);
     return setores.map((setor) => ({
       ...setor,
-      risco_medio: getRiscoMedio(setor.taxa_resposta),
+      risco_medio: getRiscoMedio(toFiniteNumber(setor.taxa_resposta)),
     }));
   }, [token, filters.orgId]);
 
@@ -78,8 +83,8 @@ export default function SetoresPage() {
     const setoresEmRisco = setores.filter((setor) => setor.risco_medio === "risco").length;
     return {
       totalSetores: setores.length,
-      mediaUsuarios: average(setores.map((setor) => setor.total_usuarios)),
-      taxaMedia: average(setores.map((setor) => setor.taxa_resposta)),
+      mediaUsuarios: average(setores.map((setor) => toFiniteNumber(setor.total_usuarios))),
+      taxaMedia: average(setores.map((setor) => toFiniteNumber(setor.taxa_resposta))),
       setoresEmRisco,
     };
   }, [setores]);
@@ -87,14 +92,16 @@ export default function SetoresPage() {
   const chartData = useMemo(
     () =>
       [...setores]
-        .sort((a, b) => b.taxa_resposta - a.taxa_resposta)
+        .sort((a, b) => toFiniteNumber(b.taxa_resposta) - toFiniteNumber(a.taxa_resposta))
         .slice(0, 8)
         .map((setor) => ({
           nome: setor.nome.length > 14 ? `${setor.nome.slice(0, 14)}...` : setor.nome,
-          taxa_resposta: Number(setor.taxa_resposta.toFixed(2)),
+          taxa_resposta: Number(toFiniteNumber(setor.taxa_resposta).toFixed(2)),
         })),
     [setores],
   );
+
+  const hasChartData = chartData.some((item) => item.taxa_resposta > 0);
 
   const openEdit = useCallback(
     async (setorId: string) => {
@@ -349,15 +356,21 @@ export default function SetoresPage() {
 
       <Card>
         <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Comparativo: Taxa de Resposta por Setor</h3>
-        <ResponsiveContainer width="100%" height={320}>
-          <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" domain={[0, 100]} />
-            <YAxis type="category" dataKey="nome" width={140} />
-            <Tooltip />
-            <Bar dataKey="taxa_resposta" fill="#14b8a6" radius={[0, 4, 4, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        {hasChartData ? (
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" domain={[0, 100]} />
+              <YAxis type="category" dataKey="nome" width={140} />
+              <Tooltip />
+              <Bar dataKey="taxa_resposta" fill="#14b8a6" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex h-[320px] items-center justify-center text-sm text-slate-500">
+            Nenhum setor com taxa de resposta registrada para exibir.
+          </div>
+        )}
       </Card>
 
       <Card padding="none">

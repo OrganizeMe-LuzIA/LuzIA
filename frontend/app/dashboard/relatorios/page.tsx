@@ -38,6 +38,11 @@ interface ReportFormState {
   tipo: "organizacional" | "setorial";
 }
 
+function toFiniteNumber(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function getHeatColor(value: number): string {
   if (value >= 70) {
     return "#ef4444";
@@ -167,10 +172,13 @@ export default function RelatoriosPage() {
       return [];
     }
 
-    return relatorio.dominios.map((dominio) => ({
-      dominio: dominio.nome.length > 18 ? `${dominio.nome.slice(0, 18)}...` : dominio.nome,
-      score: clamp(Math.round(dominio.media_dominio * 20), 0, 100),
-    }));
+    return relatorio.dominios.map((dominio) => {
+      const nome = dominio.nome || "Sem domínio";
+      return {
+        dominio: nome.length > 18 ? `${nome.slice(0, 18)}...` : nome,
+        score: clamp(Math.round(toFiniteNumber(dominio.media_dominio) * 20), 0, 100),
+      };
+    });
   }, [relatorio]);
 
   const distribuicaoDimensoes = useMemo(() => {
@@ -180,20 +188,22 @@ export default function RelatoriosPage() {
 
     return relatorio.dominios
       .flatMap((dominio) => dominio.dimensoes)
-      .slice(0, 8)
       .map((dimensao) => {
-        const favoravel = dimensao.distribuicao.favoravel || 0;
-        const intermediario = dimensao.distribuicao.intermediario || 0;
-        const risco = dimensao.distribuicao.risco || 0;
+        const favoravel = toFiniteNumber(dimensao.distribuicao?.favoravel);
+        const intermediario = toFiniteNumber(dimensao.distribuicao?.intermediario);
+        const risco = toFiniteNumber(dimensao.distribuicao?.risco);
         const total = favoravel + intermediario + risco || 1;
+        const nome = dimensao.dimensao || "Sem dimensão";
 
         return {
-          dimensao: dimensao.dimensao.length > 22 ? `${dimensao.dimensao.slice(0, 22)}...` : dimensao.dimensao,
+          dimensao: nome.length > 22 ? `${nome.slice(0, 22)}...` : nome,
           favoravel: Number(((favoravel / total) * 100).toFixed(2)),
           intermediario: Number(((intermediario / total) * 100).toFixed(2)),
           risco: Number(((risco / total) * 100).toFixed(2)),
         };
-      });
+      })
+      .sort((a, b) => b.risco - a.risco)
+      .slice(0, 8);
   }, [relatorio]);
 
   const heatmapData = useMemo(() => {
@@ -202,8 +212,8 @@ export default function RelatoriosPage() {
     }
 
     return relatorio.dominios.slice(0, 5).map((dominio) => ({
-      dominio: dominio.nome,
-      media: clamp(Math.round(dominio.media_dominio * 20), 0, 100),
+      dominio: dominio.nome || "Sem domínio",
+      media: clamp(Math.round(toFiniteNumber(dominio.media_dominio) * 20), 0, 100),
       classificacao: dominio.classificacao_predominante,
     }));
   }, [relatorio]);
@@ -213,17 +223,17 @@ export default function RelatoriosPage() {
       return [
         {
           titulo: "Média de Risco Global",
-          valor: relatorio.metricas.mediaRiscoGlobal.toFixed(2),
+          valor: toFiniteNumber(relatorio.metricas.mediaRiscoGlobal).toFixed(2),
           subtitulo: "Escala 0-4",
         },
         {
           titulo: "Índice de Proteção",
-          valor: formatPercent(relatorio.metricas.indiceProtecao),
+          valor: formatPercent(toFiniteNumber(relatorio.metricas.indiceProtecao)),
           subtitulo: "Fatores favoráveis",
         },
         {
           titulo: "Total Respondentes",
-          valor: formatNumber(relatorio.metricas.totalRespondentes),
+          valor: formatNumber(toFiniteNumber(relatorio.metricas.totalRespondentes)),
           subtitulo: "Base do relatório",
         },
       ];
@@ -350,6 +360,10 @@ export default function RelatoriosPage() {
   if (error || !data) {
     return <ErrorState message={error || "Falha ao carregar dados para relatórios."} onRetry={refetch} />;
   }
+
+  const hasDistribuicaoDimensoesData = distribuicaoDimensoes.some(
+    (item) => item.favoravel > 0 || item.intermediario > 0 || item.risco > 0,
+  );
 
   return (
     <div className="space-y-6">
@@ -527,17 +541,23 @@ export default function RelatoriosPage() {
 
         <Card>
           <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Distribuição por Dimensão</h3>
-          <ResponsiveContainer width="100%" height={340}>
-            <BarChart data={distribuicaoDimensoes} layout="vertical" margin={{ left: 10, right: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis dataKey="dimensao" type="category" width={170} tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Bar dataKey="favoravel" stackId="a" fill="#10b981" name="Favorável" />
-              <Bar dataKey="intermediario" stackId="a" fill="#f59e0b" name="Intermediário" />
-              <Bar dataKey="risco" stackId="a" fill="#ef4444" name="Risco" />
-            </BarChart>
-          </ResponsiveContainer>
+          {hasDistribuicaoDimensoesData ? (
+            <ResponsiveContainer width="100%" height={340}>
+              <BarChart data={distribuicaoDimensoes} layout="vertical" margin={{ left: 10, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" domain={[0, 100]} />
+                <YAxis dataKey="dimensao" type="category" width={170} tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Bar dataKey="favoravel" stackId="a" fill="#10b981" name="Favorável" />
+                <Bar dataKey="intermediario" stackId="a" fill="#f59e0b" name="Intermediário" />
+                <Bar dataKey="risco" stackId="a" fill="#ef4444" name="Risco" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[340px] items-center justify-center text-sm text-slate-500">
+              Gere ou consulte um relatório para visualizar este gráfico.
+            </div>
+          )}
         </Card>
       </section>
 

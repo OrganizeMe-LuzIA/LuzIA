@@ -32,6 +32,13 @@ const chartColors = {
   risco: "#ef4444",
 };
 
+const EMPTY_CHART_COLOR = "#cbd5e1";
+
+function toFiniteNumber(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export default function QuestionariosPage() {
   const { token } = useAuth();
 
@@ -56,9 +63,15 @@ export default function QuestionariosPage() {
   const questionarios = data || [];
 
   const stats = useMemo(() => {
-    const respostasTotais = questionarios.reduce((sum, questionario) => sum + questionario.total_respostas_completas, 0);
-    const taxaMedia = average(questionarios.map((questionario) => questionario.taxa_conclusao));
-    const usuariosParticipantes = Math.max(...questionarios.map((questionario) => questionario.total_usuarios_atribuidos), 0);
+    const respostasTotais = questionarios.reduce(
+      (sum, questionario) => sum + toFiniteNumber(questionario.total_respostas_completas),
+      0,
+    );
+    const taxaMedia = average(questionarios.map((questionario) => toFiniteNumber(questionario.taxa_conclusao)));
+    const usuariosParticipantes = Math.max(
+      ...questionarios.map((questionario) => toFiniteNumber(questionario.total_usuarios_atribuidos)),
+      0,
+    );
 
     return {
       totalQuestionarios: questionarios.length,
@@ -170,13 +183,37 @@ export default function QuestionariosPage() {
     return <ErrorState message={error} onRetry={refetch} />;
   }
 
-  const distribuicaoClassificacoes = metricas
-    ? [
-        { name: "Favorável", value: metricas.distribuicao_classificacoes.favoravel || 0, color: chartColors.favoravel },
-        { name: "Intermediário", value: metricas.distribuicao_classificacoes.intermediario || 0, color: chartColors.intermediario },
-        { name: "Risco", value: metricas.distribuicao_classificacoes.risco || 0, color: chartColors.risco },
-      ]
-    : [];
+  const distribuicaoClassificacoes = [
+    {
+      name: "Favorável",
+      value: toFiniteNumber(metricas?.distribuicao_classificacoes?.favoravel),
+      color: chartColors.favoravel,
+    },
+    {
+      name: "Intermediário",
+      value: toFiniteNumber(metricas?.distribuicao_classificacoes?.intermediario),
+      color: chartColors.intermediario,
+    },
+    {
+      name: "Risco",
+      value: toFiniteNumber(metricas?.distribuicao_classificacoes?.risco),
+      color: chartColors.risco,
+    },
+  ];
+
+  const hasDistribuicaoData = distribuicaoClassificacoes.some((entry) => entry.value > 0);
+  const distribuicaoChartData = hasDistribuicaoData
+    ? distribuicaoClassificacoes
+    : [{ name: "Sem dados", value: 1, color: EMPTY_CHART_COLOR }];
+
+  const dimensoesCriticasData = (metricas?.dimensoes_criticas || []).map((dimensao) => ({
+    dimensao: dimensao.dimensao,
+    total_risco: toFiniteNumber(dimensao.total_risco),
+  }));
+
+  const hasDimensoesCriticasData = dimensoesCriticasData.some((entry) => entry.total_risco > 0);
+  const organizacoesParticipantes = metricas?.organizacoes_participantes || [];
+  const setoresParticipantes = metricas?.setores_participantes || [];
 
   return (
     <div className="space-y-6">
@@ -269,35 +306,53 @@ export default function QuestionariosPage() {
                     <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Distribuição de Classificações</h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
-                        <Pie data={distribuicaoClassificacoes} cx="50%" cy="50%" outerRadius={96} dataKey="value">
-                          {distribuicaoClassificacoes.map((entry) => (
+                        <Pie
+                          data={distribuicaoChartData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={96}
+                          dataKey="value"
+                          label={hasDistribuicaoData ? ({ name, value }) => `${name} ${value}` : false}
+                        >
+                          {distribuicaoChartData.map((entry) => (
                             <Cell key={entry.name} fill={entry.color} />
                           ))}
                         </Pie>
                         <Tooltip />
                       </PieChart>
                     </ResponsiveContainer>
+                    {!hasDistribuicaoData && (
+                      <p className="text-center text-sm text-slate-500">
+                        Ainda não há diagnósticos suficientes para este gráfico.
+                      </p>
+                    )}
                   </Card>
 
                   <Card>
                     <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Top 5 Dimensões Críticas</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={metricas.dimensoes_criticas} layout="vertical" margin={{ left: 10, right: 10 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" />
-                        <YAxis dataKey="dimensao" type="category" width={160} tick={{ fontSize: 11 }} />
-                        <Tooltip />
-                        <Bar dataKey="total_risco" fill="#ef4444" radius={[0, 4, 4, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    {hasDimensoesCriticasData ? (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={dimensoesCriticasData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis type="number" />
+                          <YAxis dataKey="dimensao" type="category" width={160} tick={{ fontSize: 11 }} />
+                          <Tooltip />
+                          <Bar dataKey="total_risco" fill="#ef4444" radius={[0, 4, 4, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex h-[300px] items-center justify-center text-sm text-slate-500">
+                        Nenhuma dimensão crítica identificada para este questionário.
+                      </div>
+                    )}
                   </Card>
                 </section>
 
                 <section>
                   <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Organizações participantes</h3>
                   <div className="flex flex-wrap gap-2">
-                    {metricas.organizacoes_participantes.length ? (
-                      metricas.organizacoes_participantes.map((organizacao) => (
+                    {organizacoesParticipantes.length ? (
+                      organizacoesParticipantes.map((organizacao) => (
                         <Badge key={organizacao} variant="default">
                           {organizacao}
                         </Badge>
@@ -311,8 +366,8 @@ export default function QuestionariosPage() {
                 <section>
                   <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Setores participantes</h3>
                   <div className="flex flex-wrap gap-2">
-                    {metricas.setores_participantes.length ? (
-                      metricas.setores_participantes.map((setor) => (
+                    {setoresParticipantes.length ? (
+                      setoresParticipantes.map((setor) => (
                         <Badge key={setor} variant="default">
                           {setor}
                         </Badge>

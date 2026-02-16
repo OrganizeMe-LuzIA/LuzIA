@@ -40,6 +40,13 @@ const riskColors = {
   risco: "#ef4444",
 };
 
+const EMPTY_CHART_COLOR = "#cbd5e1";
+
+function toFiniteNumber(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export default function DashboardPage() {
   const { token } = useAuth();
   const { filters } = useDashboardFilters();
@@ -118,23 +125,29 @@ export default function DashboardPage() {
     };
 
     return [
-      { name: "Favorável", value: distribuicao.favoravel || 0, color: riskColors.favoravel },
-      { name: "Intermediário", value: distribuicao.intermediario || 0, color: riskColors.intermediario },
-      { name: "Risco", value: distribuicao.risco || 0, color: riskColors.risco },
+      { name: "Favorável", value: toFiniteNumber(distribuicao.favoravel), color: riskColors.favoravel },
+      { name: "Intermediário", value: toFiniteNumber(distribuicao.intermediario), color: riskColors.intermediario },
+      { name: "Risco", value: toFiniteNumber(distribuicao.risco), color: riskColors.risco },
     ];
   }, [data]);
 
   const setoresChartData = useMemo(
     () =>
-      (data?.setores || [])
-        .sort((a, b) => b.usuarios_ativos - a.usuarios_ativos)
+      [...(data?.setores || [])]
+        .sort((a, b) => toFiniteNumber(b.usuarios_ativos) - toFiniteNumber(a.usuarios_ativos))
         .slice(0, 8)
         .map((setor) => ({
           nome: setor.nome.length > 18 ? `${setor.nome.slice(0, 18)}...` : setor.nome,
-          respostas: setor.usuarios_ativos,
+          respostas: toFiniteNumber(setor.usuarios_ativos),
         })),
     [data],
   );
+
+  const hasRiskData = riskData.some((entry) => entry.value > 0);
+  const hasSetoresData = setoresChartData.some((entry) => entry.respostas > 0);
+  const riskChartData = hasRiskData
+    ? riskData
+    : [{ name: "Sem dados", value: 1, color: EMPTY_CHART_COLOR }];
 
   if (loading) {
     return <LoadingState label="Carregando visão geral do dashboard..." />;
@@ -171,34 +184,43 @@ export default function DashboardPage() {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={riskData}
+                data={riskChartData}
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
                 dataKey="value"
-                label={({ name, value }) => `${name} ${value}`}
+                label={hasRiskData ? ({ name, value }) => `${name} ${value}` : false}
                 labelLine={false}
               >
-                {riskData.map((item) => (
+                {riskChartData.map((item) => (
                   <Cell key={item.name} fill={item.color} />
                 ))}
               </Pie>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
+          {!hasRiskData && (
+            <p className="text-center text-sm text-slate-500">Ainda não há diagnósticos suficientes para este gráfico.</p>
+          )}
         </Card>
 
         <Card>
           <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Usuários Ativos por Setor</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={setoresChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis type="category" dataKey="nome" width={120} />
-              <Tooltip />
-              <Bar dataKey="respostas" fill="#14b8a6" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {hasSetoresData ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={setoresChartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis type="category" dataKey="nome" width={120} />
+                <Tooltip />
+                <Bar dataKey="respostas" fill="#14b8a6" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[300px] items-center justify-center text-sm text-slate-500">
+              Nenhum setor com usuários ativos para exibir.
+            </div>
+          )}
         </Card>
       </section>
 
