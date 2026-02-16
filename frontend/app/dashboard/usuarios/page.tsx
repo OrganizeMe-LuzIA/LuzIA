@@ -40,7 +40,7 @@ export default function UsuariosPage() {
   const [progresso, setProgresso] = useState<ProgressoUsuario | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
-  const loader = useCallback(async () => {
+  const loader = useCallback(async (signal?: AbortSignal) => {
     if (!token) {
       throw new Error("Sessão inválida. Faça login novamente.");
     }
@@ -48,7 +48,7 @@ export default function UsuariosPage() {
     return dashboardApi.listUsuariosAtivos(token, {
       orgId: filters.orgId || undefined,
       setorId: filters.setorId || undefined,
-    });
+    }, { signal });
   }, [token, filters.orgId, filters.setorId]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);

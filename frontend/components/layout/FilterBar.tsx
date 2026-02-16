@@ -7,6 +7,14 @@ import { OrganizacaoDashboard, QuestionarioStatus, SetorDashboard } from "@/lib/
 import { useAuth } from "@/context/AuthContext";
 import { useDashboardFilters } from "@/context/FiltersContext";
 
+function isAbortError(error: unknown): boolean {
+  if (error instanceof DOMException) {
+    return error.name === "AbortError";
+  }
+
+  return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
+}
+
 export function FilterBar() {
   const { token } = useAuth();
   const { filters, updateFilter, clearFilters } = useDashboardFilters();
@@ -20,22 +28,22 @@ export function FilterBar() {
       return;
     }
 
-    let active = true;
+    const controller = new AbortController();
     const loadFilters = async () => {
       try {
         const [organizacoesResult, questionariosResult] = await Promise.all([
-          dashboardApi.listOrganizacoes(token),
-          dashboardApi.listQuestionariosStatus(token),
+          dashboardApi.listOrganizacoes(token, { signal: controller.signal }),
+          dashboardApi.listQuestionariosStatus(token, { signal: controller.signal }),
         ]);
 
-        if (!active) {
+        if (controller.signal.aborted) {
           return;
         }
 
         setOrganizacoes(organizacoesResult);
         setQuestionarios(questionariosResult);
-      } catch {
-        if (active) {
+      } catch (err) {
+        if (!controller.signal.aborted && !isAbortError(err)) {
           setOrganizacoes([]);
           setQuestionarios([]);
         }
@@ -45,7 +53,7 @@ export function FilterBar() {
     void loadFilters();
 
     return () => {
-      active = false;
+      controller.abort();
     };
   }, [token]);
 
@@ -54,16 +62,18 @@ export function FilterBar() {
       return;
     }
 
-    let active = true;
+    const controller = new AbortController();
 
     const loadSetores = async () => {
       try {
-        const setoresResult = await dashboardApi.listSetores(token, filters.orgId || undefined);
-        if (active) {
+        const setoresResult = await dashboardApi.listSetores(token, filters.orgId || undefined, {
+          signal: controller.signal,
+        });
+        if (!controller.signal.aborted) {
           setSetores(setoresResult);
         }
-      } catch {
-        if (active) {
+      } catch (err) {
+        if (!controller.signal.aborted && !isAbortError(err)) {
           setSetores([]);
         }
       }
@@ -72,7 +82,7 @@ export function FilterBar() {
     void loadSetores();
 
     return () => {
-      active = false;
+      controller.abort();
     };
   }, [token, filters.orgId]);
 

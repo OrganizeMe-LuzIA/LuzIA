@@ -96,6 +96,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     useCache = true,
     cacheTtlMs = DEFAULT_GET_CACHE_TTL_MS,
     method = "GET",
+    signal,
     ...rest
   } = options;
   const resolvedHeaders = new Headers(headers);
@@ -120,6 +121,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   const requestUrl = buildUrl(path, query);
   const shouldUseCache = normalizedMethod === "GET" && useCache && cacheTtlMs > 0;
+  const hasAbortSignal = Boolean(signal);
   const cacheKey = shouldUseCache ? buildCacheKey(normalizedMethod, requestUrl, token) : "";
 
   const makeRequest = async (): Promise<T> => {
@@ -129,6 +131,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
       headers: resolvedHeaders,
       body: serializedBody,
       cache: "no-store",
+      signal,
     });
 
     const contentType = response.headers.get("content-type") || "";
@@ -166,9 +169,11 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     return cachedEntry.payload as T;
   }
 
-  const inFlightRequest = inFlightRequests.get(cacheKey);
-  if (inFlightRequest) {
-    return inFlightRequest as Promise<T>;
+  if (!hasAbortSignal) {
+    const inFlightRequest = inFlightRequests.get(cacheKey);
+    if (inFlightRequest) {
+      return inFlightRequest as Promise<T>;
+    }
   }
 
   const requestPromise = makeRequest()
@@ -180,10 +185,15 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
       return payload;
     })
     .finally(() => {
-      inFlightRequests.delete(cacheKey);
+      if (!hasAbortSignal) {
+        inFlightRequests.delete(cacheKey);
+      }
     });
 
-  inFlightRequests.set(cacheKey, requestPromise as Promise<unknown>);
+  if (!hasAbortSignal) {
+    inFlightRequests.set(cacheKey, requestPromise as Promise<unknown>);
+  }
+
   return requestPromise;
 }
 

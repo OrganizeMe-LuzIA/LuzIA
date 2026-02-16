@@ -1,19 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { CheckCircle2, FileText, TrendingUp, Users } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Column, DataTable } from "@/components/ui/DataTable";
@@ -32,6 +21,22 @@ const chartColors = {
   intermediario: "#f59e0b",
   risco: "#ef4444",
 };
+
+const PieClassificationChart = dynamic(
+  () => import("@/components/charts/PieClassificationChart").then((module) => module.PieClassificationChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-[300px] animate-pulse rounded-lg bg-slate-100" />,
+  },
+);
+
+const VerticalSingleBarChart = dynamic(
+  () => import("@/components/charts/VerticalSingleBarChart").then((module) => module.VerticalSingleBarChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-[300px] animate-pulse rounded-lg bg-slate-100" />,
+  },
+);
 
 const EMPTY_CHART_COLOR = "#cbd5e1";
 
@@ -52,12 +57,12 @@ export default function QuestionariosPage() {
     setMetricas(null);
   }, []);
 
-  const loader = useCallback(async () => {
+  const loader = useCallback(async (signal?: AbortSignal) => {
     if (!token) {
       throw new Error("Sessão inválida. Faça login novamente.");
     }
 
-    return dashboardApi.listQuestionariosStatus(token);
+    return dashboardApi.listQuestionariosStatus(token, { signal });
   }, [token]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
@@ -308,23 +313,12 @@ export default function QuestionariosPage() {
                 <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <Card>
                     <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Distribuição de Classificações</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <PieChart>
-                        <Pie
-                          data={distribuicaoChartData}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={96}
-                          dataKey="value"
-                          label={hasDistribuicaoData ? ({ name, value }) => `${name} ${value}` : false}
-                        >
-                          {distribuicaoChartData.map((entry) => (
-                            <Cell key={entry.name} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <PieClassificationChart
+                      data={distribuicaoChartData}
+                      height={300}
+                      outerRadius={96}
+                      showLabel={hasDistribuicaoData}
+                    />
                     {!hasDistribuicaoData && (
                       <p className="text-center text-sm text-slate-500">
                         Ainda não há diagnósticos suficientes para este gráfico.
@@ -335,15 +329,15 @@ export default function QuestionariosPage() {
                   <Card>
                     <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Top 5 Dimensões Críticas</h3>
                     {hasDimensoesCriticasData ? (
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={dimensoesCriticasData} layout="vertical" margin={{ left: 10, right: 10 }}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis type="number" />
-                          <YAxis dataKey="dimensao" type="category" width={160} tick={{ fontSize: 11 }} />
-                          <Tooltip />
-                          <Bar dataKey="total_risco" fill="#ef4444" radius={[0, 4, 4, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
+                      <VerticalSingleBarChart
+                        data={dimensoesCriticasData}
+                        valueKey="total_risco"
+                        labelKey="dimensao"
+                        height={300}
+                        yAxisWidth={160}
+                        tickFontSize={11}
+                        fill="#ef4444"
+                      />
                     ) : (
                       <div className="flex h-[300px] items-center justify-center text-sm text-slate-500">
                         Nenhuma dimensão crítica identificada para este questionário.

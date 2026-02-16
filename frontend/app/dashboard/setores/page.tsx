@@ -1,17 +1,9 @@
 "use client";
 
 import { FormEvent, useCallback, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Pencil, Plus, Trash2, Users } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Column, DataTable } from "@/components/ui/DataTable";
@@ -30,6 +22,14 @@ import { useAsyncData } from "@/lib/utils/useAsyncData";
 type RiscoMedio = "favoravel" | "intermediario" | "risco";
 
 type SetorRow = SetorDashboard & { risco_medio: RiscoMedio };
+
+const VerticalSingleBarChart = dynamic(
+  () => import("@/components/charts/VerticalSingleBarChart").then((module) => module.VerticalSingleBarChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-[320px] animate-pulse rounded-lg bg-slate-100" />,
+  },
+);
 
 function toFiniteNumber(value: unknown): number {
   const parsed = typeof value === "number" ? value : Number(value);
@@ -65,12 +65,12 @@ export default function SetoresPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
-  const loader = useCallback(async () => {
+  const loader = useCallback(async (signal?: AbortSignal) => {
     if (!token) {
       throw new Error("Sessão inválida. Faça login novamente.");
     }
 
-    const setores = await dashboardApi.listSetores(token, filters.orgId || undefined);
+    const setores = await dashboardApi.listSetores(token, filters.orgId || undefined, { signal });
     return setores.map((setor) => ({
       ...setor,
       risco_medio: getRiscoMedio(toFiniteNumber(setor.taxa_resposta)),
@@ -361,15 +361,15 @@ export default function SetoresPage() {
       <Card>
         <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Comparativo: Taxa de Resposta por Setor</h3>
         {hasChartData ? (
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis type="category" dataKey="nome" width={140} />
-              <Tooltip />
-              <Bar dataKey="taxa_resposta" fill="#14b8a6" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <VerticalSingleBarChart
+            data={chartData}
+            valueKey="taxa_resposta"
+            labelKey="nome"
+            height={320}
+            yAxisWidth={140}
+            xDomain={[0, 100]}
+            fill="#14b8a6"
+          />
         ) : (
           <div className="flex h-[320px] items-center justify-center text-sm text-slate-500">
             Nenhum setor com taxa de resposta registrada para exibir.

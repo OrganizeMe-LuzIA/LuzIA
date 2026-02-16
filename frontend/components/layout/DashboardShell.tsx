@@ -1,22 +1,83 @@
 "use client";
 
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useAuth } from "@/context/AuthContext";
+import { dashboardApi } from "@/lib/api";
+
+const DASHBOARD_ROUTES = [
+  "/dashboard",
+  "/dashboard/organizacoes",
+  "/dashboard/setores",
+  "/dashboard/usuarios",
+  "/dashboard/questionarios",
+  "/dashboard/relatorios",
+] as const;
 
 export function DashboardShell({ children }: PropsWithChildren) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { token, isAuthenticated, isLoading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const warmedTokenRef = useRef<string | null>(null);
+  const prefetchedRoutesRef = useRef(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
+
+  useEffect(() => {
+    if (isLoading || !isAuthenticated || prefetchedRoutesRef.current) {
+      return;
+    }
+
+    prefetchedRoutesRef.current = true;
+    DASHBOARD_ROUTES.forEach((route) => router.prefetch(route));
+  }, [isAuthenticated, isLoading, router]);
+
+  useEffect(() => {
+    if (!token || !isAuthenticated || warmedTokenRef.current === token) {
+      return;
+    }
+
+    let active = true;
+    warmedTokenRef.current = token;
+
+    const warmupDashboardData = async () => {
+      const preloadResults = await Promise.allSettled([
+        dashboardApi.getOverview(token),
+        dashboardApi.listOrganizacoes(token),
+        dashboardApi.listSetores(token),
+        dashboardApi.listQuestionariosStatus(token),
+      ]);
+
+      if (!active) {
+        return;
+      }
+
+      const questionariosResult = preloadResults[3];
+      if (questionariosResult.status !== "fulfilled") {
+        return;
+      }
+
+      const firstQuestionarioId = questionariosResult.value[0]?.id;
+      if (!firstQuestionarioId) {
+        return;
+      }
+
+      await dashboardApi.getQuestionarioMetricas(firstQuestionarioId, token).catch(() => undefined);
+    };
+
+    void warmupDashboardData();
+
+    return () => {
+      active = false;
+    };
+  }, [token, isAuthenticated]);
 
   if (isLoading || !isAuthenticated) {
     return (

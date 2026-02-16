@@ -1,25 +1,12 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   AlertTriangle,
   BarChart3,
   TrendingUp,
 } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { ExportButton } from "@/components/ui/ExportButton";
@@ -39,9 +26,36 @@ interface ReportFormState {
   tipo: "organizacional" | "setorial";
 }
 
+const RadarScoreChart = dynamic(
+  () => import("@/components/charts/RadarScoreChart").then((module) => module.RadarScoreChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-[340px] animate-pulse rounded-lg bg-slate-100" />,
+  },
+);
+
+const VerticalStackedDistributionChart = dynamic(
+  () =>
+    import("@/components/charts/VerticalStackedDistributionChart").then(
+      (module) => module.VerticalStackedDistributionChart,
+    ),
+  {
+    ssr: false,
+    loading: () => <div className="h-[340px] animate-pulse rounded-lg bg-slate-100" />,
+  },
+);
+
 function toFiniteNumber(value: unknown): number {
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function isAbortError(error: unknown): boolean {
+  if (error instanceof DOMException) {
+    return error.name === "AbortError";
+  }
+
+  return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
 }
 
 function getHeatColor(value: number): string {
@@ -79,15 +93,15 @@ export default function RelatoriosPage() {
 
   const [metricasQuestionario, setMetricasQuestionario] = useState<QuestionarioMetricas | null>(null);
 
-  const loader = useCallback(async () => {
+  const loader = useCallback(async (signal?: AbortSignal) => {
     if (!token) {
       throw new Error("Sessão inválida. Faça login novamente.");
     }
 
     const [overview, organizacoes, questionarios] = await Promise.all([
-      dashboardApi.getOverview(token),
-      dashboardApi.listOrganizacoes(token),
-      dashboardApi.listQuestionariosStatus(token),
+      dashboardApi.getOverview(token, { signal }),
+      dashboardApi.listOrganizacoes(token, { signal }),
+      dashboardApi.listQuestionariosStatus(token, { signal }),
     ]);
 
     return { overview, organizacoes, questionarios };
@@ -110,24 +124,27 @@ export default function RelatoriosPage() {
   useEffect(() => {
     if (!token || !form.idOrganizacao) {
       setSetores([]);
+      setLoadingSetores(false);
       return;
     }
 
-    let active = true;
+    const controller = new AbortController();
 
     const loadSetores = async () => {
       setLoadingSetores(true);
       try {
-        const result = await dashboardApi.listSetores(token, form.idOrganizacao);
-        if (active) {
+        const result = await dashboardApi.listSetores(token, form.idOrganizacao, {
+          signal: controller.signal,
+        });
+        if (!controller.signal.aborted) {
           setSetores(result);
         }
-      } catch {
-        if (active) {
+      } catch (err) {
+        if (!controller.signal.aborted && !isAbortError(err)) {
           setSetores([]);
         }
       } finally {
-        if (active) {
+        if (!controller.signal.aborted) {
           setLoadingSetores(false);
         }
       }
@@ -136,7 +153,7 @@ export default function RelatoriosPage() {
     void loadSetores();
 
     return () => {
-      active = false;
+      controller.abort();
     };
   }, [token, form.idOrganizacao]);
 
@@ -146,16 +163,18 @@ export default function RelatoriosPage() {
       return;
     }
 
-    let active = true;
+    const controller = new AbortController();
 
     const loadQuestionarioMetrics = async () => {
       try {
-        const result = await dashboardApi.getQuestionarioMetricas(form.idQuestionario, token);
-        if (active) {
+        const result = await dashboardApi.getQuestionarioMetricas(form.idQuestionario, token, {
+          signal: controller.signal,
+        });
+        if (!controller.signal.aborted) {
           setMetricasQuestionario(result);
         }
-      } catch {
-        if (active) {
+      } catch (err) {
+        if (!controller.signal.aborted && !isAbortError(err)) {
           setMetricasQuestionario(null);
         }
       }
@@ -164,7 +183,7 @@ export default function RelatoriosPage() {
     void loadQuestionarioMetrics();
 
     return () => {
-      active = false;
+      controller.abort();
     };
   }, [token, form.idQuestionario]);
 
@@ -532,31 +551,13 @@ export default function RelatoriosPage() {
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
           <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Análise por Domínio COPSOQ</h3>
-          <ResponsiveContainer width="100%" height={340}>
-            <RadarChart data={radarData.length ? radarData : [{ dominio: "Sem dados", score: 0 }]}> 
-              <PolarGrid />
-              <PolarAngleAxis dataKey="dominio" tick={{ fontSize: 11 }} />
-              <PolarRadiusAxis angle={90} domain={[0, 100]} />
-              <Radar dataKey="score" stroke="#14b8a6" fill="#14b8a6" fillOpacity={0.6} />
-              <Tooltip />
-            </RadarChart>
-          </ResponsiveContainer>
+          <RadarScoreChart data={radarData} height={340} />
         </Card>
 
         <Card>
           <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Distribuição por Dimensão</h3>
           {hasDistribuicaoDimensoesData ? (
-            <ResponsiveContainer width="100%" height={340}>
-              <BarChart data={distribuicaoDimensoes} layout="vertical" margin={{ left: 10, right: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" domain={[0, 100]} />
-                <YAxis dataKey="dimensao" type="category" width={170} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="favoravel" stackId="a" fill="#10b981" name="Favorável" />
-                <Bar dataKey="intermediario" stackId="a" fill="#f59e0b" name="Intermediário" />
-                <Bar dataKey="risco" stackId="a" fill="#ef4444" name="Risco" />
-              </BarChart>
-            </ResponsiveContainer>
+            <VerticalStackedDistributionChart data={distribuicaoDimensoes} height={340} yAxisWidth={170} />
           ) : (
             <div className="flex h-[340px] items-center justify-center text-sm text-slate-500">
               Gere ou consulte um relatório para visualizar este gráfico.

@@ -40,12 +40,12 @@ export default function OrganizacoesPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
-  const loader = useCallback(async () => {
+  const loader = useCallback(async (signal?: AbortSignal) => {
     if (!token) {
       throw new Error("Sessão inválida. Faça login novamente.");
     }
 
-    return dashboardApi.listOrganizacoes(token);
+    return dashboardApi.listOrganizacoes(token, { signal });
   }, [token]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
