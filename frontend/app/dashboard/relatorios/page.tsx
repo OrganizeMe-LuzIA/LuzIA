@@ -18,6 +18,7 @@ import { dashboardApi, relatoriosApi } from "@/lib/api";
 import { GerarRelatorioRequest, QuestionarioMetricas, Relatorio, SetorDashboard } from "@/lib/types/api";
 import { clamp, formatDateTime, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
+import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
 
 interface ReportFormState {
   idQuestionario: string;
@@ -108,6 +109,7 @@ export default function RelatoriosPage() {
   }, [token]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
+  usePollingRefetch(refetch, { enabled: Boolean(token), intervalMs: 30_000 });
 
   useEffect(() => {
     if (!data) {

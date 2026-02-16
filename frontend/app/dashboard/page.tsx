@@ -23,6 +23,7 @@ import { dashboardApi } from "@/lib/api";
 import { QuestionarioMetricas } from "@/lib/types/api";
 import { formatDateTime, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
+import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
 
 const riskColors = {
   favoravel: "#10b981",
@@ -81,6 +82,7 @@ export default function DashboardPage() {
   }, [token, filters.orgId]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
+  usePollingRefetch(refetch, { enabled: Boolean(token), intervalMs: 30_000 });
 
   useEffect(() => {
     if (!token) {

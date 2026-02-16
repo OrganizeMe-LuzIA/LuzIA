@@ -17,6 +17,7 @@ import { dashboardApi, organizacoesApi } from "@/lib/api";
 import { Organizacao, OrganizacaoDashboard, OrganizacaoDetalhada } from "@/lib/types/api";
 import { formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
+import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
 
 function digitsOnly(value: string): string {
   return value.replace(/\D/g, "");
@@ -49,6 +50,7 @@ export default function OrganizacoesPage() {
   }, [token]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
+  usePollingRefetch(refetch, { enabled: Boolean(token), intervalMs: 30_000 });
 
   const organizacoes = data || [];
 

@@ -426,6 +426,60 @@ class BotFlow:
         await self.users_repo.update_chat_state(phone, new_state)
         return new_state
 
+    async def _save_fill_status(
+        self,
+        phone: str,
+        *,
+        fill_status: str,
+        id_questionario: Optional[str] = None,
+        perguntas_respondidas: Optional[int] = None,
+        total_perguntas: Optional[int] = None,
+        respondido: Optional[bool] = None,
+        user_status: Optional[str] = None,
+    ) -> None:
+        try:
+            await self.users_repo.update_fill_status(
+                phone=phone,
+                fill_status=fill_status,
+                id_questionario=id_questionario,
+                perguntas_respondidas=perguntas_respondidas,
+                total_perguntas=total_perguntas,
+                respondido=respondido,
+                user_status=user_status,
+            )
+        except RuntimeError as exc:
+            logging.getLogger(__name__).debug(
+                "Não foi possível persistir status de preenchimento para %s: %s",
+                phone,
+                exc,
+            )
+
+    async def _finalizar_questionario(
+        self,
+        phone: str,
+        chat_state: Dict[str, Any],
+        id_questionario: str,
+        total_perguntas: int,
+        indice_pergunta: int,
+        sub_pergunta_pendente: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        await self._save_chat_state(
+            phone,
+            chat_state,
+            statusChat="FINALIZADO",
+            indicePergunta=indice_pergunta,
+            subPerguntaPendente=sub_pergunta_pendente,
+        )
+        await self._save_fill_status(
+            phone,
+            fill_status="finalizado",
+            id_questionario=id_questionario,
+            perguntas_respondidas=total_perguntas,
+            total_perguntas=total_perguntas,
+            respondido=True,
+            user_status="ativo",
+        )
+
     async def _reset_user_chat(self, phone: str) -> None:
         await self.users_repo.update_chat_state(
             phone,
@@ -443,6 +497,7 @@ class BotFlow:
                 "empresasCandidatas": None,
             },
         )
+        await self._save_fill_status(phone, fill_status="nao_iniciado")
 
     async def _start_validation_flow(self, phone: str) -> None:
         await self.users_repo.update_chat_state(
@@ -461,6 +516,7 @@ class BotFlow:
                 "empresasCandidatas": None,
             },
         )
+        await self._save_fill_status(phone, fill_status="validando_cadastro")
 
     async def handle_incoming(
         self,
@@ -477,7 +533,10 @@ class BotFlow:
             await self.users_repo.create_user({
                 "telefone": phone,
                 "anonId": anon_id,
-                "metadata": {"chat_state": {"statusChat": "INATIVO"}},
+                "metadata": {
+                    "chat_state": {"statusChat": "INATIVO"},
+                    "preenchimento": {"origem": "twilio", "status": "nao_iniciado"},
+                },
             })
             user = await self.users_repo.find_by_phone(phone)
 
@@ -652,6 +711,14 @@ class BotFlow:
                     dataInicio=datetime.utcnow(),
                     subPerguntaPendente=None,
                 )
+                await self._save_fill_status(
+                    phone,
+                    fill_status="em_andamento",
+                    id_questionario=q_id,
+                    perguntas_respondidas=0,
+                    total_perguntas=len(questions),
+                    user_status="ativo",
+                )
 
                 return await self._enviar_pergunta_formatada(
                     phone=phone,
@@ -666,6 +733,11 @@ class BotFlow:
         if status == "EM_CURSO":
             if self._is_session_expired(chat_state):
                 await self._reset_user_chat(phone)
+                await self._save_fill_status(
+                    phone,
+                    fill_status="expirado",
+                    id_questionario=id_questionario,
+                )
                 return self._timeout_message()
 
             if not id_questionario:
@@ -678,7 +750,13 @@ class BotFlow:
                 return "Não há perguntas cadastradas. Tente novamente mais tarde."
 
             if indice >= len(questions):
-                await self._save_chat_state(phone, chat_state, statusChat="FINALIZADO")
+                await self._finalizar_questionario(
+                    phone=phone,
+                    chat_state=chat_state,
+                    id_questionario=id_questionario,
+                    total_perguntas=len(questions),
+                    indice_pergunta=len(questions),
+                )
                 return self._final_message()
 
             sub_pendente = chat_state.get("subPerguntaPendente")
@@ -701,12 +779,13 @@ class BotFlow:
 
                 next_index = indice + 1
                 if next_index >= len(questions):
-                    await self._save_chat_state(
-                        phone,
-                        chat_state,
-                        statusChat="FINALIZADO",
-                        indicePergunta=next_index,
-                        subPerguntaPendente=None,
+                    await self._finalizar_questionario(
+                        phone=phone,
+                        chat_state=chat_state,
+                        id_questionario=id_questionario,
+                        total_perguntas=len(questions),
+                        indice_pergunta=next_index,
+                        sub_pergunta_pendente=None,
                     )
                     return self._final_message()
 
@@ -715,6 +794,13 @@ class BotFlow:
                     chat_state,
                     indicePergunta=next_index,
                     subPerguntaPendente=None,
+                )
+                await self._save_fill_status(
+                    phone,
+                    fill_status="em_andamento",
+                    id_questionario=id_questionario,
+                    perguntas_respondidas=min(indice + 1, len(questions)),
+                    total_perguntas=len(questions),
                 )
 
                 next_q = questions[next_index]
@@ -749,15 +835,23 @@ class BotFlow:
 
                 next_index = indice + 1
                 if next_index >= len(questions):
-                    await self._save_chat_state(
-                        phone,
-                        chat_state,
-                        statusChat="FINALIZADO",
-                        indicePergunta=next_index,
+                    await self._finalizar_questionario(
+                        phone=phone,
+                        chat_state=chat_state,
+                        id_questionario=id_questionario,
+                        total_perguntas=len(questions),
+                        indice_pergunta=next_index,
                     )
                     return self._final_message()
 
                 await self._save_chat_state(phone, chat_state, indicePergunta=next_index)
+                await self._save_fill_status(
+                    phone,
+                    fill_status="em_andamento",
+                    id_questionario=id_questionario,
+                    perguntas_respondidas=next_index,
+                    total_perguntas=len(questions),
+                )
                 next_q = questions[next_index]
                 return await self._enviar_pergunta_formatada(
                     phone=phone,
@@ -794,19 +888,34 @@ class BotFlow:
                 sub_state = self._build_subpergunta_state(current_q)
                 if sub_state:
                     await self._save_chat_state(phone, chat_state, subPerguntaPendente=sub_state)
+                    await self._save_fill_status(
+                        phone,
+                        fill_status="em_andamento",
+                        id_questionario=id_questionario,
+                        perguntas_respondidas=min(indice + 1, len(questions)),
+                        total_perguntas=len(questions),
+                    )
                     return self._formatar_subpergunta(sub_state)
 
             next_index = indice + 1
             if next_index >= len(questions):
-                await self._save_chat_state(
-                    phone,
-                    chat_state,
-                    statusChat="FINALIZADO",
-                    indicePergunta=next_index,
+                await self._finalizar_questionario(
+                    phone=phone,
+                    chat_state=chat_state,
+                    id_questionario=id_questionario,
+                    total_perguntas=len(questions),
+                    indice_pergunta=next_index,
                 )
                 return self._final_message()
 
             await self._save_chat_state(phone, chat_state, indicePergunta=next_index)
+            await self._save_fill_status(
+                phone,
+                fill_status="em_andamento",
+                id_questionario=id_questionario,
+                perguntas_respondidas=next_index,
+                total_perguntas=len(questions),
+            )
             next_q = questions[next_index]
             return await self._enviar_pergunta_formatada(
                 phone=phone,

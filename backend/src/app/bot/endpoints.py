@@ -39,6 +39,7 @@ async def dev_user_info(phone: str):
 
     anon_id = user.get("anonId")
     chat_state = (user.get("metadata") or {}).get("chat_state") or {}
+    fill_status = (user.get("metadata") or {}).get("preenchimento") or {}
 
     # Busca TODAS as respostas desse anonId (independente do questionário)
     all_respostas = []
@@ -59,7 +60,10 @@ async def dev_user_info(phone: str):
         "idOrganizacao": str(user.get("idOrganizacao", "")),
         "idSetor": str(user.get("idSetor", "")),
         "numeroUnidade": user.get("numeroUnidade"),
+        "status_usuario": user.get("status"),
+        "respondido": bool(user.get("respondido", False)),
         "chat_state": chat_state,
+        "preenchimento": fill_status,
         "respostas_por_questionario": all_respostas,
     }
 
@@ -146,4 +150,3 @@ async def twilio_whatsapp_webhook(request: Request, settings: Settings = Depends
     if reply:
         resp.message(reply)
     return PlainTextResponse(str(resp), media_type="application/xml")
-

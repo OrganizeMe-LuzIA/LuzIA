@@ -15,6 +15,7 @@ import { dashboardApi } from "@/lib/api";
 import { ProgressoUsuario, UsuarioAtivo } from "@/lib/types/api";
 import { average, formatDateTime, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
+import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
 
 function ProgressBar({ value }: { value: number }) {
   const clamped = Math.max(0, Math.min(100, value));
@@ -52,6 +53,7 @@ export default function UsuariosPage() {
   }, [token, filters.orgId, filters.setorId]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
+  usePollingRefetch(refetch, { enabled: Boolean(token), intervalMs: 30_000 });
   const usuarios = data || [];
 
   const stats = useMemo(() => {

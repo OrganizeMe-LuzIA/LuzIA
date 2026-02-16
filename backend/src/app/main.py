@@ -100,6 +100,18 @@ app.include_router(bot_router)
 async def root():
     return {"message": "Bem-vindo à API do LuzIA"}
 
+def _mongo_provider(uri: str) -> str:
+    normalized = (uri or "").strip().lower()
+    if normalized.startswith("mongodb+srv://"):
+        return "atlas"
+    if "localhost" in normalized or "127.0.0.1" in normalized or "mongo:27017" in normalized:
+        return "local"
+    return "custom"
+
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "mongo": "connected" if db.connected else "disconnected"}
+    return {
+        "status": "healthy",
+        "mongo": "connected" if db.connected else "disconnected",
+        "mongo_provider": _mongo_provider(settings.MONGO_URI),
+    }

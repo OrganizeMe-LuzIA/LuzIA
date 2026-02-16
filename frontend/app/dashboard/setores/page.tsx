@@ -18,6 +18,7 @@ import { dashboardApi, organizacoesApi, setoresApi } from "@/lib/api";
 import { Organizacao, SetorDashboard, SetorDetalhado } from "@/lib/types/api";
 import { average, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
+import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
 
 type RiscoMedio = "favoravel" | "intermediario" | "risco";
 
@@ -78,6 +79,7 @@ export default function SetoresPage() {
   }, [token, filters.orgId]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
+  usePollingRefetch(refetch, { enabled: Boolean(token), intervalMs: 30_000 });
   const setores = data || [];
 
   const stats = useMemo(() => {

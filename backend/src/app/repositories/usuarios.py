@@ -144,6 +144,48 @@ class UsuariosRepo(BaseRepository[Dict[str, Any]]):
         )
         return result.modified_count > 0
 
+    async def update_fill_status(
+        self,
+        phone: str,
+        fill_status: str,
+        *,
+        id_questionario: Optional[str] = None,
+        perguntas_respondidas: Optional[int] = None,
+        total_perguntas: Optional[int] = None,
+        respondido: Optional[bool] = None,
+        user_status: Optional[str] = None,
+    ) -> bool:
+        """
+        Atualiza o status de preenchimento do fluxo WhatsApp/Twilio.
+
+        Os dados ficam em metadata.preenchimento para rastrear progresso por telefone.
+        """
+        db = await get_db()
+        now = datetime.utcnow()
+        set_payload: Dict[str, Any] = {
+            "metadata.preenchimento.origem": "twilio",
+            "metadata.preenchimento.status": fill_status,
+            "metadata.preenchimento.atualizadoEm": now,
+            "ultimoAcesso": now,
+        }
+
+        if id_questionario:
+            set_payload["metadata.preenchimento.idQuestionario"] = id_questionario
+        if perguntas_respondidas is not None:
+            set_payload["metadata.preenchimento.perguntasRespondidas"] = int(perguntas_respondidas)
+        if total_perguntas is not None:
+            set_payload["metadata.preenchimento.totalPerguntas"] = int(total_perguntas)
+        if respondido is not None:
+            set_payload["respondido"] = bool(respondido)
+        if user_status is not None:
+            set_payload["status"] = user_status
+
+        result = await db[self.collection_name].update_one(
+            {"telefone": phone},
+            {"$set": set_payload},
+        )
+        return result.matched_count > 0
+
     async def list_users_by_org(
         self, org_id: str, setor_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:

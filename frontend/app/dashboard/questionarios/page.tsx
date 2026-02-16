@@ -15,6 +15,7 @@ import { dashboardApi } from "@/lib/api";
 import { QuestionarioMetricas, QuestionarioStatus } from "@/lib/types/api";
 import { average, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
+import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
 
 const chartColors = {
   favoravel: "#10b981",
@@ -66,6 +67,7 @@ export default function QuestionariosPage() {
   }, [token]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
+  usePollingRefetch(refetch, { enabled: Boolean(token), intervalMs: 30_000 });
   const questionarios = data || [];
 
   const stats = useMemo(() => {
