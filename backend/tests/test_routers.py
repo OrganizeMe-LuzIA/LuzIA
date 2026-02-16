@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from app.main import app
+from app.main import app, CORS_ORIGINS
 import pytest
 
 client = TestClient(app)
@@ -33,12 +33,14 @@ def test_routes_protected_unauthorized():
         assert response.status_code == 401, f"Endpoint {endpoint} should be protected"
 
 def test_cors_headers():
+    origin = next((item for item in CORS_ORIGINS if item != "*"), "http://localhost:3000")
+
     # Preflight request
     headers = {
-        "Origin": "http://localhost:3000",
+        "Origin": origin,
         "Access-Control-Request-Method": "POST",
         "Access-Control-Request-Headers": "Content-Type",
     }
     response = client.options("/api/v1/auth/login", headers=headers)
     assert response.status_code == 200
-    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+    assert response.headers["access-control-allow-origin"] == origin

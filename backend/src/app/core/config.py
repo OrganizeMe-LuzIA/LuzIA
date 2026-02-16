@@ -25,8 +25,15 @@ class Settings(BaseSettings):
     # CORS - lista separada por vírgula ou "*" para permitir qualquer origem
     CORS_ORIGINS: str = os.getenv(
         "CORS_ORIGINS",
-        "http://localhost:3000,http://localhost:8080,http://127.0.0.1:3000",
+        (
+            "http://localhost:3000,"
+            "http://localhost:8080,"
+            "http://127.0.0.1:3000,"
+            "https://luz-ia-xi.vercel.app"
+        ),
     )
+    # Regex opcional para domínios dinâmicos (ex.: previews Vercel)
+    CORS_ORIGIN_REGEX: str = os.getenv("CORS_ORIGIN_REGEX", "")
     
     # Configurações do Twilio (WhatsApp)
     TWILIO_ACCOUNT_SID: str = os.getenv("TWILIO_ACCOUNT_SID", "")

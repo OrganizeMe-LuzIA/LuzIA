@@ -1,158 +1,230 @@
-# Documentação da API REST - LuzIA Backend
+# API Reference - LuzIA Backend
 
-Este documento descreve os endpoints da API REST do LuzIA Backend.
-
-## Base URL
-```
-/api/v1
-```
-
-## Autenticação
-Todos os endpoints (exceto `/auth/login` e `/auth/request-otp`) requerem um token JWT no header:
-```
-Authorization: Bearer <token>
-```
+> **Voltar para:** [📚 Documentação](../README.md) | [🏛️ Arquitetura](../backend/ARQUITETURA.md)
 
 ---
 
-## Routers
+## 📋 Visão Geral
 
-### 1. Auth (`/auth`)
-**Arquivo**: `app/routers/auth.py`
+- **Base URL:** `http://localhost:8000/api/v1`
+- **Versão:** 2.1.1
+- **Docs Interativa:** `http://localhost:8000/docs` (Swagger UI)
+- **Autenticação:** Bearer Token (JWT) — ver [AUTENTICACAO.md](../backend/AUTENTICACAO.md)
 
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| POST | `/login` | Autentica usuário e retorna JWT | ❌ Não |
-| POST | `/request-otp` | Solicita envio de OTP via WhatsApp | ❌ Não |
+---
 
-**Request Body (login)**:
+## 🔐 Auth (`/api/v1/auth`)
+
+**Arquivo:** [`backend/src/app/api/v1/auth.py`](../../backend/src/app/api/v1/auth.py)
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `POST` | `/auth/login` | ❌ | Login via email + senha |
+| `POST` | `/auth/register` | 🔑 Admin | Cadastrar credenciais para usuário existente |
+
+### `POST /auth/login`
+
 ```json
-{
-  "phone": "+5511999999999",
-  "code": "123456"
-}
+// Request
+{ "email": "user@example.com", "password": "minhasenha123" }
+
+// Response 200
+{ "access_token": "eyJ...", "token_type": "bearer" }
+
+// Response 401 — Email ou senha inválidos
+// Response 429 — Rate limit (Retry-After: 60)
 ```
 
-**Response**:
+### `POST /auth/register`
+
 ```json
-{
-  "access_token": "eyJ...",
-  "token_type": "bearer"
-}
+// Request (requer token Admin no header)
+{ "email": "novo@empresa.com", "password": "senha123", "phone": "+5511999999999" }
+
+// Response 200
+{ "message": "Credenciais salvas com sucesso.", "email": "novo@empresa.com", "saved": true }
+
+// Response 404 — Telefone não encontrado
+// Response 409 — Email já em uso por outro usuário
 ```
 
 ---
 
-### 2. Organizações (`/organizacoes`)
-**Arquivo**: `app/routers/organizacoes.py`
+## 🏢 Organizações (`/api/v1/organizacoes`)
 
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| POST | `/` | Cria nova organização | ✅ Admin |
-| GET | `/` | Lista organizações | ✅ Admin |
-| GET | `/{org_id}` | Detalhes de uma organização | ✅ Admin |
+**Arquivo:** [`backend/src/app/api/v1/organizacoes.py`](../../backend/src/app/api/v1/organizacoes.py)
 
----
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `POST` | `/organizacoes/` | 🔑 Admin | Criar organização (CNPJ validado) |
+| `GET` | `/organizacoes/?limit=100` | 🔑 Admin | Listar todas |
+| `GET` | `/organizacoes/{org_id}` | 🔑 Admin | Obter detalhes por ID |
+| `PUT` | `/organizacoes/{org_id}` | 🔑 Admin | Atualizar organização |
+| `DELETE` | `/organizacoes/{org_id}` | 🔑 Admin | Remover (bloqueia se há vínculos) |
 
-### 3. Questionários (`/questionarios`)
-**Arquivo**: `app/routers/questionarios.py`
+### CNPJ Validation
 
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| GET | `/` | Lista questionários ativos | ✅ Usuário |
-| GET | `/{q_id}` | Detalhes do questionário | ✅ Usuário |
-| GET | `/{q_id}/perguntas` | Lista perguntas do questionário | ✅ Usuário |
+O CNPJ é validado automaticamente pelo modelo Pydantic `Organizacao`, que utiliza `validar_cnpj()` de `core/validators.py` para verificar os dígitos verificadores.
 
 ---
 
-### 4. Respostas (`/respostas`)
-**Arquivo**: `app/routers/respostas.py`
+## 🏗️ Setores (`/api/v1/setores`)
 
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| POST | `/` | Submete respostas em lote | ✅ Usuário |
+**Arquivo:** [`backend/src/app/api/v1/setores.py`](../../backend/src/app/api/v1/setores.py)
 
-**Request Body**:
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `POST` | `/setores/` | 🔑 Admin | Criar setor (verifica existência da org) |
+| `PUT` | `/setores/{setor_id}` | 🔑 Admin | Atualizar setor |
+| `DELETE` | `/setores/{setor_id}` | 🔑 Admin | Remover (bloqueia se há usuários vinculados) |
+
+---
+
+## 📝 Questionários (`/api/v1/questionarios`)
+
+**Arquivo:** [`backend/src/app/api/v1/questionarios.py`](../../backend/src/app/api/v1/questionarios.py)
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `GET` | `/questionarios/` | 👤 Ativo | Listar questionários ativos |
+| `GET` | `/questionarios/{q_id}` | 👤 Ativo | Obter questionário por ID |
+| `GET` | `/questionarios/{q_id}/perguntas` | 👤 Ativo | Listar perguntas do questionário |
+
+---
+
+## 📊 Respostas (`/api/v1/respostas`)
+
+**Arquivo:** [`backend/src/app/api/v1/respostas.py`](../../backend/src/app/api/v1/respostas.py)
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `POST` | `/respostas/` | 👤 Ativo | Enviar respostas (dispara diagnóstico via Celery) |
+
 ```json
+// Request
 {
-  "anonId": "anon123",
-  "idQuestionario": "64a...",
+  "anonId": "USR_1234567890",
+  "idQuestionario": "507f1f77bcf86cd799439011",
   "respostas": [
-    {"idPergunta": "p1", "valor": 3},
-    {"idPergunta": "p2", "valor": 1}
+    { "idPergunta": "EL_EQ_01A", "valor": 3 },
+    { "idPergunta": "EL_EQ_01B", "valorTexto": "Comentário opcional" }
   ]
 }
+
+// Response 201
+{ "message": "Respostas salvas com sucesso. Diagnóstico em processamento.", "task_id": "abc123" }
 ```
 
-> **Nota**: O envio dispara cálculo de diagnóstico em background.
+> **Nota:** Sobrescreve respostas anteriores do mesmo questionário. O diagnóstico é processado em background pelo Celery.
 
 ---
 
-### 5. Diagnósticos (`/diagnosticos`)
-**Arquivo**: `app/routers/diagnosticos.py`
+## 🩺 Diagnósticos (`/api/v1/diagnosticos`)
 
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| GET | `/me` | Histórico de diagnósticos do usuário | ✅ Usuário |
-| GET | `/{diag_id}` | Detalhes de um diagnóstico | ✅ Usuário (próprio) |
+**Arquivo:** [`backend/src/app/api/v1/diagnosticos.py`](../../backend/src/app/api/v1/diagnosticos.py)
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `GET` | `/diagnosticos/me` | 👤 Ativo | Histórico do usuário logado |
+| `GET` | `/diagnosticos/{diag_id}` | 👤 Ativo | Obter diagnóstico por ID (somente próprio) |
 
 ---
 
-### 6. Relatórios (`/relatorios`)
-**Arquivo**: `app/routers/relatorios.py`
+## 📑 Relatórios (`/api/v1/relatorios`)
 
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| POST | `/gerar` | Gera relatório consolidado | ✅ Admin |
-| GET | `/{rel_id}` | Obtém relatório pelo ID | ✅ Admin |
+**Arquivo:** [`backend/src/app/api/v1/relatorios.py`](../../backend/src/app/api/v1/relatorios.py)
 
-**Request Body (gerar)**:
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `POST` | `/relatorios/gerar` | 🔑 Admin | Geração síncrona de relatório |
+| `POST` | `/relatorios/gerar-async` | 🔑 Admin | Geração assíncrona via Celery |
+| `GET` | `/relatorios/{rel_id}` | 🔑 Admin | Obter relatório por ID |
+
 ```json
+// POST /relatorios/gerar — Request
 {
-  "idQuestionario": "64a...",
-  "idOrganizacao": "64b...",
-  "idSetor": "64c...",
+  "idQuestionario": "507f1f77bcf86cd799439011",
+  "idOrganizacao": "507f1f77bcf86cd799439012",
+  "idSetor": null,
   "tipo": "organizacional"
 }
+
+// Response 201
+{ "id": "507f1f77bcf86cd799439013", "message": "Relatório gerado com sucesso..." }
+
+// POST /relatorios/gerar-async — Response 202
+{ "task_id": "abc-123", "status": "queued", "message": "Geração de relatório enviada..." }
 ```
 
 ---
 
-## Testes
+## 📊 Dashboard (`/api/v1/dashboard`)
 
-### Arquivo: `tests/test_routers.py`
+**Arquivo:** [`backend/src/app/api/v1/dashboard.py`](../../backend/src/app/api/v1/dashboard.py)
 
-| Teste | Descrição |
-|-------|-----------|
-| `test_health_check` | Verifica endpoint `/health` retorna 200 |
-| `test_api_v1_auth_routes_exist` | Confirma que `/auth/login` existe |
-| `test_routes_protected_unauthorized` | Valida que rotas protegidas retornam 401 sem token |
-| `test_cors_headers` | Verifica headers CORS em preflight requests |
+> Todas as rotas requerem autenticação **Admin**. Existe um `legacy_router` mantido para compatibilidade com frontends antigos.
 
-### Executar Testes
-```bash
-cd backend
-python3 -m pytest tests/test_routers.py -v
-```
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `GET` | `/dashboard/overview` | Resumo executivo (totais, alertas) |
+| `GET` | `/dashboard/organizacoes` | Lista orgs com métricas |
+| `GET` | `/dashboard/organizacoes/{org_id}` | Detalhes da organização |
+| `GET` | `/dashboard/setores?org_id=X` | Setores (filtro opcional por org) |
+| `GET` | `/dashboard/setores/{setor_id}` | Detalhes do setor |
+| `GET` | `/dashboard/usuarios/ativos?org_id=X&setor_id=Y` | Usuários ativos |
+| `GET` | `/dashboard/usuarios/{user_id}/progresso` | Progresso do usuário |
+| `GET` | `/dashboard/questionarios/status` | Status de todos os questionários |
+| `GET` | `/dashboard/questionarios/{q_id}/metricas` | Métricas do questionário |
 
-### Resultado Esperado
-```
-tests/test_routers.py::test_health_check PASSED
-tests/test_routers.py::test_api_v1_auth_routes_exist PASSED
-tests/test_routers.py::test_routes_protected_unauthorized PASSED
-tests/test_routers.py::test_cors_headers PASSED
-```
+### Rotas Legacy (compatibilidade)
 
----
-
-## Dependências de Autenticação
-
-| Dependência | Arquivo | Descrição |
-|-------------|---------|-----------|
-| `get_current_user` | `deps.py` | Obtém usuário do token |
-| `get_current_active_user` | `deps.py` | Verifica se usuário está ativo |
-| `get_current_admin_user` | `deps.py` | Verifica se usuário é admin |
+As seguintes rotas também estão disponíveis sem o prefixo `/dashboard`:
+- `GET /setores`, `GET /setores/{id}`
+- `GET /usuarios/ativos`, `GET /usuarios/{id}/progresso`
+- `GET /questionarios/status`, `GET /questionarios/{id}/metricas`
+- `GET /overview`
 
 ---
 
-*Última atualização: 12 de Janeiro de 2026*
+## 🤖 WhatsApp Bot (`/webhook`)
+
+**Arquivo:** [`backend/src/app/bot/endpoints.py`](../../backend/src/app/bot/endpoints.py)
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `POST` | `/webhook` | Twilio Signature | Recebe mensagens do WhatsApp |
+
+> Detalhes em [WHATSAPP.md](../integracoes/WHATSAPP.md)
+
+---
+
+## 🔧 Utilitário
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| `GET` | `/health` | ❌ | Health check do serviço |
+
+---
+
+## 📌 Dependency Injection
+
+**Arquivo:** [`backend/src/app/api/deps.py`](../../backend/src/app/api/deps.py)
+
+| Dependency | Descrição |
+|-----------|-----------|
+| `get_current_user` | Retorna `Usuario` do banco a partir do token JWT |
+| `get_current_active_user` | Garante `is_active_user_status()` = True |
+| `get_current_admin_user` | Garante `metadata.is_admin == True` |
+
+---
+
+## 🔗 Documentos Relacionados
+
+- [🔐 Autenticação](../backend/AUTENTICACAO.md)
+- [📦 Modelos](../backend/MODELOS.md)
+- [⚡ Serviços](../backend/SERVICOS.md)
+- [📱 WhatsApp](../integracoes/WHATSAPP.md)
+
+---
+
+**Última Atualização:** 2026-02-16

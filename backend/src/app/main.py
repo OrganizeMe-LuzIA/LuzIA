@@ -43,7 +43,17 @@ DEFAULT_CORS_ORIGINS = [
     "http://localhost:3000",      # Frontend dev
     "http://localhost:8080",      # Alternative dev
     "http://127.0.0.1:3000",
+    "https://luz-ia-xi.vercel.app",  # Frontend produção
 ]
+
+
+def _normalize_origin(value: object) -> str:
+    normalized = str(value or "").strip()
+    if not normalized:
+        return ""
+    # Tolerante a valores com aspas em env vars (Render/Vercel dashboard).
+    normalized = normalized.strip("'\"").rstrip("/")
+    return normalized
 
 
 def _parse_cors_origins(origins: object) -> list[str]:
@@ -51,7 +61,7 @@ def _parse_cors_origins(origins: object) -> list[str]:
         return DEFAULT_CORS_ORIGINS
 
     if isinstance(origins, str):
-        normalized = origins.strip()
+        normalized = _normalize_origin(origins)
         if not normalized:
             return DEFAULT_CORS_ORIGINS
         if normalized == "*":
@@ -62,27 +72,35 @@ def _parse_cors_origins(origins: object) -> list[str]:
             try:
                 loaded = json.loads(normalized)
                 if isinstance(loaded, list):
-                    parsed = [str(origin).strip().rstrip("/") for origin in loaded if str(origin).strip()]
+                    parsed = [_normalize_origin(origin) for origin in loaded if _normalize_origin(origin)]
+                    if "*" in parsed:
+                        return ["*"]
                     return parsed or DEFAULT_CORS_ORIGINS
             except json.JSONDecodeError:
                 pass
 
-        parsed = [origin.strip().rstrip("/") for origin in normalized.split(",") if origin.strip()]
+        parsed = [_normalize_origin(origin) for origin in normalized.split(",") if _normalize_origin(origin)]
+        if "*" in parsed:
+            return ["*"]
         return parsed or DEFAULT_CORS_ORIGINS
 
     if isinstance(origins, list):
-        parsed = [str(origin).strip().rstrip("/") for origin in origins if str(origin).strip()]
+        parsed = [_normalize_origin(origin) for origin in origins if _normalize_origin(origin)]
+        if "*" in parsed:
+            return ["*"]
         return parsed or DEFAULT_CORS_ORIGINS
 
     return DEFAULT_CORS_ORIGINS
 
 
 CORS_ORIGINS = _parse_cors_origins(getattr(settings, "CORS_ORIGINS", None))
+CORS_ORIGIN_REGEX = _normalize_origin(getattr(settings, "CORS_ORIGIN_REGEX", None))
 ALLOW_CREDENTIALS = CORS_ORIGINS != ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX or None,
     allow_credentials=ALLOW_CREDENTIALS,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept"],
