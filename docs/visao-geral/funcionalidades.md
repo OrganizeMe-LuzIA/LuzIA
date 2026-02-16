@@ -105,3 +105,8 @@ O LuzIA utiliza uma integração que permite comunicação contínua e fluida co
 - Garantir privacidade e segurança dos dados;
 
 - Oferecer informações claras e confiáveis para a empresa;
+
+### Navegação
+
+⬅️ Anterior: [Como Funciona](./como-funciona.md)  
+➡️ Próximo: [Lógica de Funcionamento](./Logica-de-funcionamento.md)
