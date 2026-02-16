@@ -2,9 +2,8 @@
 
 O LuzIA foi desenvolvido para tornar a avaliação de riscos psicossociais mais simples, acessível e segura para empresas e colaboradores.
 
----
 
-## ✅ COPSOQ II - Avaliação Psicossocial Científica
+## COPSOQ II - Avaliação Psicossocial Científica
 
 O LuzIA possui **implementação completa e validada** do COPSOQ II (Copenhagen Psychosocial Questionnaire), metodologia científica reconhecida mundialmente para avaliação de riscos psicossociais no trabalho.
 
@@ -15,18 +14,14 @@ O LuzIA possui **implementação completa e validada** do COPSOQ II (Copenhagen 
 
 ### Funcionalidades
 
-✅ **Classificação por Tercis** - Categorização científica (favorável/intermediário/risco)  
-✅ **Dimensões de Proteção vs Risco** - Interpretação diferenciada conforme metodologia  
-✅ **Diagnósticos Individuais** - Análise personalizada com insights acionáveis  
-✅ **Relatórios Organizacionais** - Agregação por domínios e dimensões  
-✅ **Índice de Proteção** - Métrica de saúde organizacional (0-100%)  
-✅ **Recomendações Contextualizadas** - Ações específicas por dimensão em risco
+- **Classificação por Tercis** - Categorização científica (favorável/intermediário/risco)  
+-**Dimensões de Proteção vs Risco** - Interpretação diferenciada conforme metodologia  
+- **Diagnósticos Individuais** - Análise personalizada com insights acionáveis  
+- **Relatórios Organizacionais** - Agregação por domínios e dimensões  
+- **Índice de Proteção** - Métrica de saúde organizacional (0-100%)  
+- **Recomendações Contextualizadas** - Ações específicas por dimensão em risco
 
-📖 [Documentação Completa COPSOQ II](../guides/GUIA-COPSOQ-II.md)
-
----
-
-## 💬 Interação via WhatsApp
+##  Interação via WhatsApp
 
 Os colaboradores respondem aos questionários diretamente pelo WhatsApp, um canal familiar e de fácil acesso, o que aumenta a adesão e reduz barreiras de participação.
 
@@ -36,9 +31,7 @@ Os colaboradores respondem aos questionários diretamente pelo WhatsApp, um cana
 - Confirmação de conclusão
 - Suporte a múltiplos usuários simultâneos
 
----
-
-## 🔒 Privacidade e Anonimização (LGPD)
+##  Privacidade e Anonimização (LGPD)
 
 As respostas são registradas sem associação direta à identidade do colaborador, garantindo privacidade, segurança das informações e conformidade com a LGPD.
 
@@ -48,9 +41,8 @@ As respostas são registradas sem associação direta à identidade do colaborad
 - Criptografia de dados sensíveis
 - Controle de acesso por roles
 
----
 
-## 📊 Diagnósticos e Relatórios
+##  Diagnósticos e Relatórios
 
 O sistema gera automaticamente diagnósticos individuais e relatórios organizacionais com análises baseadas em metodologias científicas.
 
@@ -69,48 +61,47 @@ O sistema gera automaticamente diagnósticos individuais e relatórios organizac
 - Comparação entre setores
 - Recomendações priorizadas
 
----
 
-## 🎨 Painel de Controle
+## Painel de Controle
 
 Ambiente web onde gestores autorizados acompanham e gerenciam todo o processo de avaliação.
 
-Por meio desse painel, é possível:
+**Por meio desse painel, é possível:**
 
-Acessar métricas detalhadas sobre os resultados das avaliações
+- Acessar métricas detalhadas sobre os resultados das avaliações;
 
-Acompanhar a participação dos usuários, de forma agregada e anonimizada
+- Acompanhar a participação dos usuários, de forma agregada e anonimizada;
 
-Gerar relatórios e laudos, que auxiliam na tomada de decisões e no planejamento de ações
+- Gerar relatórios e laudos, que auxiliam na tomada de decisões e no planejamento de ações;
 
-Centralizar a gestão das avaliações em um único local, com visão clara e organizada
+- Centralizar a gestão das avaliações em um único local, com visão clara e organizada;
 
-Esse painel transforma dados complexos em informações acessíveis e úteis para gestores e profissionais responsáveis.
+- Esse painel transforma dados complexos em informações acessíveis e úteis para gestores e profissionais responsáveis.
 
-Comunicação Automatizada via WhatsApp
+### Comunicação Automatizada via WhatsApp
 
 O LuzIA utiliza uma integração que permite comunicação contínua e fluida com os colaboradores ao longo da avaliação.
 
-Essa funcionalidade possibilita:
+**Essa funcionalidade possibilita:**
 
-Comunicação em tempo real com os participantes
+- Comunicação em tempo real com os participantes;
 
-Envio automático das perguntas dos questionários
+- Envio automático das perguntas dos questionários;
 
-Garantia de que o questionário siga a ordem correta
+- Garantia de que o questionário siga a ordem correta;
 
-Confirmação da conclusão da avaliação ao final do processo
+- Confirmação da conclusão da avaliação ao final do processo;
 
-Tudo isso ocorre de forma transparente para o usuário, que apenas responde às perguntas no WhatsApp, sem precisar acessar sistemas complexos.
+- Tudo isso ocorre de forma transparente para o usuário, que apenas responde às perguntas no WhatsApp, sem precisar acessar sistemas complexos.
 
 ## Benefícios das Funcionalidades
 
-As funcionalidades do LuzIA foram pensadas para:
+- As funcionalidades do LuzIA foram pensadas para:
 
-Aumentar a adesão dos colaboradores às avaliações
+- Aumentar a adesão dos colaboradores às avaliações;
 
-Reduzir esforços manuais no processo de aplicação e análise
+- Reduzir esforços manuais no processo de aplicação e análise;
 
-Garantir privacidade e segurança dos dados
+- Garantir privacidade e segurança dos dados;
 
-Oferecer informações claras e confiáveis para a empresa
+- Oferecer informações claras e confiáveis para a empresa;
