@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ShieldCheck, UserRoundPlus } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
@@ -12,11 +12,8 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("+5511999999999");
   const [loading, setLoading] = useState(false);
-  const [registering, setRegistering] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -28,7 +25,6 @@ export default function LoginPage() {
     event.preventDefault();
     setLoading(true);
     setError(null);
-    setFeedback(null);
 
     try {
       const token = await authApi.login({ email, password });
@@ -39,27 +35,6 @@ export default function LoginPage() {
       setError(message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRegisterCredentials = async () => {
-    if (!phone.startsWith("+")) {
-      setError("Informe o telefone no formato E.164, por exemplo +5511999999999.");
-      return;
-    }
-
-    setRegistering(true);
-    setError(null);
-    setFeedback(null);
-
-    try {
-      const result = await authApi.registerCredentials({ email, password, phone });
-      setFeedback(result.message);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Falha ao salvar credenciais.";
-      setError(message);
-    } finally {
-      setRegistering(false);
     }
   };
 
@@ -79,14 +54,6 @@ export default function LoginPage() {
               </div>
               <h2 className="font-display text-lg font-semibold">Acesso com email e senha</h2>
               <p className="mt-1 text-sm text-slate-400">Autenticação com senha em hash seguro e token JWT com controle por perfil administrativo.</p>
-            </article>
-
-            <article className="rounded-xl border border-slate-700 bg-slate-800/60 p-4">
-              <div className="mb-2 inline-flex rounded-lg bg-teal-500/20 p-2 text-teal-300">
-                <UserRoundPlus className="h-5 w-5" />
-              </div>
-              <h2 className="font-display text-lg font-semibold">Cadastro de credenciais</h2>
-              <p className="mt-1 text-sm text-slate-400">Se for primeiro acesso, vincule email e senha ao usuário existente usando o telefone.</p>
             </article>
           </div>
         </section>
@@ -137,37 +104,10 @@ export default function LoginPage() {
               {!loading && <ArrowRight className="h-4 w-4" />}
             </button>
           </form>
-
-          <div className="mt-8 space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-700">Primeiro acesso</p>
-            <p className="text-xs text-slate-600">Vincule email/senha ao usuário já cadastrado no WhatsApp.</p>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-700" htmlFor="phone">
-                Telefone do usuário
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleRegisterCredentials}
-              disabled={registering}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {registering ? "Salvando..." : "Salvar credenciais no banco"}
-            </button>
-          </div>
-
-          {feedback && <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{feedback}</p>}
           {error && <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
 
           <p className="mt-6 text-xs text-slate-500">
-            Dica: os endpoints administrativos exigem usuário ativo com `metadata.is_admin = true`.
+            Dica: o cadastro de credenciais é restrito a usuário admin autenticado.
           </p>
         </section>
       </div>

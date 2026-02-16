@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { Users } from "lucide-react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import { Pencil, Plus, Trash2, Users } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -15,12 +16,13 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Column, DataTable } from "@/components/ui/DataTable";
 import { Drawer } from "@/components/ui/Drawer";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { useAuth } from "@/context/AuthContext";
 import { useDashboardFilters } from "@/context/FiltersContext";
-import { dashboardApi } from "@/lib/api";
-import { SetorDashboard, SetorDetalhado } from "@/lib/types/api";
+import { dashboardApi, organizacoesApi, setoresApi } from "@/lib/api";
+import { Organizacao, SetorDashboard, SetorDetalhado } from "@/lib/types/api";
 import { average, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
 
@@ -44,6 +46,18 @@ export default function SetoresPage() {
 
   const [selectedSetor, setSelectedSetor] = useState<SetorDetalhado | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+
+  const [editingSetorId, setEditingSetorId] = useState<string | null>(null);
+  const [editNome, setEditNome] = useState("");
+  const [editDescricao, setEditDescricao] = useState("");
+  const [editOrgId, setEditOrgId] = useState("");
+  const [orgOptions, setOrgOptions] = useState<Organizacao[]>([]);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [setorToDelete, setSetorToDelete] = useState<SetorRow | null>(null);
+
+  const [runningActionId, setRunningActionId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   const loader = useCallback(async () => {
     if (!token) {
@@ -81,6 +95,108 @@ export default function SetoresPage() {
         })),
     [setores],
   );
+
+  const openEdit = useCallback(
+    async (setorId: string) => {
+      if (!token) {
+        return;
+      }
+
+      setRunningActionId(`edit-${setorId}`);
+      setActionError(null);
+      setActionSuccess(null);
+
+      try {
+        const [detail, orgs] = await Promise.all([
+          dashboardApi.getSetorDetalhado(setorId, token),
+          organizacoesApi.list(token, 200),
+        ]);
+
+        setEditingSetorId(setorId);
+        setEditNome(detail.nome);
+        setEditDescricao(detail.descricao || "");
+        setEditOrgId(detail.organizacao.id);
+        setOrgOptions(orgs);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Falha ao carregar dados do setor.";
+        setActionError(message);
+      } finally {
+        setRunningActionId(null);
+      }
+    },
+    [token],
+  );
+
+  const saveEdit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!token || !editingSetorId) {
+      return;
+    }
+
+    setSavingEdit(true);
+    setActionError(null);
+    setActionSuccess(null);
+
+    try {
+      const result = await setoresApi.update(
+        editingSetorId,
+        {
+          idOrganizacao: editOrgId,
+          nome: editNome.trim(),
+          descricao: editDescricao.trim() || undefined,
+        },
+        token,
+      );
+      setActionSuccess(result.message);
+      setEditingSetorId(null);
+      await refetch();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Falha ao atualizar setor.";
+      setActionError(message);
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const deleteSector = useCallback(
+    async (row: SetorRow): Promise<boolean> => {
+      if (!token) {
+        return false;
+      }
+
+      setRunningActionId(`delete-${row.id}`);
+      setActionError(null);
+      setActionSuccess(null);
+
+      try {
+        const result = await setoresApi.remove(row.id, token);
+        setActionSuccess(result.message);
+        if (selectedSetor?.id === row.id) {
+          setSelectedSetor(null);
+        }
+        await refetch();
+        return true;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Falha ao excluir setor.";
+        setActionError(message);
+        return false;
+      } finally {
+        setRunningActionId(null);
+      }
+    },
+    [token, refetch, selectedSetor],
+  );
+
+  const confirmDeleteSector = useCallback(async () => {
+    if (!setorToDelete) {
+      return;
+    }
+
+    const success = await deleteSector(setorToDelete);
+    if (success) {
+      setSetorToDelete(null);
+    }
+  }, [setorToDelete, deleteSector]);
 
   const columns: Column<SetorRow>[] = [
     {
@@ -146,6 +262,41 @@ export default function SetoresPage() {
       label: "Risco Médio",
       render: (value) => <Badge variant={value as RiscoMedio}>{String(value).toUpperCase()}</Badge>,
     },
+    {
+      key: "acoes",
+      label: "Ações",
+      render: (_, row) => {
+        const loadingEdit = runningActionId === `edit-${row.id}`;
+        const loadingDelete = runningActionId === `delete-${row.id}`;
+
+        return (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={async (event) => {
+                event.stopPropagation();
+                await openEdit(row.id);
+              }}
+              disabled={loadingEdit || loadingDelete}
+              className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Pencil className="h-4 w-4" />
+              <span>Editar</span>
+            </button>
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                setSetorToDelete(row);
+              }}
+              disabled={loadingEdit || loadingDelete}
+              className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-rose-700 transition-colors hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span>Excluir</span>
+            </button>
+          </div>
+        );
+      },
+    },
   ];
 
   if (loading) {
@@ -158,10 +309,24 @@ export default function SetoresPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-3xl font-semibold text-slate-900">Setores</h1>
-        <p className="mt-1 text-slate-600">Análise comparativa de setores por organização</p>
+      <header className="flex flex-col justify-between gap-3 md:flex-row md:items-end">
+        <div>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Setores</h1>
+          <p className="mt-1 text-slate-600">Análise comparativa de setores por organização</p>
+        </div>
+        <Link
+          href="/dashboard/setores/novo"
+          className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700"
+        >
+          <Plus className="h-4 w-4" />
+          Novo setor
+        </Link>
       </header>
+
+      {actionSuccess && (
+        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{actionSuccess}</p>
+      )}
+      {actionError && <ErrorState title="Operação não concluída" message={actionError} />}
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card padding="sm">
@@ -263,6 +428,92 @@ export default function SetoresPage() {
           </div>
         )}
       </Drawer>
+
+      <Drawer
+        isOpen={Boolean(editingSetorId)}
+        onClose={() => (savingEdit ? undefined : setEditingSetorId(null))}
+        title="Editar setor"
+      >
+        <form className="space-y-4" onSubmit={saveEdit}>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700" htmlFor="editSetorNome">
+              Nome
+            </label>
+            <input
+              id="editSetorNome"
+              type="text"
+              value={editNome}
+              onChange={(event) => setEditNome(event.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700" htmlFor="editSetorOrg">
+              Organização
+            </label>
+            <select
+              id="editSetorOrg"
+              value={editOrgId}
+              onChange={(event) => setEditOrgId(event.target.value)}
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+              required
+            >
+              {orgOptions.map((org) => (
+                <option key={org.id} value={org.id}>
+                  {org.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700" htmlFor="editSetorDesc">
+              Descrição
+            </label>
+            <textarea
+              id="editSetorDesc"
+              value={editDescricao}
+              onChange={(event) => setEditDescricao(event.target.value)}
+              rows={4}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setEditingSetorId(null)}
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              disabled={savingEdit}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={savingEdit}
+            >
+              {savingEdit ? "Salvando..." : "Salvar alterações"}
+            </button>
+          </div>
+        </form>
+      </Drawer>
+
+      <ConfirmModal
+        isOpen={Boolean(setorToDelete)}
+        title="Excluir setor"
+        description={
+          setorToDelete
+            ? `O setor "${setorToDelete.nome}" será removido permanentemente. Esta ação não pode ser desfeita.`
+            : ""
+        }
+        confirmLabel="Excluir setor"
+        loading={Boolean(setorToDelete && runningActionId === `delete-${setorToDelete.id}`)}
+        onCancel={() => setSetorToDelete(null)}
+        onConfirm={confirmDeleteSector}
+      />
     </div>
   );
 }

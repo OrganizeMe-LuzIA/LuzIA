@@ -17,6 +17,7 @@ import {
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Column, DataTable } from "@/components/ui/DataTable";
+import { DialogModal } from "@/components/ui/DialogModal";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { useAuth } from "@/context/AuthContext";
@@ -37,6 +38,11 @@ export default function QuestionariosPage() {
   const [selectedQuestionario, setSelectedQuestionario] = useState<QuestionarioStatus | null>(null);
   const [metricas, setMetricas] = useState<QuestionarioMetricas | null>(null);
   const [loadingMetricas, setLoadingMetricas] = useState(false);
+
+  const closeQuestionarioDialog = useCallback(() => {
+    setSelectedQuestionario(null);
+    setMetricas(null);
+  }, []);
 
   const loader = useCallback(async () => {
     if (!token) {
@@ -222,117 +228,107 @@ export default function QuestionariosPage() {
         <DataTable columns={columns} data={questionarios} />
       </Card>
 
-      {selectedQuestionario && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/50 p-4">
-          <div className="mx-auto my-6 w-full max-w-5xl rounded-xl border border-slate-200 bg-white">
-            <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-              <div>
-                <h2 className="font-display text-2xl font-semibold text-slate-900">{selectedQuestionario.nome}</h2>
-                <p className="text-sm text-slate-600">
-                  v{selectedQuestionario.versao} {selectedQuestionario.codigo ? `• ${selectedQuestionario.codigo}` : ""}
+      <DialogModal
+        isOpen={Boolean(selectedQuestionario)}
+        onClose={closeQuestionarioDialog}
+        title={selectedQuestionario?.nome || "Métricas do questionário"}
+        subtitle={
+          selectedQuestionario
+            ? `v${selectedQuestionario.versao} ${selectedQuestionario.codigo ? `• ${selectedQuestionario.codigo}` : ""}`
+            : undefined
+        }
+        maxWidth="5xl"
+      >
+        {selectedQuestionario && (
+          <div className="space-y-6">
+            <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <Card padding="sm">
+                <p className="text-sm text-slate-600">Usuários Atribuídos</p>
+                <p className="text-2xl font-semibold text-slate-900">
+                  {formatNumber(selectedQuestionario.total_usuarios_atribuidos)}
                 </p>
-              </div>
-              <button
-                onClick={() => {
-                  setSelectedQuestionario(null);
-                  setMetricas(null);
-                }}
-                className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
-              >
-                ✕
-              </button>
-            </header>
+              </Card>
+              <Card padding="sm">
+                <p className="text-sm text-slate-600">Respostas Completas</p>
+                <p className="text-2xl font-semibold text-teal-600">
+                  {formatNumber(selectedQuestionario.total_respostas_completas)}
+                </p>
+              </Card>
+              <Card padding="sm">
+                <p className="text-sm text-slate-600">Taxa de Conclusão</p>
+                <p className="text-2xl font-semibold text-slate-900">{formatPercent(selectedQuestionario.taxa_conclusao)}</p>
+              </Card>
+            </section>
 
-            <div className="space-y-6 p-6">
-              <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <Card padding="sm">
-                  <p className="text-sm text-slate-600">Usuários Atribuídos</p>
-                  <p className="text-2xl font-semibold text-slate-900">
-                    {formatNumber(selectedQuestionario.total_usuarios_atribuidos)}
-                  </p>
-                </Card>
-                <Card padding="sm">
-                  <p className="text-sm text-slate-600">Respostas Completas</p>
-                  <p className="text-2xl font-semibold text-teal-600">
-                    {formatNumber(selectedQuestionario.total_respostas_completas)}
-                  </p>
-                </Card>
-                <Card padding="sm">
-                  <p className="text-sm text-slate-600">Taxa de Conclusão</p>
-                  <p className="text-2xl font-semibold text-slate-900">{formatPercent(selectedQuestionario.taxa_conclusao)}</p>
-                </Card>
-              </section>
+            {loadingMetricas ? (
+              <LoadingState label="Carregando métricas do questionário..." />
+            ) : metricas ? (
+              <>
+                <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                  <Card>
+                    <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Distribuição de Classificações</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie data={distribuicaoClassificacoes} cx="50%" cy="50%" outerRadius={96} dataKey="value">
+                          {distribuicaoClassificacoes.map((entry) => (
+                            <Cell key={entry.name} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Card>
 
-              {loadingMetricas ? (
-                <LoadingState label="Carregando métricas do questionário..." />
-              ) : metricas ? (
-                <>
-                  <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    <Card>
-                      <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Distribuição de Classificações</h3>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie data={distribuicaoClassificacoes} cx="50%" cy="50%" outerRadius={96} dataKey="value">
-                            {distribuicaoClassificacoes.map((entry) => (
-                              <Cell key={entry.name} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </Card>
+                  <Card>
+                    <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Top 5 Dimensões Críticas</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={metricas.dimensoes_criticas} layout="vertical" margin={{ left: 10, right: 10 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis dataKey="dimensao" type="category" width={160} tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        <Bar dataKey="total_risco" fill="#ef4444" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </Card>
+                </section>
 
-                    <Card>
-                      <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Top 5 Dimensões Críticas</h3>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={metricas.dimensoes_criticas} layout="vertical" margin={{ left: 10, right: 10 }}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis type="number" />
-                          <YAxis dataKey="dimensao" type="category" width={160} tick={{ fontSize: 11 }} />
-                          <Tooltip />
-                          <Bar dataKey="total_risco" fill="#ef4444" radius={[0, 4, 4, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </Card>
-                  </section>
+                <section>
+                  <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Organizações participantes</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {metricas.organizacoes_participantes.length ? (
+                      metricas.organizacoes_participantes.map((organizacao) => (
+                        <Badge key={organizacao} variant="default">
+                          {organizacao}
+                        </Badge>
+                      ))
+                    ) : (
+                      <p className="text-sm text-slate-500">Nenhuma organização participante encontrada.</p>
+                    )}
+                  </div>
+                </section>
 
-                  <section>
-                    <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Organizações participantes</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {metricas.organizacoes_participantes.length ? (
-                        metricas.organizacoes_participantes.map((organizacao) => (
-                          <Badge key={organizacao} variant="default">
-                            {organizacao}
-                          </Badge>
-                        ))
-                      ) : (
-                        <p className="text-sm text-slate-500">Nenhuma organização participante encontrada.</p>
-                      )}
-                    </div>
-                  </section>
-
-                  <section>
-                    <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Setores participantes</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {metricas.setores_participantes.length ? (
-                        metricas.setores_participantes.map((setor) => (
-                          <Badge key={setor} variant="default">
-                            {setor}
-                          </Badge>
-                        ))
-                      ) : (
-                        <p className="text-sm text-slate-500">Nenhum setor participante encontrado.</p>
-                      )}
-                    </div>
-                  </section>
-                </>
-              ) : (
-                <ErrorState message="Não foi possível carregar as métricas detalhadas." />
-              )}
-            </div>
+                <section>
+                  <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Setores participantes</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {metricas.setores_participantes.length ? (
+                      metricas.setores_participantes.map((setor) => (
+                        <Badge key={setor} variant="default">
+                          {setor}
+                        </Badge>
+                      ))
+                    ) : (
+                      <p className="text-sm text-slate-500">Nenhum setor participante encontrado.</p>
+                    )}
+                  </div>
+                </section>
+              </>
+            ) : (
+              <ErrorState message="Não foi possível carregar as métricas detalhadas." />
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </DialogModal>
     </div>
   );
 }
