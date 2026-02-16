@@ -17,4 +17,4 @@ Por fim, os resultados são apresentados por meio de dashboards visuais, acessí
 
 ➡️ **Próximo:** [Funcionalidades](funcionalidades.md)  
 ⬅️ **Anterior:** [Objetivo do Projeto](objetivo.md)  
-🏠 [Voltar para Visão Geral](README.md)
+⬅️⬅️[Voltar para Visão Geral](README.md)
