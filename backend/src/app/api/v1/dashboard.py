@@ -17,7 +17,9 @@ from app.models.dashboard import (
 )
 from app.services.dashboard_service import DashboardService
 
-router = APIRouter()
+router = APIRouter(prefix="/dashboard")
+# Legacy routes kept for backward compatibility with older frontend bundles.
+legacy_router = APIRouter()
 
 
 @router.get(
@@ -73,6 +75,7 @@ async def detalhes_organizacao(
 
 
 @router.get("/setores", response_model=List[SetorDashboard])
+@legacy_router.get("/setores", response_model=List[SetorDashboard])
 async def listar_setores(
     org_id: Optional[str] = None,
     current_user: Usuario = Depends(get_current_admin_user),
@@ -83,6 +86,7 @@ async def listar_setores(
 
 
 @router.get("/setores/{setor_id}", response_model=SetorDetalhado)
+@legacy_router.get("/setores/{setor_id}", response_model=SetorDetalhado)
 async def detalhes_setor(
     setor_id: str,
     current_user: Usuario = Depends(get_current_admin_user),
@@ -99,6 +103,7 @@ async def detalhes_setor(
 
 
 @router.get("/usuarios/ativos", response_model=List[UsuarioAtivo])
+@legacy_router.get("/usuarios/ativos", response_model=List[UsuarioAtivo])
 async def listar_usuarios_ativos(
     org_id: Optional[str] = None,
     setor_id: Optional[str] = None,
@@ -110,6 +115,7 @@ async def listar_usuarios_ativos(
 
 
 @router.get("/usuarios/{user_id}/progresso", response_model=ProgressoUsuario)
+@legacy_router.get("/usuarios/{user_id}/progresso", response_model=ProgressoUsuario)
 async def progresso_usuario(
     user_id: str,
     current_user: Usuario = Depends(get_current_admin_user),
@@ -126,6 +132,7 @@ async def progresso_usuario(
 
 
 @router.get("/questionarios/status", response_model=List[QuestionarioStatus])
+@legacy_router.get("/questionarios/status", response_model=List[QuestionarioStatus])
 async def status_questionarios(
     current_user: Usuario = Depends(get_current_admin_user),
 ) -> List[QuestionarioStatus]:
@@ -135,6 +142,7 @@ async def status_questionarios(
 
 
 @router.get("/questionarios/{questionario_id}/metricas", response_model=QuestionarioMetricas)
+@legacy_router.get("/questionarios/{questionario_id}/metricas", response_model=QuestionarioMetricas)
 async def metricas_questionario(
     questionario_id: str,
     current_user: Usuario = Depends(get_current_admin_user),
@@ -156,6 +164,13 @@ async def metricas_questionario(
     tags=["Dashboard"],
     summary="Resumo executivo do dashboard",
     description="Retorna indicadores gerais agregados do sistema.",
+)
+@legacy_router.get(
+    "/overview",
+    response_model=DashboardOverview,
+    tags=["Dashboard"],
+    summary="Resumo executivo do dashboard (legacy)",
+    description="Rota mantida para compatibilidade com frontend antigo.",
 )
 async def dashboard_overview(
     current_user: Usuario = Depends(get_current_admin_user),

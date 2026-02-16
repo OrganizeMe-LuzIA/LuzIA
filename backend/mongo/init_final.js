@@ -16,6 +16,7 @@ function ensureIndexes() {
   // Índice para usuários
   db.usuarios.createIndex({ "anonId": 1 }, { unique: true });
   db.usuarios.createIndex({ "telefone": 1 }, { unique: true });
+  db.usuarios.createIndex({ "email": 1 }, { unique: true, sparse: true });
   db.usuarios.createIndex({ "idOrganizacao": 1, "idSetor": 1 });
   
   // Índices para organizações
@@ -123,6 +124,15 @@ createIfNotExists("usuarios", {
           "bsonType": "string",
           "pattern": "^\\+?[1-9]\\d{1,14}$",
           "description": "Número de telefone no formato E.164"
+        },
+        "email": {
+          "bsonType": ["string", "null"],
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+          "description": "Email para autenticação do usuário"
+        },
+        "password_hash": {
+          "bsonType": ["string", "null"],
+          "description": "Hash seguro da senha do usuário"
         },
         "idOrganizacao": { 
           "bsonType": "objectId",

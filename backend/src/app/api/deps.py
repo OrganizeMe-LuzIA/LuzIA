@@ -11,7 +11,17 @@ async def get_current_user(
     Dependency to get the current authenticated user from the database.
     """
     user_repo = UsuariosRepo()
-    user_dict = await user_repo.find_by_phone(token_data.phone)
+
+    user_dict = None
+    if token_data.email:
+        user_dict = await user_repo.find_by_email(token_data.email)
+    elif token_data.sub:
+        # Compatibilidade com tokens antigos cujo sub ainda era telefone.
+        if "@" in token_data.sub:
+            user_dict = await user_repo.find_by_email(token_data.sub.lower())
+        else:
+            user_dict = await user_repo.find_by_phone(token_data.sub)
+
     if user_dict is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
