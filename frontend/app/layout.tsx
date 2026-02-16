@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@/app/globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { FiltersProvider } from "@/context/FiltersContext";
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AuthProvider>
           <FiltersProvider>{children}</FiltersProvider>
         </AuthProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
