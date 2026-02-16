@@ -1,17 +1,25 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { Building2, Eye } from "lucide-react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import { Building2, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Column, DataTable } from "@/components/ui/DataTable";
+import { Drawer } from "@/components/ui/Drawer";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { DialogModal } from "@/components/ui/DialogModal";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { useAuth } from "@/context/AuthContext";
-import { dashboardApi } from "@/lib/api";
-import { OrganizacaoDashboard, OrganizacaoDetalhada } from "@/lib/types/api";
+import { dashboardApi, organizacoesApi } from "@/lib/api";
+import { Organizacao, OrganizacaoDashboard, OrganizacaoDetalhada } from "@/lib/types/api";
 import { formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
+
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
 
 export default function OrganizacoesPage() {
   const { token } = useAuth();
@@ -19,6 +27,17 @@ export default function OrganizacoesPage() {
   const [selectedOrg, setSelectedOrg] = useState<OrganizacaoDetalhada | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
+
+  const [editOrg, setEditOrg] = useState<Organizacao | null>(null);
+  const [editNome, setEditNome] = useState("");
+  const [editCnpj, setEditCnpj] = useState("");
+  const [editCodigo, setEditCodigo] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [orgToDelete, setOrgToDelete] = useState<OrganizacaoDashboard | null>(null);
+
+  const [runningActionId, setRunningActionId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   const loader = useCallback(async () => {
     if (!token) {
@@ -46,6 +65,109 @@ export default function OrganizacoesPage() {
       mediaTaxa,
     };
   }, [organizacoes]);
+
+  const openEdit = useCallback(
+    async (orgId: string) => {
+      if (!token) {
+        return;
+      }
+
+      setRunningActionId(`edit-${orgId}`);
+      setActionError(null);
+      setActionSuccess(null);
+
+      try {
+        const org = await organizacoesApi.getById(orgId, token);
+        setEditOrg(org);
+        setEditNome(String(org.nome || ""));
+        setEditCnpj(String(org.cnpj || ""));
+        setEditCodigo(String((org.codigo as string | undefined) || ""));
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Falha ao carregar organização.";
+        setActionError(message);
+      } finally {
+        setRunningActionId(null);
+      }
+    },
+    [token],
+  );
+
+  const saveEdit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!token || !editOrg) {
+      return;
+    }
+
+    const cnpj = digitsOnly(editCnpj);
+    if (cnpj.length !== 14) {
+      setActionError("CNPJ deve conter 14 dígitos.");
+      return;
+    }
+
+    setSavingEdit(true);
+    setActionError(null);
+    setActionSuccess(null);
+
+    try {
+      const result = await organizacoesApi.update(
+        editOrg.id,
+        {
+          nome: editNome.trim(),
+          cnpj,
+          codigo: editCodigo.trim() || undefined,
+        },
+        token,
+      );
+      setActionSuccess(result.message);
+      setEditOrg(null);
+      await refetch();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Falha ao atualizar organização.";
+      setActionError(message);
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const deleteOrganization = useCallback(
+    async (org: OrganizacaoDashboard): Promise<boolean> => {
+      if (!token) {
+        return false;
+      }
+
+      setRunningActionId(`delete-${org.id}`);
+      setActionError(null);
+      setActionSuccess(null);
+
+      try {
+        const result = await organizacoesApi.remove(org.id, token);
+        setActionSuccess(result.message);
+        if (selectedOrg?.id === org.id) {
+          setSelectedOrg(null);
+        }
+        await refetch();
+        return true;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Falha ao excluir organização.";
+        setActionError(message);
+        return false;
+      } finally {
+        setRunningActionId(null);
+      }
+    },
+    [token, refetch, selectedOrg],
+  );
+
+  const confirmDeleteOrganization = useCallback(async () => {
+    if (!orgToDelete) {
+      return;
+    }
+
+    const success = await deleteOrganization(orgToDelete);
+    if (success) {
+      setOrgToDelete(null);
+    }
+  }, [orgToDelete, deleteOrganization]);
 
   const columns: Column<OrganizacaoDashboard>[] = [
     {
@@ -109,32 +231,61 @@ export default function OrganizacoesPage() {
     {
       key: "acoes",
       label: "Ações",
-      render: (_, row) => (
-        <button
-          onClick={async (event) => {
-            event.stopPropagation();
-            if (!token) {
-              return;
-            }
+      render: (_, row) => {
+        const loadingEdit = runningActionId === `edit-${row.id}`;
+        const loadingDelete = runningActionId === `delete-${row.id}`;
 
-            try {
-              setLoadingDetail(true);
-              setDetailError(null);
-              const detail = await dashboardApi.getOrganizacaoDetalhada(row.id, token);
-              setSelectedOrg(detail);
-            } catch (err) {
-              const message = err instanceof Error ? err.message : "Falha ao carregar detalhes.";
-              setDetailError(message);
-            } finally {
-              setLoadingDetail(false);
-            }
-          }}
-          className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm text-teal-700 transition-colors hover:bg-teal-50"
-        >
-          <Eye className="h-4 w-4" />
-          Ver detalhes
-        </button>
-      ),
+        return (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={async (event) => {
+                event.stopPropagation();
+                if (!token) {
+                  return;
+                }
+
+                try {
+                  setLoadingDetail(true);
+                  setDetailError(null);
+                  const detail = await dashboardApi.getOrganizacaoDetalhada(row.id, token);
+                  setSelectedOrg(detail);
+                } catch (err) {
+                  const message = err instanceof Error ? err.message : "Falha ao carregar detalhes.";
+                  setDetailError(message);
+                } finally {
+                  setLoadingDetail(false);
+                }
+              }}
+              className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-teal-700 transition-colors hover:bg-teal-50"
+            >
+              <Eye className="h-4 w-4" />
+              <span>Detalhes</span>
+            </button>
+            <button
+              onClick={async (event) => {
+                event.stopPropagation();
+                await openEdit(row.id);
+              }}
+              disabled={loadingEdit || loadingDelete}
+              className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Pencil className="h-4 w-4" />
+              <span>Editar</span>
+            </button>
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                setOrgToDelete(row);
+              }}
+              disabled={loadingEdit || loadingDelete}
+              className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-rose-700 transition-colors hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span>Excluir</span>
+            </button>
+          </div>
+        );
+      },
     },
   ];
 
@@ -153,7 +304,19 @@ export default function OrganizacoesPage() {
           <h1 className="font-display text-3xl font-semibold text-slate-900">Organizações</h1>
           <p className="mt-1 text-slate-600">Gerenciar e visualizar dados das organizações cadastradas</p>
         </div>
+        <Link
+          href="/dashboard/organizacoes/nova"
+          className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700"
+        >
+          <Plus className="h-4 w-4" />
+          Nova organização
+        </Link>
       </header>
+
+      {actionSuccess && (
+        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{actionSuccess}</p>
+      )}
+      {actionError && <ErrorState title="Operação não concluída" message={actionError} />}
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card padding="sm">
@@ -182,79 +345,148 @@ export default function OrganizacoesPage() {
 
       {loadingDetail && <LoadingState label="Carregando detalhes da organização..." />}
 
-      {selectedOrg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-slate-200 bg-white">
-            <header className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-              <div>
-                <h2 className="font-display text-2xl font-semibold text-slate-900">{selectedOrg.nome}</h2>
-                <p className="text-sm text-slate-600">CNPJ: {selectedOrg.cnpj}</p>
+      <DialogModal
+        isOpen={Boolean(selectedOrg)}
+        onClose={() => setSelectedOrg(null)}
+        title={selectedOrg?.nome || "Detalhes da organização"}
+        subtitle={selectedOrg ? `CNPJ: ${selectedOrg.cnpj}` : undefined}
+        maxWidth="3xl"
+      >
+        {selectedOrg && (
+          <div className="space-y-6">
+            <section>
+              <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Status de usuários</h3>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {Object.entries(selectedOrg.usuarios_por_status || {}).length === 0 ? (
+                  <p className="col-span-full text-sm text-slate-500">Sem dados de status para esta organização.</p>
+                ) : (
+                  Object.entries(selectedOrg.usuarios_por_status || {}).map(([status, quantidade]) => (
+                    <Card key={status} padding="sm">
+                      <p className="text-sm text-slate-600">{status}</p>
+                      <p className="text-2xl font-semibold text-slate-900">{formatNumber(Number(quantidade) || 0)}</p>
+                    </Card>
+                  ))
+                )}
               </div>
-              <button
-                onClick={() => setSelectedOrg(null)}
-                className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
-              >
-                ✕
-              </button>
-            </header>
+            </section>
 
-            <div className="space-y-6 p-6">
-              <section>
-                <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Status de usuários</h3>
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                  {Object.entries(selectedOrg.usuarios_por_status || {}).length === 0 ? (
-                    <p className="col-span-full text-sm text-slate-500">Sem dados de status para esta organização.</p>
-                  ) : (
-                    Object.entries(selectedOrg.usuarios_por_status || {}).map(([status, quantidade]) => (
-                      <Card key={status} padding="sm">
-                        <p className="text-sm text-slate-600">{status}</p>
-                        <p className="text-2xl font-semibold text-slate-900">{formatNumber(Number(quantidade) || 0)}</p>
-                      </Card>
-                    ))
-                  )}
-                </div>
-              </section>
+            <section>
+              <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Setores da organização</h3>
+              <div className="space-y-2">
+                {(selectedOrg.setores || []).length === 0 ? (
+                  <p className="text-sm text-slate-500">Nenhum setor encontrado.</p>
+                ) : (
+                  (selectedOrg.setores || []).map((setor) => (
+                    <div key={setor.id} className="rounded-lg border border-slate-200 px-4 py-3">
+                      <p className="font-medium text-slate-900">{setor.nome}</p>
+                      <p className="text-sm text-slate-600">
+                        {formatNumber(setor.usuarios_ativos)} usuários ativos de {formatNumber(setor.total_usuarios)}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
 
-              <section>
-                <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Setores da organização</h3>
-                <div className="space-y-2">
-                  {(selectedOrg.setores || []).length === 0 ? (
-                    <p className="text-sm text-slate-500">Nenhum setor encontrado.</p>
-                  ) : (
-                    (selectedOrg.setores || []).map((setor) => (
-                      <div key={setor.id} className="rounded-lg border border-slate-200 px-4 py-3">
-                        <p className="font-medium text-slate-900">{setor.nome}</p>
-                        <p className="text-sm text-slate-600">
-                          {formatNumber(setor.usuarios_ativos)} usuários ativos de {formatNumber(setor.total_usuarios)}
-                        </p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </section>
-
-              <section>
-                <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Questionários no escopo</h3>
-                <div className="space-y-2">
-                  {(selectedOrg.questionarios_status || []).length === 0 ? (
-                    <p className="text-sm text-slate-500">Nenhum questionário encontrado.</p>
-                  ) : (
-                    (selectedOrg.questionarios_status || []).map((questionario) => (
-                      <div key={questionario.id} className="rounded-lg border border-slate-200 px-4 py-3">
-                        <p className="font-medium text-slate-900">{questionario.nome}</p>
-                        <p className="text-sm text-slate-600">
-                          v{questionario.versao} {questionario.codigo ? `• ${questionario.codigo}` : ""} • conclusão {" "}
-                          {formatPercent(questionario.taxa_conclusao)}
-                        </p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </section>
-            </div>
+            <section>
+              <h3 className="mb-2 font-display text-lg font-semibold text-slate-900">Questionários no escopo</h3>
+              <div className="space-y-2">
+                {(selectedOrg.questionarios_status || []).length === 0 ? (
+                  <p className="text-sm text-slate-500">Nenhum questionário encontrado.</p>
+                ) : (
+                  (selectedOrg.questionarios_status || []).map((questionario) => (
+                    <div key={questionario.id} className="rounded-lg border border-slate-200 px-4 py-3">
+                      <p className="font-medium text-slate-900">{questionario.nome}</p>
+                      <p className="text-sm text-slate-600">
+                        v{questionario.versao} {questionario.codigo ? `• ${questionario.codigo}` : ""} • conclusão{" "}
+                        {formatPercent(questionario.taxa_conclusao)}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
           </div>
-        </div>
-      )}
+        )}
+      </DialogModal>
+
+      <Drawer isOpen={Boolean(editOrg)} onClose={() => (savingEdit ? undefined : setEditOrg(null))} title="Editar organização">
+        <form className="space-y-4" onSubmit={saveEdit}>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700" htmlFor="editNome">
+              Nome
+            </label>
+            <input
+              id="editNome"
+              type="text"
+              value={editNome}
+              onChange={(event) => setEditNome(event.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700" htmlFor="editCnpj">
+              CNPJ
+            </label>
+            <input
+              id="editCnpj"
+              type="text"
+              value={editCnpj}
+              onChange={(event) => setEditCnpj(event.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+              required
+            />
+            <p className="mt-1 text-xs text-slate-500">Será enviado com apenas números ({digitsOnly(editCnpj).length}/14).</p>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700" htmlFor="editCodigo">
+              Código (opcional)
+            </label>
+            <input
+              id="editCodigo"
+              type="text"
+              value={editCodigo}
+              onChange={(event) => setEditCodigo(event.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setEditOrg(null)}
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              disabled={savingEdit}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={savingEdit}
+            >
+              {savingEdit ? "Salvando..." : "Salvar alterações"}
+            </button>
+          </div>
+        </form>
+      </Drawer>
+
+      <ConfirmModal
+        isOpen={Boolean(orgToDelete)}
+        title="Excluir organização"
+        description={
+          orgToDelete
+            ? `A organização "${orgToDelete.nome}" será removida permanentemente. Esta ação não pode ser desfeita.`
+            : ""
+        }
+        confirmLabel="Excluir organização"
+        loading={Boolean(orgToDelete && runningActionId === `delete-${orgToDelete.id}`)}
+        onCancel={() => setOrgToDelete(null)}
+        onConfirm={confirmDeleteOrganization}
+      />
     </div>
   );
 }

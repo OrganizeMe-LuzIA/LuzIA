@@ -7,8 +7,9 @@ Endpoints:
 """
 from datetime import timedelta
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.api.deps import get_current_admin_user
 from app.core.config import settings
 from app.core.security import (
     AuthRequest,
@@ -19,6 +20,7 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
+from app.models.base import Usuario
 from app.repositories.usuarios import UsuariosRepo
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -80,7 +82,10 @@ async def login_for_access_token(form_data: AuthRequest):
 
 
 @router.post("/register")
-async def register_credentials(payload: RegisterCredentialsRequest):
+async def register_credentials(
+    payload: RegisterCredentialsRequest,
+    current_user: Usuario = Depends(get_current_admin_user),
+):
     """
     Cadastra email e senha (hash seguro) para um usuário já existente.
 
@@ -90,6 +95,8 @@ async def register_credentials(payload: RegisterCredentialsRequest):
     Returns:
         Confirmação de persistência no MongoDB
     """
+    _ = current_user
+
     if not await check_rate_limit(payload.email):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,

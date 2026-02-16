@@ -88,6 +88,8 @@ class SetoresRepo(BaseRepository[Dict[str, Any]]):
         """
         try:
             db = await get_db()
+            # Garante consistência de tipo para idOrganizacao no update
+            self._ensure_object_id(update_data, "idOrganizacao")
             result = await db[self.collection_name].update_one(
                 {"_id": ObjectId(sector_id)},
                 {"$set": update_data}

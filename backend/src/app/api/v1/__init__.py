@@ -1,7 +1,7 @@
 # API v1 routers
 from fastapi import APIRouter
 
-from . import auth, dashboard, diagnosticos, organizacoes, questionarios, relatorios, respostas
+from . import auth, dashboard, diagnosticos, organizacoes, questionarios, relatorios, respostas, setores
 
 api_router = APIRouter()
 
@@ -10,6 +10,7 @@ api_router.include_router(auth.router, tags=["auth"])
 # must be registered before /questionarios/{q_id} to avoid route shadowing.
 api_router.include_router(dashboard.legacy_router, tags=["dashboard-legacy"])
 api_router.include_router(organizacoes.router, tags=["organizacoes"])
+api_router.include_router(setores.router, tags=["setores"])
 api_router.include_router(questionarios.router, tags=["questionarios"])
 api_router.include_router(respostas.router, tags=["respostas"])
 api_router.include_router(diagnosticos.router, tags=["diagnosticos"])
