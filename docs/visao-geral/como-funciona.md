@@ -16,6 +16,6 @@ Por fim, os resultados são apresentados por meio de dashboards visuais, acessí
 
 ### Conteúdo: 
 
-⬅️ **Anterior:** [Objetivo do Projeto](objetivo.md)
 
-➡️ **Próximo:** [Funcionalidades](funcionalidades.md) 
+⬅️ **Anterior:** [Objetivo do Projeto](objetivo.md)
+➡️ **Próximo:** [Funcionalidades](funcionalidades.md)
