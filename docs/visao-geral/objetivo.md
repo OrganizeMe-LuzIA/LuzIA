@@ -8,15 +8,13 @@ A proposta do sistema é tornar o processo de aplicação de questionários mais
 
 A partir de 07/02/2026, o sistema conta com implementação **completa e validada** do COPSOQ II, incluindo:
 
-✅ Classificação por tercis (verde/amarelo/vermelho) conforme metodologia oficial  
-✅ Processamento de dimensões de proteção vs dimensões de risco  
-✅ Geração automática de insights individuais e organizacionais  
-✅ Agregação de dados por domínios e dimensões para relatórios  
-✅ Cálculo de índice de proteção e métricas de risco  
-✅ Recomendações contextualizadas baseadas em dimensões em risco  
+- Classificação por tercis (verde/amarelo/vermelho) conforme metodologia oficial;
+- Processamento de dimensões de proteção vs dimensões de risco;
+- Geração automática de insights individuais e organizacionais;
+- Agregação de dados por domínios e dimensões para relatórios;
+- Cálculo de índice de proteção e métricas de risco;
+- Recomendações contextualizadas baseadas em dimensões em risco.
 
-**Status:** Pronto para uso em produção com 100% de conformidade COPSOQ II  
-**Documentação:** [GUIA-COPSOQ-II.md](../guides/GUIA-COPSOQ-II.md) | [STATUS_IMPLEMENTACAO_COPSOQ.md](../STATUS_IMPLEMENTACAO_COPSOQ.md)
 
 ## O desenvolvimento do projeto está fundamentado em três pilares essenciais:
 
@@ -32,5 +30,7 @@ Disponibilizar diagnósticos e relatórios claros, que permitam a análise dos r
 
 Simplificar as etapas de coleta, organização e visualização dos dados, transformando informações complexas em conteúdos acessíveis, apresentados de forma clara e compreensível para pessoas autorizadas dentro das organizações.
 
-➡️ **Próximo:** [Como Funciona](como-funciona.md)  
-⬅️ [Voltar para Visão Geral](README.md)
+### Conteúdo:
+
+⬅️ Anterior: [Introdução](./README.md)  
+➡️ Próximo: [Como Funciona](./como-funciona.md)
