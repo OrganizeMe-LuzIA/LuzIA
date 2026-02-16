@@ -18,11 +18,4 @@ Além disso, esses métodos geralmente dependem de processos manuais ou semi man
 
 ### Conteúdo
 
--  **[Objetivo do Projeto](objetivo.md)**  
-  Entenda o propósito do LuzIA e os problemas que ele busca resolver.
-
--  **[Como Funciona](como-funciona.md)**  
-  Veja, passo a passo, como o sistema opera desde o cadastro até a geração dos resultados.
-
--  **[Funcionalidades](funcionalidades.md)**  
-  Conheça os principais recursos disponíveis para organizações e gestores
+➡️ Próximo: [Objetivo do Projeto](./objetivo.md)  
