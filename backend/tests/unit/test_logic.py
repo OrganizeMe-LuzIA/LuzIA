@@ -19,6 +19,17 @@ def test_usuario_model_valid():
     assert user.status == "em andamento"
     assert user.respondido is False # Default
 
+def test_usuario_model_legacy_status_alias():
+    """Status legados devem ser normalizados para os novos valores canônicos."""
+    user_data = {
+        "telefone": "+5511999999998",
+        "idOrganizacao": "507f1f77bcf86cd799439011",
+        "anonId": "anon_legacy_status",
+        "status": "ativo",
+    }
+    user = Usuario(**user_data)
+    assert user.status == "em andamento"
+
 def test_usuario_model_invalid_status():
     """Testa falha ao usar status inválido (embora Pydantic por padrão aceite string, vamos checar se o enum deveria ser forçado se fosse strict)."""
     # Nota: No base.py atual, 'status' é str, não Enum, então isso passaria a menos que mudemos o model.

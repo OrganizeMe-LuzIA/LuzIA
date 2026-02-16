@@ -24,7 +24,8 @@ docker-compose up -d
 ### Pré-requisitos
 
 - Python 3.10+
-- MongoDB 6.0+
+- MongoDB 7.0+
+- Redis 7.0+ (opcional — cache e Celery)
 
 ### Passos
 
@@ -46,8 +47,11 @@ cp backend/.env.example backend/.env
 
 # 5. Execute
 cd backend
-uvicorn src.app.main:app --reload
+PYTHONPATH=src uvicorn app.main:app --reload
 ```
+
+> **Atalho:** Na raiz do projeto, use `make run` para iniciar o servidor.
+> O backend funciona **sem Redis** — o cache é desativado automaticamente.
 
 ---
 
@@ -63,4 +67,4 @@ curl http://localhost:8000/health
 
 ---
 
-**Última Atualização:** 2026-02-07
+**Última Atualização:** 2026-02-16

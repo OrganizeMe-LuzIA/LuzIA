@@ -63,9 +63,10 @@ Responsável por:
 - Tratamento de erros HTTP
 
 **Endpoints principais:**
-- `/auth` - Autenticação (login, registro, tokens JWT)
-- `/organizacoes` - Gestão de organizações
-- `/questionarios` - CRUD de questionários
+- `/auth` - Autenticação (login, register, tokens JWT)
+- `/organizacoes` - CRUD organizações
+- `/setores` - CRUD setores
+- `/questionarios` - Consulta de questionários
 - `/respostas` - Submissão de respostas
 - `/diagnosticos` - Consulta de diagnósticos
 - `/relatorios` - Geração de relatórios
@@ -225,18 +226,22 @@ sequenceDiagram
 ### JWT Authentication
 
 ```python
-# Geração de token
-def create_access_token(data: dict) -> str:
+# Geração de token (core/security.py)
+def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=11520))
+    to_encode.update({
+        "exp": expire,
+        "iat": datetime.now(timezone.utc),
+        "jti": str(uuid.uuid4()),  # ID único por token
+    })
+    return jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")
 
-# Verificação de token
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> Usuario:
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    user_id = payload.get("sub")
-    return await usuarios_repo.get_by_id(user_id)
+# Verificação de token (core/security.py)
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
+    payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    email = payload.get("sub")
+    return TokenData(sub=email, email=email, jti=payload.get("jti"))
 ```
 
 ### Níveis de Acesso
@@ -292,21 +297,30 @@ class DiagnosticoService:
 ### Dependency Injection
 
 ```python
-# Dependência de database
-async def get_db():
-    db = client[settings.MONGO_DB_NAME]
-    try:
-        yield db
-    finally:
-        pass
+# Cadeia de dependências (api/deps.py)
 
-# Dependência de autenticação
+# 1. Extrai TokenData do header Authorization
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db = Depends(get_db)
+    token_data: TokenData = Depends(get_token_user),  # core/security.py
 ) -> Usuario:
-    # ...
-    return usuario
+    user_dict = await user_repo.find_by_email(token_data.email)
+    return Usuario(**user_dict)
+
+# 2. Garante que status é ativo (em andamento ou finalizado)
+async def get_current_active_user(
+    current_user: Usuario = Depends(get_current_user),
+) -> Usuario:
+    if not is_active_user_status(current_user.status):
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+# 3. Garante que é admin (metadata.is_admin == True)
+async def get_current_admin_user(
+    current_user: Usuario = Depends(get_current_active_user),
+) -> Usuario:
+    if not current_user.metadata.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not enough privileges")
+    return current_user
 
 # Uso em endpoint
 @router.get("/me")
@@ -421,4 +435,4 @@ logger = logging.getLogger(__name__)
 
 ---
 
-**Última Atualização:** 2026-02-15
+**Última Atualização:** 2026-02-16

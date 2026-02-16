@@ -26,12 +26,25 @@ _USER_STATUS_ALIASES: Dict[str, str] = {
     "nao_iniciado": StatusEnum.NAO_INICIADO.value,
     "nao iniciado": StatusEnum.NAO_INICIADO.value,
     "não iniciado": StatusEnum.NAO_INICIADO.value,
+    # Compatibilidade com status legados persistidos no banco
+    "ativo": StatusEnum.EM_ANDAMENTO.value,
+    "inativo": StatusEnum.NAO_INICIADO.value,
+    "aguardando_confirmacao": StatusEnum.NAO_INICIADO.value,
 }
 
 _USER_STATUS_EQUIVALENTS: Dict[str, List[str]] = {
     StatusEnum.FINALIZADO.value: [StatusEnum.FINALIZADO.value],
-    StatusEnum.EM_ANDAMENTO.value: [StatusEnum.EM_ANDAMENTO.value, "em_andamento"],
-    StatusEnum.NAO_INICIADO.value: [StatusEnum.NAO_INICIADO.value, "nao_iniciado"],
+    StatusEnum.EM_ANDAMENTO.value: [
+        StatusEnum.EM_ANDAMENTO.value,
+        "em_andamento",
+        "ativo",
+    ],
+    StatusEnum.NAO_INICIADO.value: [
+        StatusEnum.NAO_INICIADO.value,
+        "nao_iniciado",
+        "inativo",
+        "aguardando_confirmacao",
+    ],
 }
 
 

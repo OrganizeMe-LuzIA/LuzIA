@@ -1,6 +1,6 @@
-# Banco de Dados -  MongoDB
+# Banco de Dados — MongoDB
 
-> **Voltar para:** [📚 Documentação](README.md)
+> **Voltar para:** [📚 Documentação](../README.md)
 
 ---
 
@@ -12,32 +12,52 @@
 {
   "_id": ObjectId("..."),
   "telefone": "+5511999999999",
+  "email": "user@example.com",
+  "password_hash": "$pbkdf2-sha256$29000$...",
   "idOrganizacao": ObjectId("..."),
   "idSetor": ObjectId("..."),
+  "numeroUnidade": "A-301",
   "anonId": "USR_1234567890",
-  "status": "ativo",
+  "status": "não iniciado",           // "finalizado", "em andamento", "não iniciado"
   "respondido": false,
-  "dataCadastro": ISODate("...")
+  "dataCadastro": ISODate("..."),
+  "metadata": {"is_admin": false}
 }
 ```
 
 **Índices:**
-- `{email: 1}` (unique)
-- `{anonId: 1}` (unique)
-- `{idOrganizacao: 1, idSetor: 1}`
+- `{telefone: 1}` (unique) — busca por telefone no login/registro
+- `{anonId: 1}` (unique) — busca anônima para diagnósticos
+- `{email: 1}` (unique, sparse) — busca por email no login
+- `{idOrganizacao: 1, idSetor: 1}` — filtro por organização/setor
 
 ### `organizacoes`
 
 ```javascript
 {
   "_id": ObjectId("..."),
-  "cnpj": "12345678000100",
-  "nome": "Empresa  XYZ Ltda"
+  "cnpj": "12345678000100",           // CNPJ validado (dígitos verificadores)
+  "nome": "Empresa XYZ Ltda",
+  "codigo": "EXY"                     // Código opcional
 }
 ```
 
 **Índices:**
 - `{cnpj: 1}` (unique)
+
+### `setores`
+
+```javascript
+{
+  "_id": ObjectId("..."),
+  "idOrganizacao": ObjectId("..."),
+  "nome": "Recursos Humanos",
+  "descricao": "Departamento de RH"
+}
+```
+
+**Índices:**
+- `{idOrganizacao: 1, nome: 1}` (unique) — nome único por organização
 
 ### `questionarios`
 
@@ -47,9 +67,14 @@
   "nome": "COPSOQ II - Versão Curta Brasileira",
   "codigo": "COPSOQ_CURTA_BR",
   "versao": "2.0",
+  "tipo": "psicossocial",
   "idioma": "pt-BR",
+  "descricao": "...",
+  "dominios": [
+    {"codigo": "EL", "nome": "Exigências Laborais", "ordem": 1, "descricao": "..."}
+  ],
+  "escalasPossiveis": ["frequencia", "intensidade", "satisfacao"],
   "totalPerguntas": 40,
-  "dominios": [{codigo: "EL", nome: "Exigências Laborais", ...}],
   "ativo": true
 }
 ```
@@ -71,13 +96,22 @@
   "tipoEscala": "frequencia",
   "sinal": "risco",
   "itemInvertido": false,
-  "ordem": 1
+  "ordem": 1,
+  "opcoesResposta": [
+    {"valor": 0, "texto": "Nunca"},
+    {"valor": 1, "texto": "Raramente"},
+    {"valor": 2, "texto": "Às vezes"},
+    {"valor": 3, "texto": "Frequentemente"},
+    {"valor": 4, "texto": "Sempre"}
+  ],
+  "subPergunta": null,
+  "ativo": true
 }
 ```
 
 **Índices:**
-- `{idQuestionario: 1, ordem: 1}`
 - `{idPergunta: 1}` (unique)
+- `{idQuestionario: 1, ordem: 1}`
 
 ### `respostas`
 
@@ -88,17 +122,16 @@
   "idQuestionario": ObjectId("..."),
   "data": ISODate("..."),
   "respostas": [
-    {idPergunta: "EL_EQ_01A", valor: 3},
-    {idPergunta: "EL_EQ_01B", valor: 2},
-    //...
+    {"idPergunta": "EL_EQ_01A", "valor": 3},
+    {"idPergunta": "CO_CO_01", "valor": [1, 2], "valorTexto": null}
   ]
 }
 ```
 
 **Índices:**
-- `{anonId: 1, idQuestionario: 1}` (unique)
+- `{anonId: 1, idQuestionario: 1}` (unique) — uma resposta por questionário/usuário
 
-### ` diagnosticos`
+### `diagnosticos`
 
 ```javascript
 {
@@ -124,7 +157,7 @@
 ```
 
 **Índices:**
-- `{anonId: 1}`
+- `{anonId: 1}` — busca por usuário anônimo
 
 ### `relatorios`
 
@@ -133,6 +166,7 @@
   "_id": ObjectId("..."),
   "idQuestionario": ObjectId("..."),
   "idOrganizacao": ObjectId("..."),
+  "idSetor": null,
   "tipoRelatorio": "organizacional",
   "geradoPor": "admin@empresa.com",
   "dataGeracao": ISODate("..."),
@@ -141,8 +175,25 @@
     "indiceProtecao": 65.5,
     "totalRespondentes": 25
   },
-  "dominios": [{codigo: "EL", nome: "...", dimensoes: [...]}],
-  "recomendacoes": ["..."]
+  "dominios": [
+    {
+      "codigo": "EL",
+      "nome": "Exigências Laborais",
+      "dimensoes": [
+        {
+          "dimensao": "Exigências quantitativas",
+          "media": 2.1,
+          "distribuicao": {"favoravel": 15, "intermediario": 8, "risco": 2},
+          "classificacao": "favoravel",
+          "sinal": "risco"
+        }
+      ],
+      "media_dominio": 2.3,
+      "classificacao_predominante": "favoravel"
+    }
+  ],
+  "recomendacoes": ["Atenção a..."],
+  "observacoes": null
 }
 ```
 
@@ -173,7 +224,7 @@ db.usuarios.aggregate([
 ])
 ```
 
-### Relatórios recentes
+### Relatórios recentes de uma organização
 
 ```javascript
 db.relatorios.find({
@@ -184,10 +235,36 @@ db.relatorios.find({
 
 ---
 
-## 📝 Migr Actions
+## ⚙️ Conexão
 
-Atualizações de schema são aplicadas diretamente no código através de validação Pydantic.
+**Arquivo:** [`backend/src/app/core/database.py`](../../backend/src/app/core/database.py)
+
+```python
+# Motor (driver async para MongoDB)
+client = AsyncIOMotorClient(settings.MONGO_URI)
+db = client[settings.MONGO_DB_NAME]
+```
+
+### Pool de Conexões
+
+```env
+MONGO_MAX_POOL_SIZE=100   # 50 em produção (Render)
+MONGO_MIN_POOL_SIZE=10    # 5 em produção (Render)
+MONGO_TIMEOUT_MS=5000
+```
+
+### Retry Logic
+
+A conexão ao MongoDB inclui lógica de retry no startup (`lifespan` do FastAPI):
+- Tenta conectar com `server_info()` a cada segundo
+- Máximo de tentativas configurável
 
 ---
 
-**Última Atualização:** 2026-02-07
+## 📝 Migrações
+
+O schema é validado em runtime via Pydantic. Atualizações de schema são aplicadas diretamente no código — não há ferramenta de migração (como Alembic) pois o MongoDB é schemaless.
+
+---
+
+**Última Atualização:** 2026-02-16

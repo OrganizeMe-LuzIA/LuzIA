@@ -21,7 +21,7 @@ MONGO_DB_NAME=LuzIA
 
 # JWT/Security
 SECRET_KEY=sua-chave-super-secreta-aqui
-ACCESS_TOKEN_EXPIRE_MINUTES=120
+ACCESS_TOKEN_EXPIRE_MINUTES=11520   # 8 dias
 ```
 
 ### WhatsApp (Twilio)
@@ -56,6 +56,10 @@ TWILIO_TEMPLATE_COMPORTAMENTO_OFENSIVO=HXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 # Redis (cache e Celery broker)
 REDIS_URL=redis://localhost:6379
 
+# Celery (processamento assíncrono)
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+
 # CORS - Origens permitidas
 CORS_ORIGINS=http://localhost:3000,http://localhost:8080
 
@@ -70,6 +74,9 @@ MONGO_TIMEOUT_MS=5000
 
 # Cache
 CACHE_TTL=300
+
+# Questionário (timeout em minutos)
+QUESTIONNAIRE_TIMEOUT_MINUTES=60
 ```
 
 ---
@@ -124,4 +131,4 @@ O backend funciona sem Redis (cache desativado automaticamente).
 
 ---
 
-**Última Atualização:** 2026-02-15
+**Última Atualização:** 2026-02-16

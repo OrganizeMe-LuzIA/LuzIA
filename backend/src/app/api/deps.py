@@ -1,8 +1,13 @@
 from typing import Annotated
+import logging
 from fastapi import Depends, HTTPException, status
+from pydantic import ValidationError
 from app.core.security import get_current_user as get_token_user, TokenData
-from app.models.base import Usuario, is_active_user_status
+from app.models.base import Usuario, is_active_user_status, normalize_user_status
 from app.repositories.usuarios import UsuariosRepo
+
+logger = logging.getLogger(__name__)
+
 
 async def get_current_user(
     token_data: Annotated[TokenData, Depends(get_token_user)],
@@ -27,7 +32,18 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
         )
-    return Usuario(**user_dict)
+
+    # Compatibilidade com dados legados de status.
+    user_payload = dict(user_dict)
+    user_payload["status"] = normalize_user_status(user_payload.get("status"))
+    try:
+        return Usuario(**user_payload)
+    except ValidationError:
+        logger.exception("Falha ao validar payload de usuário autenticado.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user profile",
+        )
 
 async def get_current_active_user(
     current_user: Annotated[Usuario, Depends(get_current_user)],

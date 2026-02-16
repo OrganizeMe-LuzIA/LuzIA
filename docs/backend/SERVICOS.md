@@ -374,31 +374,55 @@ print(f"Recomendações: {relatorio.recomendacoes}")
 
 ---
 
-## 🔧 Outros Serviços (Futuros)
+## 📊 Dashboard Service
 
-### WhatsApp Service (TwilioContentService)
+**Arquivo:** [`backend/src/app/services/dashboard_service.py`](../../backend/src/app/services/dashboard_service.py)
 
-**Responsabilidades:**
-- Enviar mensagens e Content Templates via Twilio API
-- Processar respostas de usuários via webhook
-- Gerenciar estado de conversação (BotFlow)
-- Fallback para texto simples quando templates não configurados
+### Responsabilidades
 
-### Notification Service
+- Agregação de métricas por organização, setor e questionário
+- KPIs: taxa de conclusão, usuários ativos, alertas
+- Cache Redis para dados de dashboard
 
-**Responsabilidades:**
-- Envio de notificações
-- Templates de mensagens
-- Agendamento de envios
-- Histórico de notificações
+### API Principal
 
-### Analytics Service
+```python
+class DashboardService:
+    async def get_overview() -> DashboardOverview
+    async def list_organizacoes() -> List[OrganizacaoDashboard]
+    async def get_organizacao_detalhada(org_id) -> OrganizacaoDetalhada
+    async def list_setores(org_id=None) -> List[SetorDashboard]
+    async def get_setor_detalhado(setor_id) -> SetorDetalhado
+    async def list_usuarios_ativos(org_id=None, setor_id=None) -> List[UsuarioAtivo]
+    async def get_usuario_progresso(user_id) -> ProgressoUsuario
+    async def list_questionarios_status() -> List[QuestionarioStatus]
+    async def get_questionario_metricas(q_id) -> QuestionarioMetricas
+```
 
-**Responsabilidades:**
-- Agregação de métricas
-- Análise temporal
-- Comparações entre setores
-- Benchmarking
+> Todas as rotas do dashboard requerem autenticação **Admin** via `Depends(get_current_admin_user)`.
+
+---
+
+## 📱 Twilio Content Service
+
+**Arquivo:** [`backend/src/app/services/twilio_content_service.py`](../../backend/src/app/services/twilio_content_service.py)
+
+### Responsabilidades
+
+- Mapear `tipoEscala` de perguntas para Content Templates do Twilio
+- Enviar mensagens interativas via WhatsApp (listas, botões)
+- Fallback para texto simples quando template não configurado
+
+### Mapeamento de Templates
+
+| Tipo de Escala | Variável de Ambiente | Uso |
+|---------------|---------------------|-----|
+| `frequencia` | `TWILIO_TEMPLATE_FREQUENCIA` | Maioria das perguntas COPSOQ |
+| `intensidade` | `TWILIO_TEMPLATE_INTENSIDADE` | Escalas de intensidade |
+| `satisfacao` | `TWILIO_TEMPLATE_SATISFACAO` | Perguntas de satisfação |
+| `conflito_tf` | `TWILIO_TEMPLATE_CONFLITO_TF` | Conflito trabalho-família |
+| `saude_geral` | `TWILIO_TEMPLATE_SAUDE_GERAL` | Saúde e bem-estar |
+| `comportamento_ofensivo` | `TWILIO_TEMPLATE_COMPORTAMENTO_OFENSIVO` | Comportamentos ofensivos |
 
 ---
 
@@ -515,18 +539,23 @@ def test_calculate_score():
 graph LR
     API[API Endpoint] --> DS[DiagnosticoService]
     API --> RS[RelatorioService]
+    API --> DBS[DashboardService]
     DS --> CS[COPSOQScoringService]
     RS --> CS
+    DBS --> Cache[(Redis Cache)]
     DS --> REPO1[RespostasRepo]
     DS --> REPO2[DiagnosticosRepo]
     RS --> REPO3[RelatoriosRepo]
+    DBS --> REPO4[All Repos]
     REPO1 --> DB[(MongoDB)]
     REPO2 --> DB
     REPO3 --> DB
+    REPO4 --> DB
     
     style CS fill:#90EE90
     style DS fill:#87CEEB
     style RS fill:#87CEEB
+    style DBS fill:#FFD700
 ```
 
 ---
@@ -541,4 +570,4 @@ graph LR
 
 ---
 
-**Última Atualização:** 2026-02-08
+**Última Atualização:** 2026-02-16

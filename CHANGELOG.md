@@ -17,6 +17,25 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [2.1.2] - 2026-02-16
+
+### Documentação
+- **Revisão completa da documentação** — Todas as docs alinhadas com o código real (13 arquivos atualizados)
+  - **AUTENTICACAO.md**: Corrigido algoritmo de hashing (bcrypt → PBKDF2-SHA256), adicionado `RegisterCredentialsRequest`, `TokenData.jti`
+  - **MODELOS.md**: Corrigido `StatusEnum` (ativo/inativo → finalizado/em andamento/não iniciado), adicionado `UserState`, `SubPergunta`, `RespostaItem.valorTexto`, `Organizacao.codigo`, modelos de dashboard
+  - **API.md**: Documentados todos os 9 routers (25+ endpoints), adicionados setores e dashboard (com rotas legacy), corrigidos exemplos de request/response
+  - **ORGANIZACOES.md**: Adicionada validação de CNPJ, regras de deleção com proteção de vínculos, `UserState`, diagrama de fluxo atualizado
+  - **CELERY.md**: Expandido de stub para documentação completa dos workers (`diagnostico_tasks`, `relatorio_tasks`), fluxos de disparo
+  - **REDIS.md**: Expandido com `CacheClient` API, serialização JSON, TTL, invalidação por padrão, degradação graceful
+  - **DATABASE.md**: Corrigido índice de usuários (telefone ao invés de email), adicionada collection `setores`, campos `password_hash`/`email`/`metadata`/`valorTexto`
+  - **SEGURANCA.md**: Corrigidas todas as referências de arquivo (`auth.py` → `core/security.py`), adicionados validadores CNPJ/email, seção LGPD/anonimização, cadeia DI de acesso
+  - **SERVICOS.md**: Substituída seção "serviços futuros" por documentação real de `DashboardService` (10 métodos) e `TwilioContentService` (6 templates)
+  - **ARQUITETURA.md**: Corrigido snippet JWT (timezone-aware, jti), cadeia DI (`deps.py`), adicionado endpoint setores
+  - **GUIA-CONFIGURACAO.md**: Adicionadas variáveis `CELERY_BROKER_URL`, `CELERY_RESULT_BACKEND`, `QUESTIONNAIRE_TIMEOUT_MINUTES`, corrigido `ACCESS_TOKEN_EXPIRE_MINUTES` (120 → 11520)
+  - **GUIA-INSTALACAO.md**: Corrigido comando de execução (`PYTHONPATH=src`), MongoDB 7.0+, Redis opcional, atalho `make run`
+
+---
+
 ## [2.1.1] - 2026-02-15
 
 ### Documentação
