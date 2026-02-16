@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     # Configurações de Segurança
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 dias
+
+    # CORS - lista separada por vírgula ou "*" para permitir qualquer origem
+    CORS_ORIGINS: str = os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:3000,http://localhost:8080,http://127.0.0.1:3000",
+    )
     
     # Configurações do Twilio (WhatsApp)
     TWILIO_ACCOUNT_SID: str = os.getenv("TWILIO_ACCOUNT_SID", "")

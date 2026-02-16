@@ -1,3 +1,4 @@
+import json
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,16 +39,51 @@ Funcionalidades:
 # Configuração de CORS - Restritivo por padrão
 # Em desenvolvimento: adicione http://localhost:3000 ao CORS_ORIGINS no .env
 # Em produção: adicione apenas os domínios autorizados
-CORS_ORIGINS = getattr(settings, 'CORS_ORIGINS', None) or [
+DEFAULT_CORS_ORIGINS = [
     "http://localhost:3000",      # Frontend dev
     "http://localhost:8080",      # Alternative dev
     "http://127.0.0.1:3000",
 ]
 
+
+def _parse_cors_origins(origins: object) -> list[str]:
+    if origins is None:
+        return DEFAULT_CORS_ORIGINS
+
+    if isinstance(origins, str):
+        normalized = origins.strip()
+        if not normalized:
+            return DEFAULT_CORS_ORIGINS
+        if normalized == "*":
+            return ["*"]
+
+        # Suporte a valor JSON: ["https://a.com","https://b.com"]
+        if normalized.startswith("[") and normalized.endswith("]"):
+            try:
+                loaded = json.loads(normalized)
+                if isinstance(loaded, list):
+                    parsed = [str(origin).strip().rstrip("/") for origin in loaded if str(origin).strip()]
+                    return parsed or DEFAULT_CORS_ORIGINS
+            except json.JSONDecodeError:
+                pass
+
+        parsed = [origin.strip().rstrip("/") for origin in normalized.split(",") if origin.strip()]
+        return parsed or DEFAULT_CORS_ORIGINS
+
+    if isinstance(origins, list):
+        parsed = [str(origin).strip().rstrip("/") for origin in origins if str(origin).strip()]
+        return parsed or DEFAULT_CORS_ORIGINS
+
+    return DEFAULT_CORS_ORIGINS
+
+
+CORS_ORIGINS = _parse_cors_origins(getattr(settings, "CORS_ORIGINS", None))
+ALLOW_CREDENTIALS = CORS_ORIGINS != ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
+    allow_credentials=ALLOW_CREDENTIALS,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept"],
     max_age=600,  # Cache preflight por 10 minutos

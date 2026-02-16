@@ -52,7 +52,7 @@ services:
       - key: LOG_LEVEL
         value: INFO
       - key: CORS_ORIGINS
-        value: "*"
+        value: "https://luz-ia-xi.vercel.app"
       # MongoDB Pool
       - key: MONGO_MAX_POOL_SIZE
         value: "50"
