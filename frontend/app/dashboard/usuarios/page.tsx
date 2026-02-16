@@ -12,7 +12,7 @@ import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { useDashboardFilters } from "@/context/FiltersContext";
 import { dashboardApi } from "@/lib/api";
-import { ProgressoUsuario, UsuarioAtivo } from "@/lib/types/api";
+import { BadgeVariant, ProgressoUsuario, UsuarioAtivo } from "@/lib/types/api";
 import { average, formatDateTime, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
 import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
@@ -31,6 +31,31 @@ function ProgressBar({ value }: { value: number }) {
       </div>
     </div>
   );
+}
+
+function toStatusBadgeVariant(status: string): BadgeVariant {
+  const normalized = status.trim().toLowerCase();
+  if (normalized === "finalizado") {
+    return "finalizado";
+  }
+  if (normalized === "em andamento" || normalized === "em_andamento") {
+    return "em_andamento";
+  }
+  if (normalized === "não iniciado" || normalized === "nao iniciado" || normalized === "nao_iniciado") {
+    return "nao_iniciado";
+  }
+  return "default";
+}
+
+function toStatusLabel(status: string): string {
+  const normalized = status.trim().toLowerCase();
+  if (normalized === "em andamento" || normalized === "em_andamento") {
+    return "em andamento";
+  }
+  if (normalized === "não iniciado" || normalized === "nao iniciado" || normalized === "nao_iniciado") {
+    return "não iniciado";
+  }
+  return normalized || "desconhecido";
 }
 
 export default function UsuariosPage() {
@@ -112,13 +137,15 @@ export default function UsuariosPage() {
     },
     {
       key: "status",
-      label: "Status",
-      render: (value) => <Badge variant={String(value) === "ativo" ? "ativo" : "inativo"}>{String(value)}</Badge>,
+      label: "Status de Preenchimento",
+      render: (value) => (
+        <Badge variant={toStatusBadgeVariant(String(value))}>{toStatusLabel(String(value))}</Badge>
+      ),
     },
   ];
 
   if (loading) {
-    return <LoadingState label="Carregando usuários ativos..." />;
+    return <LoadingState label="Carregando usuários..." />;
   }
 
   if (error) {
@@ -129,15 +156,15 @@ export default function UsuariosPage() {
     <div className="space-y-6">
       <header className="flex flex-col justify-between gap-2 md:flex-row md:items-end">
         <div>
-          <h1 className="font-display text-3xl font-semibold text-slate-900">Usuários Ativos</h1>
-          <p className="mt-1 text-slate-600">Monitoramento de usuários com questionários em andamento</p>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Usuários</h1>
+          <p className="mt-1 text-slate-600">Monitoramento de usuários por status de preenchimento</p>
         </div>
         <RefreshingIndicator active={refreshing} />
       </header>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card padding="sm">
-          <p className="text-sm text-slate-600">Total Usuários Ativos</p>
+          <p className="text-sm text-slate-600">Total de Usuários</p>
           <p className="mt-1 text-2xl font-semibold text-slate-900">{formatNumber(stats.totalUsuarios)}</p>
         </Card>
         <Card padding="sm">

@@ -138,9 +138,9 @@
           },
           "GUID": "99a16efa-ab48-4dee-abf6-576809fff67f",
           "enum": [
-            "ativo",
-            "inativo",
-            "aguardando_confirmacao"
+            "finalizado",
+            "em andamento",
+            "não iniciado"
           ]
         },
         {

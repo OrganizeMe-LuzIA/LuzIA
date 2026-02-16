@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from app.core.security import get_current_user as get_token_user, TokenData
-from app.models.base import Usuario, StatusEnum
+from app.models.base import Usuario, is_active_user_status
 from app.repositories.usuarios import UsuariosRepo
 
 async def get_current_user(
@@ -35,7 +35,7 @@ async def get_current_active_user(
     """
     Dependency to ensure the user is active.
     """
-    if current_user.status != StatusEnum.ATIVO and current_user.status != "ativo":
+    if not is_active_user_status(current_user.status):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Inactive user",

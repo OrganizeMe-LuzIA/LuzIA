@@ -4,6 +4,7 @@ Repositório para gerenciamento de usuários.
 from typing import Optional, Dict, Any, List
 from app.core.database import get_db
 from app.repositories.base_repository import BaseRepository
+from app.models.base import StatusEnum, VALID_USER_STATUSES, normalize_user_status
 from bson import ObjectId
 from bson.errors import InvalidId
 from datetime import datetime
@@ -84,7 +85,10 @@ class UsuariosRepo(BaseRepository[Dict[str, Any]]):
 
         # Adiciona data de cadastro se não existir
         user_data.setdefault("dataCadastro", datetime.utcnow())
-        user_data.setdefault("status", "aguardando_confirmacao")
+        status_value = normalize_user_status(user_data.get("status", StatusEnum.NAO_INICIADO.value))
+        if status_value not in VALID_USER_STATUSES:
+            status_value = StatusEnum.NAO_INICIADO.value
+        user_data["status"] = status_value
         user_data.setdefault("respondido", False)
 
         result = await db[self.collection_name].insert_one(user_data)
@@ -115,15 +119,20 @@ class UsuariosRepo(BaseRepository[Dict[str, Any]]):
 
         Args:
             phone: Número de telefone do usuário.
-            status: Novo status (ativo, inativo, aguardando_confirmacao).
+            status: Novo status (não iniciado, em andamento, finalizado).
 
         Returns:
             True se a atualização foi bem-sucedida.
         """
+        normalized_status = normalize_user_status(status)
+        if normalized_status not in VALID_USER_STATUSES:
+            logger.warning("Status de usuário inválido recebido: %s", status)
+            return False
+
         db = await get_db()
         result = await db[self.collection_name].update_one(
             {"telefone": phone},
-            {"$set": {"status": status, "ultimoAcesso": datetime.utcnow()}}
+            {"$set": {"status": normalized_status, "ultimoAcesso": datetime.utcnow()}}
         )
         return result.modified_count > 0
 
@@ -178,7 +187,11 @@ class UsuariosRepo(BaseRepository[Dict[str, Any]]):
         if respondido is not None:
             set_payload["respondido"] = bool(respondido)
         if user_status is not None:
-            set_payload["status"] = user_status
+            normalized_status = normalize_user_status(user_status)
+            if normalized_status in VALID_USER_STATUSES:
+                set_payload["status"] = normalized_status
+            else:
+                logger.warning("Status de usuário inválido recebido no fluxo Twilio: %s", user_status)
 
         result = await db[self.collection_name].update_one(
             {"telefone": phone},

@@ -1,8 +1,16 @@
 # Dependências base
 fastapi>=0.100.0
 uvicorn[standard]>=0.22.0
-motor>=3.0.0
+motor>=3.3.1
 pydantic>=2.0.0
+pydantic-settings>=2.0.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 python-dotenv>=1.0.0
+python-multipart>=0.0.6
+structlog>=23.1.0
+twilio>=8.0.0
+celery[redis]>=5.2.7
+weasyprint>=58.1
+aiofiles>=23.1.0
+httpx>=0.23.3

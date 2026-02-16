@@ -23,6 +23,17 @@ function digitsOnly(value: string): string {
   return value.replace(/\D/g, "");
 }
 
+function toStatusLabel(status: string): string {
+  const normalized = status.trim().toLowerCase();
+  if (normalized === "em andamento" || normalized === "em_andamento") {
+    return "em andamento";
+  }
+  if (normalized === "não iniciado" || normalized === "nao iniciado" || normalized === "nao_iniciado") {
+    return "não iniciado";
+  }
+  return normalized || "desconhecido";
+}
+
 export default function OrganizacoesPage() {
   const { token } = useAuth();
 
@@ -193,7 +204,7 @@ export default function OrganizacoesPage() {
     { key: "total_usuarios", label: "Total Usuários", sortable: true },
     {
       key: "usuarios_ativos",
-      label: "Usuários Ativos",
+      label: "Usuários em Andamento",
       sortable: true,
       render: (value, row) => {
         const usuariosAtivos = Number(value || 0);
@@ -368,7 +379,7 @@ export default function OrganizacoesPage() {
                 ) : (
                   Object.entries(selectedOrg.usuarios_por_status || {}).map(([status, quantidade]) => (
                     <Card key={status} padding="sm">
-                      <p className="text-sm text-slate-600">{status}</p>
+                      <p className="text-sm text-slate-600">{toStatusLabel(status)}</p>
                       <p className="text-2xl font-semibold text-slate-900">{formatNumber(Number(quantidade) || 0)}</p>
                     </Card>
                   ))
@@ -386,7 +397,7 @@ export default function OrganizacoesPage() {
                     <div key={setor.id} className="rounded-lg border border-slate-200 px-4 py-3">
                       <p className="font-medium text-slate-900">{setor.nome}</p>
                       <p className="text-sm text-slate-600">
-                        {formatNumber(setor.usuarios_ativos)} usuários ativos de {formatNumber(setor.total_usuarios)}
+                        {formatNumber(setor.usuarios_ativos)} usuários em andamento de {formatNumber(setor.total_usuarios)}
                       </p>
                     </div>
                   ))

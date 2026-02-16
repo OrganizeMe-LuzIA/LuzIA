@@ -32,7 +32,7 @@ lint:
 	cd backend && ruff check .
 
 run:
-	cd backend && uvicorn app.main:app --reload
+	cd backend && PYTHONPATH=src uvicorn app.main:app --reload
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true

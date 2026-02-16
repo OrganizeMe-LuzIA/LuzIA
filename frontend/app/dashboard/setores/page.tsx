@@ -15,7 +15,7 @@ import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { useDashboardFilters } from "@/context/FiltersContext";
 import { dashboardApi, organizacoesApi, setoresApi } from "@/lib/api";
-import { Organizacao, SetorDashboard, SetorDetalhado } from "@/lib/types/api";
+import { BadgeVariant, Organizacao, SetorDashboard, SetorDetalhado } from "@/lib/types/api";
 import { average, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
 import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
@@ -45,6 +45,31 @@ function getRiscoMedio(taxaResposta: number): RiscoMedio {
     return "intermediario";
   }
   return "risco";
+}
+
+function toStatusBadgeVariant(status: string): BadgeVariant {
+  const normalized = status.trim().toLowerCase();
+  if (normalized === "finalizado") {
+    return "finalizado";
+  }
+  if (normalized === "em andamento" || normalized === "em_andamento") {
+    return "em_andamento";
+  }
+  if (normalized === "não iniciado" || normalized === "nao iniciado" || normalized === "nao_iniciado") {
+    return "nao_iniciado";
+  }
+  return "default";
+}
+
+function toStatusLabel(status: string): string {
+  const normalized = status.trim().toLowerCase();
+  if (normalized === "em andamento" || normalized === "em_andamento") {
+    return "em andamento";
+  }
+  if (normalized === "não iniciado" || normalized === "nao iniciado" || normalized === "nao_iniciado") {
+    return "não iniciado";
+  }
+  return normalized || "desconhecido";
 }
 
 export default function SetoresPage() {
@@ -235,7 +260,7 @@ export default function SetoresPage() {
     },
     {
       key: "usuarios_ativos",
-      label: "Usuários Ativos",
+      label: "Usuários em Andamento",
       sortable: true,
       render: (value, row) => {
         const ativos = Number(value || 0);
@@ -436,7 +461,7 @@ export default function SetoresPage() {
                     <div key={usuario.id} className="rounded-lg border border-slate-100 px-3 py-2">
                       <p className="font-mono text-xs text-slate-700">AnonID: {usuario.anon_id}</p>
                       <div className="mt-1 flex items-center gap-2 text-xs">
-                        <Badge variant={usuario.status === "ativo" ? "ativo" : "inativo"}>{usuario.status}</Badge>
+                        <Badge variant={toStatusBadgeVariant(usuario.status)}>{toStatusLabel(usuario.status)}</Badge>
                         {usuario.respondido && <span className="text-emerald-600">Respondido</span>}
                       </div>
                     </div>

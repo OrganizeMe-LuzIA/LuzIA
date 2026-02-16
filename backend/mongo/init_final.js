@@ -148,8 +148,8 @@ createIfNotExists("usuarios", {
         },
         "status": { 
           "bsonType": "string", 
-          "enum": ["ativo", "inativo", "aguardando_confirmacao"],
-          "default": "aguardando_confirmacao",
+          "enum": ["finalizado", "em andamento", "não iniciado"],
+          "default": "não iniciado",
           "description": "Status atual do usuário no sistema"
         },
         "respondido": { 

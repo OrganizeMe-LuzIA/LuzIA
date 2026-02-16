@@ -12,11 +12,11 @@ def test_usuario_model_valid():
         "telefone": "+5511999999999",
         "idOrganizacao": "507f1f77bcf86cd799439011", # ObjectId fictício
         "anonId": "anon123",
-        "status": "ativo"
+        "status": "em andamento"
     }
     user = Usuario(**user_data)
     assert user.telefone == user_data["telefone"]
-    assert user.status == "ativo"
+    assert user.status == "em andamento"
     assert user.respondido is False # Default
 
 def test_usuario_model_invalid_status():
@@ -72,7 +72,7 @@ async def test_repo_create_user(test_db):
     saved_user = await repo.find_by_phone("+5511888888888")
     assert saved_user is not None
     assert saved_user["anonId"] == "anon_test_1"
-    assert saved_user["status"] == "aguardando_confirmacao" # Default do Repo
+    assert saved_user["status"] == "não iniciado" # Default do Repo
 
 @pytest.mark.asyncio
 async def test_repo_find_by_anon_id(test_db):
@@ -101,10 +101,9 @@ async def test_repo_update_status(test_db):
     }
     await repo.create_user(user_data)
     
-    success = await repo.update_status(phone, "ativo")
+    success = await repo.update_status(phone, "em andamento")
     assert success is True
     
     updated = await repo.find_by_phone(phone)
-    assert updated["status"] == "ativo"
+    assert updated["status"] == "em andamento"
     assert "ultimoAcesso" in updated
-

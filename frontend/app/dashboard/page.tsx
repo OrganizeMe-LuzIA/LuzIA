@@ -156,7 +156,7 @@ export default function DashboardPage() {
         icon: <Users className="h-6 w-6" />,
       },
       {
-        title: "Usuários Ativos",
+        title: "Usuários em Andamento",
         value: formatNumber(overview.usuarios_ativos),
         icon: <Activity className="h-6 w-6" />,
       },
@@ -256,7 +256,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card>
-          <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Usuários Ativos por Setor</h3>
+          <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Usuários em Andamento por Setor</h3>
           {hasSetoresData ? (
             <VerticalSingleBarChart
               data={setoresChartData}
@@ -268,7 +268,7 @@ export default function DashboardPage() {
             />
           ) : (
             <div className="flex h-[300px] items-center justify-center text-sm text-slate-500">
-              Nenhum setor com usuários ativos para exibir.
+              Nenhum setor com usuários em andamento para exibir.
             </div>
           )}
         </Card>

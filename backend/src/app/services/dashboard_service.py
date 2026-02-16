@@ -25,6 +25,12 @@ from app.models.dashboard import (
     UsuarioAtivo,
     UsuarioResumo,
 )
+from app.models.base import (
+    StatusEnum,
+    is_in_progress_user_status,
+    normalize_user_status,
+    user_status_values,
+)
 from app.repositories.perguntas import PerguntasRepo
 
 
@@ -62,7 +68,7 @@ class DashboardService:
             setores = await db["setores"].count_documents({"idOrganizacao": org_id})
             users = await db["usuarios"].find({"idOrganizacao": org_id}).to_list(length=2000)
             total_usuarios = len(users)
-            usuarios_ativos = sum(1 for u in users if u.get("status") == "ativo")
+            usuarios_ativos = sum(1 for u in users if is_in_progress_user_status(u.get("status")))
             anon_ids = [u.get("anonId") for u in users if u.get("anonId")]
             if anon_ids:
                 respostas_docs = await db["respostas"].find({"anonId": {"$in": anon_ids}}).to_list(length=5000)
@@ -97,7 +103,7 @@ class DashboardService:
 
         setores_docs = await db["setores"].find({"idOrganizacao": oid}).to_list(length=500)
         users = await db["usuarios"].find({"idOrganizacao": oid}).to_list(length=5000)
-        status_counter = Counter(u.get("status", "desconhecido") for u in users)
+        status_counter = Counter(normalize_user_status(u.get("status", "desconhecido")) for u in users)
 
         setor_users_counter: Dict[str, Dict[str, int]] = {}
         for s in setores_docs:
@@ -105,7 +111,7 @@ class DashboardService:
             related = [u for u in users if str(u.get("idSetor")) == sid]
             setor_users_counter[sid] = {
                 "total": len(related),
-                "ativos": sum(1 for u in related if u.get("status") == "ativo"),
+                "ativos": sum(1 for u in related if is_in_progress_user_status(u.get("status"))),
             }
 
         setores = [
@@ -168,7 +174,7 @@ class DashboardService:
             sid = setor["_id"]
             users = await db["usuarios"].find({"idSetor": sid}).to_list(length=3000)
             total = len(users)
-            ativos = sum(1 for u in users if u.get("status") == "ativo")
+            ativos = sum(1 for u in users if is_in_progress_user_status(u.get("status")))
             respondidos = sum(1 for u in users if u.get("respondido"))
             taxa = round((respondidos / total) * 100, 2) if total else 0.0
             results.append(
@@ -204,7 +210,7 @@ class DashboardService:
             UsuarioResumo(
                 id=str(u["_id"]),
                 anon_id=u.get("anonId", ""),
-                status=u.get("status", "desconhecido"),
+                status=normalize_user_status(u.get("status", StatusEnum.NAO_INICIADO.value)),
                 respondido=bool(u.get("respondido", False)),
             )
             for u in users
@@ -229,7 +235,7 @@ class DashboardService:
         setor_id: Optional[str] = None,
     ) -> List[UsuarioAtivo]:
         db = await get_db()
-        query: Dict[str, Any] = {"status": "ativo"}
+        query: Dict[str, Any] = {"status": {"$in": user_status_values(StatusEnum.EM_ANDAMENTO)}}
         if org_id:
             oid = self._to_object_id(org_id)
             if not oid:
@@ -267,7 +273,7 @@ class DashboardService:
                 UsuarioAtivo(
                     id=str(user["_id"]),
                     telefone_mascarado=self._mask_phone(user.get("telefone", "")),
-                    status=user.get("status", "ativo"),
+                    status=normalize_user_status(user.get("status", StatusEnum.EM_ANDAMENTO.value)),
                     progresso_atual=progresso,
                     questionario_em_andamento=q_map.get(qid, {}).get("nome") if qid else None,
                     ultima_atividade=ultima,
@@ -396,7 +402,9 @@ class DashboardService:
         total_organizacoes = await db["organizacoes"].count_documents({})
         total_setores = await db["setores"].count_documents({})
         total_usuarios = await db["usuarios"].count_documents({})
-        usuarios_ativos = await db["usuarios"].count_documents({"status": "ativo"})
+        usuarios_ativos = await db["usuarios"].count_documents(
+            {"status": {"$in": user_status_values(StatusEnum.EM_ANDAMENTO)}}
+        )
         questionarios = await db["questionarios"].find().to_list(length=500)
         questionarios_em_andamento = 0
         for q in questionarios:

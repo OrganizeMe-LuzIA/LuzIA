@@ -477,7 +477,7 @@ class BotFlow:
             perguntas_respondidas=total_perguntas,
             total_perguntas=total_perguntas,
             respondido=True,
-            user_status="ativo",
+            user_status="finalizado",
         )
 
     async def _reset_user_chat(self, phone: str) -> None:
@@ -497,7 +497,12 @@ class BotFlow:
                 "empresasCandidatas": None,
             },
         )
-        await self._save_fill_status(phone, fill_status="nao_iniciado")
+        await self._save_fill_status(
+            phone,
+            fill_status="nao_iniciado",
+            user_status="não iniciado",
+            respondido=False,
+        )
 
     async def _start_validation_flow(self, phone: str) -> None:
         await self.users_repo.update_chat_state(
@@ -717,7 +722,7 @@ class BotFlow:
                     id_questionario=q_id,
                     perguntas_respondidas=0,
                     total_perguntas=len(questions),
-                    user_status="ativo",
+                    user_status="em andamento",
                 )
 
                 return await self._enviar_pergunta_formatada(

@@ -12,9 +12,53 @@ from app.core.validators import validar_cnpj
 # ==============================================================================
 
 class StatusEnum(str, Enum):
-    ATIVO = "ativo"
-    INATIVO = "inativo"
-    AGUARDANDO_CONFIRMACAO = "aguardando_confirmacao"
+    FINALIZADO = "finalizado"
+    EM_ANDAMENTO = "em andamento"
+    NAO_INICIADO = "não iniciado"
+
+
+VALID_USER_STATUSES = {status.value for status in StatusEnum}
+
+_USER_STATUS_ALIASES: Dict[str, str] = {
+    "finalizado": StatusEnum.FINALIZADO.value,
+    "em_andamento": StatusEnum.EM_ANDAMENTO.value,
+    "em andamento": StatusEnum.EM_ANDAMENTO.value,
+    "nao_iniciado": StatusEnum.NAO_INICIADO.value,
+    "nao iniciado": StatusEnum.NAO_INICIADO.value,
+    "não iniciado": StatusEnum.NAO_INICIADO.value,
+}
+
+_USER_STATUS_EQUIVALENTS: Dict[str, List[str]] = {
+    StatusEnum.FINALIZADO.value: [StatusEnum.FINALIZADO.value],
+    StatusEnum.EM_ANDAMENTO.value: [StatusEnum.EM_ANDAMENTO.value, "em_andamento"],
+    StatusEnum.NAO_INICIADO.value: [StatusEnum.NAO_INICIADO.value, "nao_iniciado"],
+}
+
+
+def normalize_user_status(status: Optional[Union[str, StatusEnum]]) -> str:
+    if isinstance(status, StatusEnum):
+        return status.value
+
+    raw = str(status or "").strip().lower()
+    if not raw:
+        return StatusEnum.NAO_INICIADO.value
+    return _USER_STATUS_ALIASES.get(raw, raw)
+
+
+def user_status_values(status: Union[str, StatusEnum]) -> List[str]:
+    canonical = normalize_user_status(status)
+    return _USER_STATUS_EQUIVALENTS.get(canonical, [canonical])
+
+
+def is_active_user_status(status: Optional[Union[str, StatusEnum]]) -> bool:
+    return normalize_user_status(status) in {
+        StatusEnum.EM_ANDAMENTO.value,
+        StatusEnum.FINALIZADO.value,
+    }
+
+
+def is_in_progress_user_status(status: Optional[Union[str, StatusEnum]]) -> bool:
+    return normalize_user_status(status) == StatusEnum.EM_ANDAMENTO.value
 
 # ==============================================================================
 # COPSOQ II - Modelos Auxiliares
@@ -75,7 +119,7 @@ class Usuario(BaseModel):
     idOrganizacao: Any  # MongoDB ObjectId
     idSetor: Optional[Any] = None
     numeroUnidade: Optional[str] = None
-    status: StatusEnum = StatusEnum.AGUARDANDO_CONFIRMACAO
+    status: StatusEnum = StatusEnum.NAO_INICIADO
     respondido: bool = False
     anonId: str
     dataCadastro: datetime = Field(default_factory=datetime.utcnow)
@@ -97,6 +141,11 @@ class Usuario(BaseModel):
         if not re.fullmatch(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", normalized):
             raise ValueError("Email inválido")
         return normalized
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, value: Optional[Union[str, StatusEnum]]) -> str:
+        return normalize_user_status(value)
 
     model_config = ConfigDict(arbitrary_types_allowed=True, use_enum_values=True)
 

@@ -51,7 +51,7 @@ def mock_user_data():
         "telefone": "+5511999990001",
         "idOrganizacao": "507f1f77bcf86cd799439011",
         "idSetor": None,
-        "status": "ativo",
+        "status": "em andamento",
         "respondido": False,
         "anonId": "test_anon_user_001",
         "metadata": {}
@@ -64,7 +64,7 @@ def mock_admin_data():
         "telefone": "+5511999990000",
         "idOrganizacao": "507f1f77bcf86cd799439011",
         "idSetor": None,
-        "status": "ativo",
+        "status": "em andamento",
         "respondido": False,
         "anonId": "test_anon_admin_001",
         "metadata": {"is_admin": True}

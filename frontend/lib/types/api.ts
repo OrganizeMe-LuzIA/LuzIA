@@ -5,9 +5,14 @@ export type BadgeVariant =
   | "alta"
   | "media"
   | "baixa"
+  | "finalizado"
+  | "em_andamento"
+  | "nao_iniciado"
   | "ativo"
   | "inativo"
   | "default";
+
+export type UserStatus = "finalizado" | "em andamento" | "não iniciado" | "em_andamento" | "nao_iniciado";
 
 export interface ApiErrorPayload {
   detail?: string | Record<string, unknown> | Array<Record<string, unknown>>;
@@ -88,7 +93,7 @@ export interface SetorDashboard {
 export interface UsuarioResumo {
   id: string;
   anon_id: string;
-  status: string;
+  status: UserStatus | string;
   respondido: boolean;
 }
 
@@ -110,7 +115,7 @@ export interface SetorDetalhado {
 export interface UsuarioAtivo {
   id: string;
   telefone_mascarado: string;
-  status: string;
+  status: UserStatus | string;
   progresso_atual: number;
   questionario_em_andamento?: string | null;
   ultima_atividade: string;
