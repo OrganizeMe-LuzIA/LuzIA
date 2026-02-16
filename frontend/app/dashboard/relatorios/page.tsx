@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState";
+import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { dashboardApi, relatoriosApi } from "@/lib/api";
 import { GerarRelatorioRequest, QuestionarioMetricas, Relatorio, SetorDashboard } from "@/lib/types/api";
@@ -92,7 +93,7 @@ export default function RelatoriosPage() {
     return { overview, organizacoes, questionarios };
   }, [token]);
 
-  const { data, loading, error, refetch } = useAsyncData(loader, [loader]);
+  const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
 
   useEffect(() => {
     if (!data) {
@@ -372,7 +373,10 @@ export default function RelatoriosPage() {
           <h1 className="font-display text-3xl font-semibold text-slate-900">Relatórios Consolidados</h1>
           <p className="mt-1 text-slate-600">Análise completa de saúde psicossocial COPSOQ II</p>
         </div>
-        <ExportButton onExport={(format) => setFeedback(`Exportação ${format.toUpperCase()} iniciada.`)} />
+        <div className="flex flex-col items-start gap-2 md:items-end">
+          <RefreshingIndicator active={refreshing} />
+          <ExportButton onExport={(format) => setFeedback(`Exportação ${format.toUpperCase()} iniciada.`)} />
+        </div>
       </header>
 
       <Card>

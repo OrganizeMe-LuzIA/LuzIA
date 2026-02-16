@@ -8,6 +8,7 @@ import { Column, DataTable } from "@/components/ui/DataTable";
 import { Drawer } from "@/components/ui/Drawer";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState";
+import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { useDashboardFilters } from "@/context/FiltersContext";
 import { dashboardApi } from "@/lib/api";
@@ -50,7 +51,7 @@ export default function UsuariosPage() {
     });
   }, [token, filters.orgId, filters.setorId]);
 
-  const { data, loading, error, refetch } = useAsyncData(loader, [loader]);
+  const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
   const usuarios = data || [];
 
   const stats = useMemo(() => {
@@ -124,9 +125,12 @@ export default function UsuariosPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-3xl font-semibold text-slate-900">Usuários Ativos</h1>
-        <p className="mt-1 text-slate-600">Monitoramento de usuários com questionários em andamento</p>
+      <header className="flex flex-col justify-between gap-2 md:flex-row md:items-end">
+        <div>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Usuários Ativos</h1>
+          <p className="mt-1 text-slate-600">Monitoramento de usuários com questionários em andamento</p>
+        </div>
+        <RefreshingIndicator active={refreshing} />
       </header>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-4">

@@ -20,6 +20,7 @@ import { Column, DataTable } from "@/components/ui/DataTable";
 import { DialogModal } from "@/components/ui/DialogModal";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState";
+import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { dashboardApi } from "@/lib/api";
 import { QuestionarioMetricas, QuestionarioStatus } from "@/lib/types/api";
@@ -59,7 +60,7 @@ export default function QuestionariosPage() {
     return dashboardApi.listQuestionariosStatus(token);
   }, [token]);
 
-  const { data, loading, error, refetch } = useAsyncData(loader, [loader]);
+  const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
   const questionarios = data || [];
 
   const stats = useMemo(() => {
@@ -217,9 +218,12 @@ export default function QuestionariosPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-3xl font-semibold text-slate-900">Questionários</h1>
-        <p className="mt-1 text-slate-600">Gestão e métricas dos questionários COPSOQ II</p>
+      <header className="flex flex-col justify-between gap-2 md:flex-row md:items-end">
+        <div>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Questionários</h1>
+          <p className="mt-1 text-slate-600">Gestão e métricas dos questionários COPSOQ II</p>
+        </div>
+        <RefreshingIndicator active={refreshing} />
       </header>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-4">

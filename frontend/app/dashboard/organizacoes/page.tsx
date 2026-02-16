@@ -11,6 +11,7 @@ import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { DialogModal } from "@/components/ui/DialogModal";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState";
+import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { dashboardApi, organizacoesApi } from "@/lib/api";
 import { Organizacao, OrganizacaoDashboard, OrganizacaoDetalhada } from "@/lib/types/api";
@@ -47,7 +48,7 @@ export default function OrganizacoesPage() {
     return dashboardApi.listOrganizacoes(token);
   }, [token]);
 
-  const { data, loading, error, refetch } = useAsyncData(loader, [loader]);
+  const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
 
   const organizacoes = data || [];
 
@@ -304,13 +305,16 @@ export default function OrganizacoesPage() {
           <h1 className="font-display text-3xl font-semibold text-slate-900">Organizações</h1>
           <p className="mt-1 text-slate-600">Gerenciar e visualizar dados das organizações cadastradas</p>
         </div>
-        <Link
-          href="/dashboard/organizacoes/nova"
-          className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700"
-        >
-          <Plus className="h-4 w-4" />
-          Nova organização
-        </Link>
+        <div className="flex flex-col items-start gap-2 md:items-end">
+          <RefreshingIndicator active={refreshing} />
+          <Link
+            href="/dashboard/organizacoes/nova"
+            className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700"
+          >
+            <Plus className="h-4 w-4" />
+            Nova organização
+          </Link>
+        </div>
       </header>
 
       {actionSuccess && (

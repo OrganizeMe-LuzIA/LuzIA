@@ -27,6 +27,7 @@ import { AlertCard } from "@/components/ui/AlertCard";
 import { Card } from "@/components/ui/Card";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
+import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { useDashboardFilters } from "@/context/FiltersContext";
 import { dashboardApi } from "@/lib/api";
@@ -75,7 +76,7 @@ export default function DashboardPage() {
     return { overview, setores, metricas };
   }, [token, filters.orgId, filters.questionarioId]);
 
-  const { data, loading, error, refetch } = useAsyncData(loader, [loader]);
+  const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
 
   const kpis = useMemo(() => {
     if (!data) {
@@ -166,9 +167,12 @@ export default function DashboardPage() {
           <h1 className="font-display text-3xl font-semibold text-slate-900">Dashboard Overview</h1>
           <p className="mt-1 text-slate-600">Visão geral da saúde psicossocial organizacional</p>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500">
-          <BarChart3 className="h-4 w-4 text-teal-600" />
-          Atualizado em {formatDateTime(overview.ultima_atualizacao)}
+        <div className="flex flex-col items-start gap-2 md:items-end">
+          <RefreshingIndicator active={refreshing} />
+          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500">
+            <BarChart3 className="h-4 w-4 text-teal-600" />
+            Atualizado em {formatDateTime(overview.ultima_atualizacao)}
+          </div>
         </div>
       </header>
 

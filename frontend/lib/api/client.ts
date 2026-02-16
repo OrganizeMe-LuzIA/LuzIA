@@ -5,6 +5,16 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
   "http://localhost:8000/api/v1";
 
+const DEFAULT_GET_CACHE_TTL_MS = 15_000;
+
+interface CacheEntry {
+  expiresAt: number;
+  payload: unknown;
+}
+
+const responseCache = new Map<string, CacheEntry>();
+const inFlightRequests = new Map<string, Promise<unknown>>();
+
 export class ApiError extends Error {
   status: number;
   detail: ApiErrorPayload["detail"];
@@ -21,6 +31,8 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   token?: string;
   body?: BodyInit | object;
   query?: Record<string, string | number | undefined | null>;
+  useCache?: boolean;
+  cacheTtlMs?: number;
 }
 
 function buildUrl(path: string, query?: RequestOptions["query"]): string {
@@ -57,10 +69,38 @@ function parseErrorMessage(detail: ApiErrorPayload["detail"], fallback: string):
   return fallback;
 }
 
+function clearExpiredCacheEntries(): void {
+  const now = Date.now();
+  for (const [key, entry] of responseCache.entries()) {
+    if (entry.expiresAt <= now) {
+      responseCache.delete(key);
+    }
+  }
+}
+
+function buildCacheKey(method: string, url: string, token?: string): string {
+  return `${method}::${url}::${token || "anonymous"}`;
+}
+
+export function clearApiCache(): void {
+  responseCache.clear();
+  inFlightRequests.clear();
+}
+
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { token, query, body, headers, ...rest } = options;
+  const {
+    token,
+    query,
+    body,
+    headers,
+    useCache = true,
+    cacheTtlMs = DEFAULT_GET_CACHE_TTL_MS,
+    method = "GET",
+    ...rest
+  } = options;
   const resolvedHeaders = new Headers(headers);
   resolvedHeaders.set("Accept", "application/json");
+  const normalizedMethod = method.toUpperCase();
 
   let serializedBody: BodyInit | undefined;
   if (body !== undefined && body !== null) {
@@ -78,30 +118,73 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     resolvedHeaders.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(buildUrl(path, query), {
-    ...rest,
-    headers: resolvedHeaders,
-    body: serializedBody,
-    cache: "no-store",
-  });
+  const requestUrl = buildUrl(path, query);
+  const shouldUseCache = normalizedMethod === "GET" && useCache && cacheTtlMs > 0;
+  const cacheKey = shouldUseCache ? buildCacheKey(normalizedMethod, requestUrl, token) : "";
 
-  const contentType = response.headers.get("content-type") || "";
-  const hasJsonBody = contentType.includes("application/json");
-  const responseBody = hasJsonBody ? await response.json() : await response.text();
+  const makeRequest = async (): Promise<T> => {
+    const response = await fetch(requestUrl, {
+      ...rest,
+      method: normalizedMethod,
+      headers: resolvedHeaders,
+      body: serializedBody,
+      cache: "no-store",
+    });
 
-  if (!response.ok) {
-    const detail = (responseBody as ApiErrorPayload)?.detail;
-    const fallbackMessage = `Erro ${response.status} ao acessar ${path}`;
+    const contentType = response.headers.get("content-type") || "";
+    const hasJsonBody = contentType.includes("application/json");
+    const responseBody = hasJsonBody ? await response.json() : await response.text();
 
-    if (response.status === 401 && token) {
-      clearStoredSession();
-      notifySessionExpired();
+    if (!response.ok) {
+      const detail = (responseBody as ApiErrorPayload)?.detail;
+      const fallbackMessage = `Erro ${response.status} ao acessar ${path}`;
+
+      if (response.status === 401 && token) {
+        clearStoredSession();
+        clearApiCache();
+        notifySessionExpired();
+      }
+
+      throw new ApiError(parseErrorMessage(detail, fallbackMessage), response.status, detail);
     }
 
-    throw new ApiError(parseErrorMessage(detail, fallbackMessage), response.status, detail);
+    if (normalizedMethod !== "GET") {
+      clearApiCache();
+    }
+
+    return responseBody as T;
+  };
+
+  if (!shouldUseCache) {
+    return makeRequest();
   }
 
-  return responseBody as T;
+  clearExpiredCacheEntries();
+
+  const cachedEntry = responseCache.get(cacheKey);
+  if (cachedEntry && cachedEntry.expiresAt > Date.now()) {
+    return cachedEntry.payload as T;
+  }
+
+  const inFlightRequest = inFlightRequests.get(cacheKey);
+  if (inFlightRequest) {
+    return inFlightRequest as Promise<T>;
+  }
+
+  const requestPromise = makeRequest()
+    .then((payload) => {
+      responseCache.set(cacheKey, {
+        expiresAt: Date.now() + cacheTtlMs,
+        payload,
+      });
+      return payload;
+    })
+    .finally(() => {
+      inFlightRequests.delete(cacheKey);
+    });
+
+  inFlightRequests.set(cacheKey, requestPromise as Promise<unknown>);
+  return requestPromise;
 }
 
 export { API_BASE_URL };
