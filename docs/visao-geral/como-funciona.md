@@ -14,7 +14,8 @@ Após a coleta, o sistema realiza a análise das informações, transformando as
 
 Por fim, os resultados são apresentados por meio de dashboards visuais, acessíveis apenas a pessoas autorizadas da empresa, permitindo uma visualização clara dos indicadores, facilitando o acompanhamento e apoiando a tomada de decisões.
 
+### Conteúdo: 
 
 ➡️ **Próximo:** [Funcionalidades](funcionalidades.md)  
 ⬅️ **Anterior:** [Objetivo do Projeto](objetivo.md)  
-⬅️⬅️[Voltar para Visão Geral](README.md)
+
