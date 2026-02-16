@@ -70,6 +70,8 @@ class Setor(BaseModel):
 
 class Usuario(BaseModel):
     telefone: str
+    email: Optional[str] = None
+    password_hash: Optional[str] = None
     idOrganizacao: Any  # MongoDB ObjectId
     idSetor: Optional[Any] = None
     numeroUnidade: Optional[str] = None
@@ -85,6 +87,16 @@ class Usuario(BaseModel):
         if not re.fullmatch(r"^\+\d{10,15}$", value or ""):
             raise ValueError("Telefone deve estar no formato E.164")
         return value
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return value
+        normalized = value.strip().lower()
+        if not re.fullmatch(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", normalized):
+            raise ValueError("Email inválido")
+        return normalized
 
     model_config = ConfigDict(arbitrary_types_allowed=True, use_enum_values=True)
 

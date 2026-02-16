@@ -36,6 +36,19 @@ class UsuariosRepo(BaseRepository[Dict[str, Any]]):
         db = await get_db()
         return await db[self.collection_name].find_one({"telefone": phone})
 
+    async def find_by_email(self, email: str) -> Optional[Dict[str, Any]]:
+        """
+        Busca um usuário pelo email.
+
+        Args:
+            email: Email do usuário.
+
+        Returns:
+            Documento do usuário ou None.
+        """
+        db = await get_db()
+        return await db[self.collection_name].find_one({"email": email.strip().lower()})
+
     async def find_by_anon_id(self, anon_id: str) -> Optional[Dict[str, Any]]:
         """
         Busca um usuário pelo seu ID anônimo.
@@ -64,6 +77,10 @@ class UsuariosRepo(BaseRepository[Dict[str, Any]]):
         # Converte IDs para ObjectId
         self._ensure_object_id(user_data, "idOrganizacao")
         self._ensure_object_id(user_data, "idSetor")
+
+        # Normaliza email se presente
+        if isinstance(user_data.get("email"), str):
+            user_data["email"] = user_data["email"].strip().lower()
 
         # Adiciona data de cadastro se não existir
         user_data.setdefault("dataCadastro", datetime.utcnow())

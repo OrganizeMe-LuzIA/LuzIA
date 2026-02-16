@@ -3,7 +3,7 @@ Módulo de Autenticação JWT - LuzIA Backend
 
 Implementação segura com:
 - Configuração via variáveis de ambiente
-- Validação de formato de telefone
+- Validação de formato de email
 - Suporte a revogação de tokens (jti)
 - Rate limiting ready (via dependency injection)
 """
@@ -15,6 +15,7 @@ from jose import JWTError, jwt
 from pydantic import BaseModel, field_validator
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from passlib.context import CryptContext
 
 from app.core.config import settings
 
@@ -24,9 +25,12 @@ ALGORITHM = "HS256"
 # OAuth2 scheme para endpoints protegidos
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-# Regex para validar telefone E.164 (mais restritivo)
-# Deve começar com + seguido de 1-9, depois 7-14 dígitos
-PHONE_REGEX = re.compile(r"^\+[1-9]\d{7,14}$")
+# Regex para validar email
+EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+# Contexto de hash de senha
+# Usa PBKDF2-SHA256 para evitar dependência de backend nativo do bcrypt.
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 
 class Token(BaseModel):
@@ -35,21 +39,72 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    phone: Optional[str] = None
+    sub: Optional[str] = None
+    email: Optional[str] = None
     jti: Optional[str] = None  # JWT ID para revogação
 
 
 class AuthRequest(BaseModel):
+    email: str
+    password: str
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        normalized = (value or "").strip().lower()
+        if not EMAIL_REGEX.match(normalized):
+            raise ValueError("Formato de email inválido.")
+        return normalized
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        if len((value or "").strip()) < 6:
+            raise ValueError("Senha deve ter pelo menos 6 caracteres.")
+        return value
+
+
+class RegisterCredentialsRequest(BaseModel):
+    email: str
+    password: str
     phone: str
-    code: Optional[str] = None
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        normalized = (value or "").strip().lower()
+        if not EMAIL_REGEX.match(normalized):
+            raise ValueError("Formato de email inválido.")
+        return normalized
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        if len((value or "").strip()) < 6:
+            raise ValueError("Senha deve ter pelo menos 6 caracteres.")
+        return value
 
     @field_validator("phone")
     @classmethod
-    def validate_phone(cls, v: str) -> str:
-        """Valida formato do telefone (E.164)."""
-        if not PHONE_REGEX.match(v):
-            raise ValueError("Formato de telefone inválido. Use formato E.164 (ex: +5511999999999)")
-        return v
+    def validate_phone(cls, value: str) -> str:
+        if not re.fullmatch(r"^\+\d{10,15}$", value or ""):
+            raise ValueError("Telefone deve estar no formato E.164")
+        return value
+
+
+def hash_password(password: str) -> str:
+    """Gera hash de senha para persistência no banco."""
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, password_hash: Optional[str]) -> bool:
+    """Compara senha em texto puro com hash armazenado."""
+    if not password_hash:
+        return False
+    try:
+        return pwd_context.verify(plain_password, password_hash)
+    except Exception:
+        return False
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -57,7 +112,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     Cria um token JWT seguro.
     
     Args:
-        data: Dados a serem codificados no token (ex: {"sub": phone})
+        data: Dados a serem codificados no token (ex: {"sub": email})
         expires_delta: Tempo de expiração customizado
     
     Returns:
@@ -105,17 +160,18 @@ def verify_token(token: str) -> TokenData:
             algorithms=[ALGORITHM],
             options={"require_exp": True}  # Exige campo exp
         )
-        phone: str = payload.get("sub")
+        sub: str = payload.get("sub")
         jti: str = payload.get("jti")
-        
-        if phone is None:
+
+        if sub is None:
             raise credentials_exception
         
         # Aqui poderia verificar se jti está em blacklist (Redis)
         # if await is_token_revoked(jti):
         #     raise credentials_exception
         
-        return TokenData(phone=phone, jti=jti)
+        email = sub.lower() if "@" in sub else None
+        return TokenData(sub=sub, email=email, jti=jti)
         
     except JWTError:
         raise credentials_exception
@@ -128,14 +184,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     Uso:
         @router.get("/protected")
         async def protected_route(current_user: TokenData = Depends(get_current_user)):
-            return {"phone": current_user.phone}
+            return {"email": current_user.email}
     """
     return verify_token(token)
 
 
 # === Funções auxiliares para Rate Limiting (hooks) ===
 
-async def check_rate_limit(phone: str) -> bool:
+async def check_rate_limit(identifier: str) -> bool:
     """
     Placeholder para verificação de rate limit.
     
@@ -147,28 +203,9 @@ async def check_rate_limit(phone: str) -> bool:
         True se permitido, False se rate limited
     """
     # TODO: Implementar com Redis
-    # key = f"auth_attempts:{phone}"
+    # key = f"auth_attempts:{identifier}"
     # attempts = await redis.incr(key)
     # if attempts == 1:
     #     await redis.expire(key, 60)
     # return attempts <= 5
     return True
-
-
-async def verify_otp(phone: str, code: str) -> bool:
-    """
-    Placeholder para verificação de OTP via Twilio.
-    
-    Em produção:
-    1. Verificar código no Twilio Verify
-    2. Invalidar código após uso
-    
-    Returns:
-        True se código válido
-    """
-    # TODO: Implementar com Twilio Verify
-    # verification = await twilio_client.verify.v2.services(VERIFY_SID).verification_checks.create(
-    #     to=phone, code=code
-    # )
-    # return verification.status == "approved"
-    return True  # Mock para desenvolvimento
