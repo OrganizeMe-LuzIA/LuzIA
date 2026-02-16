@@ -5,7 +5,7 @@ O sistema tem como objetivo aplicar questionários psicossociais (ex.: COPSOQ II
 
 Todo o fluxo é orientado a anonimato, segregação por organização e setor e processamento posterior dos dados, evitando exposição de informações pessoais sensíveis.
 
-### 👤 Gestão de Usuários e Anonimato
+###  Gestão de Usuários e Anonimato
 
 Os participantes são registrados na collection usuarios, vinculados a:
 
@@ -15,10 +15,10 @@ Os participantes são registrados na collection usuarios, vinculados a:
 
 #### Cada usuário recebe um anonId, que passa a ser a única referência utilizada em respostas, diagnósticos e análises.
 
-## 📌 Regra de negócio importante:
+##  Regra de negócio importante:
 Nenhuma resposta ou diagnóstico utiliza identificadores pessoais (telefone, email, etc.). O anonId garante rastreabilidade técnica sem quebrar o anonimato.
 
-## 🏢 Organizações e Estrutura
+##  Organizações e Estrutura
 
 ### A collection organizacoes representa empresas ou instituições que aplicam os questionários.
 
@@ -54,10 +54,10 @@ As perguntas associadas ficam na collection perguntas, organizadas por:
 
  - Indicação de risco ou proteção.
 
-### 📌 Regra de negócio:
+###  Regra de negócio:
 A estrutura do questionário define como as respostas serão interpretadas posteriormente no diagnóstico.
 
-#### 📝 Coleta de Respostas
+####  Coleta de Respostas
 
 As respostas dos usuários são armazenadas na collection respostas.
 
@@ -69,10 +69,10 @@ As respostas são vinculadas apenas ao anonId;
 
 Cada usuário pode responder uma única vez por questionário.
 
-#### 📌 Validação de negócio:
+####  Validação de negócio:
 O sistema impede múltiplas respostas do mesmo usuário para o mesmo questionário, garantindo integridade estatística.
 
-#### 🧩 Geração de Diagnósticos
+####  Geração de Diagnósticos
 
 Após a submissão das respostas, o sistema gera um diagnóstico individual, armazenado na collection diagnosticos.
 
@@ -86,7 +86,7 @@ O diagnóstico inclui:
 
  - Quantidade de itens respondidos.
 
-### 📌 Lógica central:
+###  Lógica central:
 
 As pontuações consideram:
 
@@ -98,7 +98,7 @@ As pontuações consideram:
 
  - Quantidade válida de respostas.
 
-📊 Relatórios Organizacionais
+####  Relatórios Organizacionais
 
 Os dados individuais são consolidados na collection relatorios, com foco organizacional, nunca individual.
 
@@ -114,10 +114,10 @@ Os relatórios apresentam:
 
 ## Recomendações gerais:
 
-### 📌 Regra de negócio crítica:
+###  Regra de negócio crítica:
 Relatórios não expõem diagnósticos individuais, apenas métricas agregadas, preservando o anonimato dos colaboradores.
 
-#### 🔄 Evolução e Consistência de Dados
+####  Evolução e Consistência de Dados
 
 O sistema permite evolução do modelo de dados sem impacto direto nos usuários;
 
@@ -127,7 +127,7 @@ Versões de questionários garantem comparabilidade histórica;
 
 Dados antigos permanecem íntegros mesmo com ajustes futuros.
 
-### 🎯 Benefícios do Modelo de Negócio
+###  Benefícios do Modelo de Negócio
 
  - Privacidade e anonimato garantidos;
 
