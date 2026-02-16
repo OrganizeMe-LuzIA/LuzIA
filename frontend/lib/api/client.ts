@@ -1,4 +1,5 @@
 import { ApiErrorPayload } from "@/lib/types/api";
+import { clearStoredSession, notifySessionExpired } from "@/lib/auth/session";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
@@ -91,6 +92,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   if (!response.ok) {
     const detail = (responseBody as ApiErrorPayload)?.detail;
     const fallbackMessage = `Erro ${response.status} ao acessar ${path}`;
+
+    if (response.status === 401 && token) {
+      clearStoredSession();
+      notifySessionExpired();
+    }
+
     throw new ApiError(parseErrorMessage(detail, fallbackMessage), response.status, detail);
   }
 

@@ -9,10 +9,13 @@ import {
   useMemo,
   useState,
 } from "react";
-
-const TOKEN_STORAGE_KEY = "luzia.access_token";
-const EMAIL_STORAGE_KEY = "luzia.email";
-const LEGACY_PHONE_STORAGE_KEY = "luzia.phone";
+import {
+  AUTH_SESSION_EXPIRED_EVENT,
+  EMAIL_STORAGE_KEY,
+  LEGACY_PHONE_STORAGE_KEY,
+  TOKEN_STORAGE_KEY,
+  clearStoredSession,
+} from "@/lib/auth/session";
 
 interface AuthContextValue {
   token: string | null;
@@ -61,12 +64,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setToken(null);
     setEmail(null);
 
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-      window.localStorage.removeItem(EMAIL_STORAGE_KEY);
-      window.localStorage.removeItem(LEGACY_PHONE_STORAGE_KEY);
-    }
+    clearStoredSession();
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const handleSessionExpired = () => {
+      clearSession();
+    };
+
+    window.addEventListener(AUTH_SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => {
+      window.removeEventListener(AUTH_SESSION_EXPIRED_EVENT, handleSessionExpired);
+    };
+  }, [clearSession]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
