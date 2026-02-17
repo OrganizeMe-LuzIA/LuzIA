@@ -2,11 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import {
-  AlertTriangle,
-  BarChart3,
-  TrendingUp,
-} from "lucide-react";
+import { AlertTriangle, BarChart3, Clock4, FileSpreadsheet, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { ExportButton } from "@/components/ui/ExportButton";
@@ -15,7 +11,14 @@ import { ErrorState } from "@/components/shared/ErrorState";
 import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { dashboardApi, relatoriosApi } from "@/lib/api";
-import { GerarRelatorioRequest, QuestionarioMetricas, Relatorio, SetorDashboard } from "@/lib/types/api";
+import {
+  GerarRelatorioRequest,
+  QuestionarioMetricas,
+  Relatorio,
+  RelatorioExportFormat,
+  RelatorioResumo,
+  SetorDashboard,
+} from "@/lib/types/api";
 import { clamp, formatDateTime, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
 import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
@@ -69,6 +72,25 @@ function getHeatColor(value: number): string {
   return "#10b981";
 }
 
+function isSupportedExportFormat(format: string): format is RelatorioExportFormat {
+  return format === "pdf" || format === "excel" || format === "csv";
+}
+
+function triggerDownload(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+function formatTipoRelatorio(tipo: string): string {
+  return tipo === "setorial" ? "Setorial" : "Organizacional";
+}
+
 export default function RelatoriosPage() {
   const { token } = useAuth();
 
@@ -84,6 +106,7 @@ export default function RelatoriosPage() {
 
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingAsyncSubmit, setLoadingAsyncSubmit] = useState(false);
+  const [loadingExport, setLoadingExport] = useState<RelatorioExportFormat | null>(null);
 
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -93,6 +116,8 @@ export default function RelatoriosPage() {
   const [loadingRelatorio, setLoadingRelatorio] = useState(false);
 
   const [metricasQuestionario, setMetricasQuestionario] = useState<QuestionarioMetricas | null>(null);
+  const [recentReports, setRecentReports] = useState<RelatorioResumo[]>([]);
+  const [loadingRecentReports, setLoadingRecentReports] = useState(false);
 
   const loader = useCallback(async (signal?: AbortSignal) => {
     if (!token) {
@@ -122,6 +147,35 @@ export default function RelatoriosPage() {
       idOrganizacao: current.idOrganizacao || data.organizacoes[0]?.id || "",
     }));
   }, [data]);
+
+  const refreshRecentReports = useCallback(async () => {
+    if (!token || !form.idQuestionario || !form.idOrganizacao) {
+      setRecentReports([]);
+      return;
+    }
+
+    setLoadingRecentReports(true);
+    try {
+      const result = await relatoriosApi.list(token, {
+        questionarioId: form.idQuestionario,
+        orgId: form.idOrganizacao,
+        setorId: form.tipo === "setorial" ? form.idSetor || undefined : undefined,
+        tipo: form.tipo,
+        limit: 12,
+      });
+      setRecentReports(result);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Falha ao carregar relatórios recentes.";
+      setErrorMessage(message);
+      setRecentReports([]);
+    } finally {
+      setLoadingRecentReports(false);
+    }
+  }, [token, form.idQuestionario, form.idOrganizacao, form.idSetor, form.tipo]);
+
+  useEffect(() => {
+    void refreshRecentReports();
+  }, [refreshRecentReports]);
 
   useEffect(() => {
     if (!token || !form.idOrganizacao) {
@@ -194,13 +248,16 @@ export default function RelatoriosPage() {
       return [];
     }
 
-    return relatorio.dominios.map((dominio) => {
-      const nome = dominio.nome || "Sem domínio";
-      return {
-        dominio: nome.length > 18 ? `${nome.slice(0, 18)}...` : nome,
-        score: clamp(Math.round(toFiniteNumber(dominio.media_dominio) * 20), 0, 100),
-      };
-    });
+    return relatorio.dominios
+      .map((dominio) => {
+        const nome = dominio.nome || "Sem domínio";
+        return {
+          dominio: nome.length > 18 ? `${nome.slice(0, 18)}...` : nome,
+          score: clamp(Math.round(toFiniteNumber(dominio.media_dominio) * 20), 0, 100),
+        };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6);
   }, [relatorio]);
 
   const distribuicaoDimensoes = useMemo(() => {
@@ -233,7 +290,7 @@ export default function RelatoriosPage() {
       return [];
     }
 
-    return relatorio.dominios.slice(0, 5).map((dominio) => ({
+    return relatorio.dominios.slice(0, 6).map((dominio) => ({
       dominio: dominio.nome || "Sem domínio",
       media: clamp(Math.round(toFiniteNumber(dominio.media_dominio) * 20), 0, 100),
       classificacao: dominio.classificacao_predominante,
@@ -267,43 +324,46 @@ export default function RelatoriosPage() {
 
     return [
       {
-        titulo: "Média de Risco Global",
+        titulo: "Média de Risco Global (estimada)",
         valor: (4 - data.overview.taxa_conclusao_geral / 25).toFixed(2),
         subtitulo: "Estimativa baseada no overview",
       },
       {
-        titulo: "Índice de Proteção",
+        titulo: "Índice de Proteção (estimado)",
         valor: formatPercent(data.overview.taxa_conclusao_geral),
         subtitulo: "Taxa de conclusão geral",
       },
       {
-        titulo: "Total Respondentes",
+        titulo: "Total Respondentes (potencial)",
         valor: formatNumber(data.overview.total_usuarios),
         subtitulo: "Base potencial",
       },
     ];
   }, [relatorio, data]);
 
-  const loadReportById = async (id: string) => {
-    if (!token || !id) {
-      return;
-    }
+  const loadReportById = useCallback(
+    async (id: string) => {
+      if (!token || !id) {
+        return;
+      }
 
-    setLoadingRelatorio(true);
-    setErrorMessage(null);
+      setLoadingRelatorio(true);
+      setErrorMessage(null);
 
-    try {
-      const report = await relatoriosApi.getById(id, token);
-      setRelatorio(report);
-      setRelatorioId(id);
-      setFeedback("Relatório carregado com sucesso.");
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Não foi possível obter o relatório.";
-      setErrorMessage(message);
-    } finally {
-      setLoadingRelatorio(false);
-    }
-  };
+      try {
+        const report = await relatoriosApi.getById(id, token);
+        setRelatorio(report);
+        setRelatorioId(id);
+        setFeedback("Relatório carregado com sucesso.");
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Não foi possível obter o relatório.";
+        setErrorMessage(message);
+      } finally {
+        setLoadingRelatorio(false);
+      }
+    },
+    [token],
+  );
 
   const handleGenerateReport = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -332,7 +392,7 @@ export default function RelatoriosPage() {
       const response = await relatoriosApi.gerar(payload, token);
       setFeedback(response.message);
       setRelatorioId(response.id);
-      await loadReportById(response.id);
+      await Promise.all([loadReportById(response.id), refreshRecentReports()]);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Falha ao gerar relatório.";
       setErrorMessage(message);
@@ -367,11 +427,41 @@ export default function RelatoriosPage() {
       );
 
       setFeedback(`${response.message} Task ID: ${response.task_id}`);
+      await refreshRecentReports();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Falha ao enviar geração assíncrona.";
       setErrorMessage(message);
     } finally {
       setLoadingAsyncSubmit(false);
+    }
+  };
+
+  const handleExport = async (format: string) => {
+    if (!token) {
+      return;
+    }
+    if (!relatorio?.id) {
+      setErrorMessage("Carregue um relatório antes de exportar.");
+      return;
+    }
+    if (!isSupportedExportFormat(format)) {
+      setErrorMessage("Formato de exportação não suportado nesta tela.");
+      return;
+    }
+
+    setLoadingExport(format);
+    setErrorMessage(null);
+    setFeedback(null);
+
+    try {
+      const exported = await relatoriosApi.exportById(relatorio.id, format, token);
+      triggerDownload(exported.blob, exported.filename);
+      setFeedback(`Arquivo ${exported.filename} gerado com sucesso.`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Falha ao exportar relatório.";
+      setErrorMessage(message);
+    } finally {
+      setLoadingExport(null);
     }
   };
 
@@ -392,17 +482,54 @@ export default function RelatoriosPage() {
       <header className="flex flex-col justify-between gap-3 md:flex-row md:items-end">
         <div>
           <h1 className="font-display text-3xl font-semibold text-slate-900">Relatórios Consolidados</h1>
-          <p className="mt-1 text-slate-600">Análise completa de saúde psicossocial COPSOQ II</p>
+          <p className="mt-1 text-slate-600">Fluxo em 3 passos: configurar, gerar/carregar e exportar.</p>
         </div>
         <div className="flex flex-col items-start gap-2 md:items-end">
           <RefreshingIndicator active={refreshing} />
-          <ExportButton onExport={(format) => setFeedback(`Exportação ${format.toUpperCase()} iniciada.`)} />
+          <ExportButton
+            onExport={(format) => void handleExport(format)}
+            formats={["pdf", "excel", "csv"]}
+            label={loadingExport ? `Exportando ${loadingExport.toUpperCase()}...` : "Exportar relatório"}
+          />
         </div>
       </header>
 
+      <section className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <Card padding="sm">
+          <div className="flex items-start gap-2">
+            <Badge variant="default">1</Badge>
+            <div>
+              <p className="font-semibold text-slate-900">Defina o escopo</p>
+              <p className="text-sm text-slate-600">Selecione questionário, organização e tipo.</p>
+            </div>
+          </div>
+        </Card>
+        <Card padding="sm">
+          <div className="flex items-start gap-2">
+            <Badge variant="default">2</Badge>
+            <div>
+              <p className="font-semibold text-slate-900">Gere ou carregue</p>
+              <p className="text-sm text-slate-600">Use geração síncrona ou escolha um relatório recente.</p>
+            </div>
+          </div>
+        </Card>
+        <Card padding="sm">
+          <div className="flex items-start gap-2">
+            <Badge variant="default">3</Badge>
+            <div>
+              <p className="font-semibold text-slate-900">Analise e exporte</p>
+              <p className="text-sm text-slate-600">Baixe em PDF, CSV ou Excel.</p>
+            </div>
+          </div>
+        </Card>
+      </section>
+
       <Card>
         <form onSubmit={handleGenerateReport} className="space-y-4">
-          <h2 className="font-display text-xl font-semibold text-slate-900">Gerar relatório via endpoint</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-xl font-semibold text-slate-900">Configuração de Geração</h2>
+            <Badge variant="media">{formatTipoRelatorio(form.tipo)}</Badge>
+          </div>
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             <label className="text-sm">
@@ -458,6 +585,7 @@ export default function RelatoriosPage() {
                   setForm((current) => ({
                     ...current,
                     tipo: event.target.value as ReportFormState["tipo"],
+                    idSetor: "",
                   }))
                 }
                 className="w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -468,7 +596,9 @@ export default function RelatoriosPage() {
             </label>
 
             <label className="text-sm">
-              <span className="mb-1 block font-semibold text-slate-700">Setor {form.tipo === "setorial" ? "(obrigatório)" : "(opcional)"}</span>
+              <span className="mb-1 block font-semibold text-slate-700">
+                Setor {form.tipo === "setorial" ? "(obrigatório)" : "(opcional)"}
+              </span>
               <select
                 value={form.idSetor}
                 onChange={(event) =>
@@ -497,7 +627,7 @@ export default function RelatoriosPage() {
               disabled={loadingSubmit}
               className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loadingSubmit ? "Gerando..." : "Gerar relatório (síncrono)"}
+              {loadingSubmit ? "Gerando..." : "Gerar agora"}
             </button>
 
             <button
@@ -506,16 +636,74 @@ export default function RelatoriosPage() {
               onClick={handleGenerateReportAsync}
               className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loadingAsyncSubmit ? "Enviando..." : "Gerar relatório (assíncrono)"}
+              {loadingAsyncSubmit ? "Enviando..." : "Enviar para fila (async)"}
             </button>
           </div>
         </form>
       </Card>
 
       <Card>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-display text-lg font-semibold text-slate-900">Relatórios Recentes no Escopo</h3>
+          <button
+            type="button"
+            onClick={() => void refreshRecentReports()}
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Atualizar lista
+          </button>
+        </div>
+
+        {loadingRecentReports ? (
+          <div className="py-6 text-sm text-slate-500">Carregando relatórios...</div>
+        ) : recentReports.length ? (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px]">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-slate-700">Data</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-slate-700">Tipo</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-slate-700">Respondentes</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-slate-700">Risco Global</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-slate-700">Proteção</th>
+                  <th className="px-3 py-2 text-right text-xs font-semibold text-slate-700">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentReports.map((item) => (
+                  <tr key={item.id} className="border-b border-slate-100">
+                    <td className="px-3 py-2 text-sm text-slate-700">{formatDateTime(item.dataGeracao)}</td>
+                    <td className="px-3 py-2">
+                      <Badge variant="default">{formatTipoRelatorio(item.tipoRelatorio)}</Badge>
+                    </td>
+                    <td className="px-3 py-2 text-sm text-slate-700">
+                      {formatNumber(toFiniteNumber(item.metricas.totalRespondentes))}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-slate-700">{toFiniteNumber(item.metricas.mediaRiscoGlobal).toFixed(2)}</td>
+                    <td className="px-3 py-2 text-sm text-slate-700">{formatPercent(toFiniteNumber(item.metricas.indiceProtecao))}</td>
+                    <td className="px-3 py-2 text-right">
+                      <button
+                        type="button"
+                        onClick={() => void loadReportById(item.id)}
+                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                      >
+                        Carregar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="py-6 text-sm text-slate-500">Nenhum relatório encontrado para os filtros atuais.</div>
+        )}
+      </Card>
+
+      <Card>
         <div className="flex flex-col gap-3 md:flex-row md:items-end">
           <label className="flex-1 text-sm">
-            <span className="mb-1 block font-semibold text-slate-700">Consultar relatório por ID</span>
+            <span className="mb-1 block font-semibold text-slate-700">Abrir relatório por ID (opcional)</span>
             <input
               value={relatorioId}
               onChange={(event) => setRelatorioId(event.target.value)}
@@ -529,13 +717,46 @@ export default function RelatoriosPage() {
             disabled={loadingRelatorio || !relatorioId}
             className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loadingRelatorio ? "Consultando..." : "Buscar relatório"}
+            {loadingRelatorio ? "Consultando..." : "Buscar por ID"}
           </button>
         </div>
       </Card>
 
       {feedback && <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{feedback}</p>}
       {errorMessage && <p className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{errorMessage}</p>}
+
+      {relatorio ? (
+        <Card>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+            <div className="rounded-lg border border-slate-200 p-3">
+              <p className="text-xs text-slate-500">Relatório carregado</p>
+              <p className="mt-1 font-mono text-xs text-slate-700">{relatorio.id}</p>
+            </div>
+            <div className="rounded-lg border border-slate-200 p-3">
+              <p className="text-xs text-slate-500">Tipo</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">{formatTipoRelatorio(relatorio.tipoRelatorio)}</p>
+            </div>
+            <div className="rounded-lg border border-slate-200 p-3">
+              <p className="text-xs text-slate-500">Gerado em</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">{formatDateTime(relatorio.dataGeracao)}</p>
+            </div>
+            <div className="rounded-lg border border-slate-200 p-3">
+              <p className="text-xs text-slate-500">Status</p>
+              <div className="mt-1 flex items-center gap-1 text-sm font-semibold text-emerald-700">
+                <FileSpreadsheet className="h-4 w-4" />
+                pronto para exportação
+              </div>
+            </div>
+          </div>
+        </Card>
+      ) : (
+        <Card>
+          <div className="flex items-start gap-2 text-sm text-slate-600">
+            <Clock4 className="mt-0.5 h-4 w-4 text-slate-500" />
+            Carregue um relatório para habilitar exportação e análises completas dos gráficos.
+          </div>
+        </Card>
+      )}
 
       <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {scorecards.map((card) => (
@@ -552,7 +773,7 @@ export default function RelatoriosPage() {
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
-          <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Análise por Domínio COPSOQ</h3>
+          <h3 className="mb-4 font-display text-lg font-semibold text-slate-900">Radar Hexagonal por Domínio</h3>
           <RadarScoreChart data={radarData} height={340} />
         </Card>
 
@@ -639,13 +860,17 @@ export default function RelatoriosPage() {
 
       <section className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
         <p>
-          <strong>Contexto atual:</strong> {relatorio ? "dados derivados de relatório gerado" : "dados de overview e métricas de questionário"}.
+          <strong>Contexto atual:</strong>{" "}
+          {relatorio ? "dados derivados de relatório gerado" : "dados de overview e métricas de questionário"}.
           Última atualização geral: {formatDateTime(data.overview.ultima_atualizacao)}.
         </p>
         {metricasQuestionario && (
           <p className="mt-2 flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-teal-600" />
-            Classificação atual do questionário selecionado: favorável {formatNumber(metricasQuestionario.distribuicao_classificacoes.favoravel || 0)}, intermediário {formatNumber(metricasQuestionario.distribuicao_classificacoes.intermediario || 0)}, risco {formatNumber(metricasQuestionario.distribuicao_classificacoes.risco || 0)}.
+            Classificação atual do questionário selecionado: favorável{" "}
+            {formatNumber(metricasQuestionario.distribuicao_classificacoes.favoravel || 0)}, intermediário{" "}
+            {formatNumber(metricasQuestionario.distribuicao_classificacoes.intermediario || 0)}, risco{" "}
+            {formatNumber(metricasQuestionario.distribuicao_classificacoes.risco || 0)}.
           </p>
         )}
       </section>

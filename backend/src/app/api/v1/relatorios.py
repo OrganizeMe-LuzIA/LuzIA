@@ -1,10 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import io
+from enum import Enum
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import StreamingResponse
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from app.models.base import Usuario
 from app.repositories.relatorios import RelatoriosRepo
 from app.repositories.usuarios import UsuariosRepo
 from app.repositories.diagnosticos import DiagnosticosRepo
+from app.services.relatorio_export_service import RelatorioExportService
 from app.services.relatorio_service import RelatorioService
 from app.workers.relatorio_tasks import generate_organizational_report, generate_sector_report
 from app.api.deps import get_current_admin_user
@@ -16,6 +21,74 @@ class GerarRelatorioRequest(BaseModel):
     idOrganizacao: str
     idSetor: Optional[str] = None
     tipo: str # "organizacional" ou "setorial"
+
+
+class ExportFormat(str, Enum):
+    PDF = "pdf"
+    CSV = "csv"
+    EXCEL = "excel"
+
+
+def _stringify_id(value: Any) -> Optional[str]:
+    if value is None:
+        return None
+    raw = str(value).strip()
+    return raw if raw else None
+
+
+def _count_dimensoes(relatorio: Dict[str, Any]) -> int:
+    total = 0
+    for dominio in relatorio.get("dominios") or []:
+        total += len(dominio.get("dimensoes") or [])
+    return total
+
+
+def _serialize_relatorio(relatorio_doc: Dict[str, Any], include_full_payload: bool) -> Dict[str, Any]:
+    encoded = jsonable_encoder(relatorio_doc)
+    result: Dict[str, Any] = {
+        "id": _stringify_id(encoded.pop("_id", None)),
+        "idQuestionario": _stringify_id(encoded.get("idQuestionario")),
+        "idOrganizacao": _stringify_id(encoded.get("idOrganizacao")),
+        "idSetor": _stringify_id(encoded.get("idSetor")),
+        "tipoRelatorio": encoded.get("tipoRelatorio"),
+        "geradoPor": encoded.get("geradoPor"),
+        "dataGeracao": encoded.get("dataGeracao"),
+        "metricas": encoded.get("metricas") or {},
+        "totalDominios": len(encoded.get("dominios") or []),
+        "totalDimensoes": _count_dimensoes(encoded),
+    }
+
+    if include_full_payload:
+        result.update(
+            {
+                "dominios": encoded.get("dominios") or [],
+                "recomendacoes": encoded.get("recomendacoes") or [],
+                "observacoes": encoded.get("observacoes"),
+            }
+        )
+
+    return result
+
+
+@router.get("", response_model=List[Dict[str, Any]])
+async def listar_relatorios(
+    questionario_id: Optional[str] = Query(default=None),
+    org_id: Optional[str] = Query(default=None),
+    setor_id: Optional[str] = Query(default=None),
+    tipo: Optional[str] = Query(default=None),
+    limit: int = Query(default=20, ge=1, le=200),
+    current_user: Usuario = Depends(get_current_admin_user),
+) -> List[Dict[str, Any]]:
+    _ = current_user
+    repo = RelatoriosRepo()
+    relatorios = await repo.find_by_filters(
+        questionario_id=questionario_id,
+        org_id=org_id,
+        setor_id=setor_id,
+        tipo=tipo,
+        limit=limit,
+    )
+    return [_serialize_relatorio(item, include_full_payload=False) for item in relatorios]
 
 @router.post("/gerar", status_code=status.HTTP_201_CREATED)
 async def gerar_relatorio(
@@ -123,11 +196,37 @@ async def get_relatorio(
     
     if not rel:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
-        
-    rel["id"] = str(rel.pop("_id"))
-    # Converter ObjectIds para string
-    for field in ["idQuestionario", "idOrganizacao", "idSetor"]:
-        if field in rel and rel[field]:
-            rel[field] = str(rel[field])
-            
-    return rel
+
+    return _serialize_relatorio(rel, include_full_payload=True)
+
+
+@router.get("/{rel_id}/export")
+async def exportar_relatorio(
+    rel_id: str,
+    format: ExportFormat = Query(default=ExportFormat.PDF),
+    current_user: Usuario = Depends(get_current_admin_user),
+) -> StreamingResponse:
+    _ = current_user
+    repo = RelatoriosRepo()
+    relatorio = await repo.get_by_id(rel_id)
+    if not relatorio:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+
+    serializado = _serialize_relatorio(relatorio, include_full_payload=True)
+    service = RelatorioExportService()
+    try:
+        exported = service.export(serializado, format.value)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    headers = {
+        "Content-Disposition": f"attachment; filename=\"{exported['filename']}\"",
+        "Cache-Control": "no-store",
+    }
+    return StreamingResponse(
+        io.BytesIO(exported["payload"]),
+        media_type=exported["media_type"],
+        headers=headers,
+    )

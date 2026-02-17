@@ -225,6 +225,8 @@ export interface GerarRelatorioResponse {
   message: string;
 }
 
+export type RelatorioExportFormat = "pdf" | "excel" | "csv";
+
 export interface RelatorioMetricas {
   mediaRiscoGlobal: number;
   indiceProtecao: number;
@@ -259,6 +261,24 @@ export interface Relatorio {
   dominios: RelatorioDominio[];
   recomendacoes: string[];
   observacoes?: string;
+}
+
+export interface RelatorioResumo {
+  id: string;
+  idQuestionario?: string;
+  idOrganizacao?: string;
+  idSetor?: string;
+  tipoRelatorio: string;
+  geradoPor: string;
+  dataGeracao: string;
+  metricas: RelatorioMetricas;
+  totalDominios: number;
+  totalDimensoes: number;
+}
+
+export interface RelatorioExportResult {
+  blob: Blob;
+  filename: string;
 }
 
 export interface DashboardFilters {
