@@ -5,6 +5,7 @@ const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
 const MARGIN_MM = 10;
 const CONTENT_WIDTH_MM = A4_WIDTH_MM - MARGIN_MM * 2;
+const PAGE_EPSILON_MM = 0.5;
 
 export async function generateReportPdf(
   element: HTMLElement,
@@ -26,28 +27,23 @@ export async function generateReportPdf(
 
   const pdf = new jsPDF("p", "mm", "a4");
   const pageContentHeight = A4_HEIGHT_MM - MARGIN_MM * 2;
+  const effectiveHeightMm = Math.max(imgHeightMm - PAGE_EPSILON_MM, 0);
+  const totalPages = Math.max(1, Math.ceil(effectiveHeightMm / pageContentHeight));
 
-  let heightLeft = imgHeightMm;
-  let position = MARGIN_MM;
-  let page = 0;
-
-  while (heightLeft > 0) {
+  for (let page = 0; page < totalPages; page += 1) {
     if (page > 0) {
       pdf.addPage();
     }
 
+    const imageTop = MARGIN_MM - page * pageContentHeight;
     pdf.addImage(
       imgData,
       "PNG",
       MARGIN_MM,
-      position - page * pageContentHeight,
+      imageTop,
       CONTENT_WIDTH_MM,
       imgHeightMm,
     );
-
-    heightLeft -= pageContentHeight;
-    page++;
-    position = MARGIN_MM - page * pageContentHeight;
   }
 
   pdf.save(filename);
