@@ -19,7 +19,12 @@ function buildForwardHeaders(request: NextRequest): Headers {
   const headers = new Headers();
   request.headers.forEach((value, key) => {
     const normalized = key.toLowerCase();
-    if (normalized === "host" || normalized === "connection" || normalized === "content-length") {
+    if (
+      normalized === "host" ||
+      normalized === "connection" ||
+      normalized === "content-length" ||
+      normalized === "accept-encoding"
+    ) {
       return;
     }
     // O backend não precisa do Origin para chamadas server-to-server.
@@ -28,6 +33,17 @@ function buildForwardHeaders(request: NextRequest): Headers {
     }
     headers.set(key, value);
   });
+  return headers;
+}
+
+function buildResponseHeaders(upstreamHeaders: Headers): Headers {
+  const headers = new Headers(upstreamHeaders);
+  // Evita inconsistências de compressão/tamanho no runtime serverless.
+  headers.delete("content-encoding");
+  headers.delete("content-length");
+  headers.delete("transfer-encoding");
+  headers.delete("connection");
+  headers.delete("keep-alive");
   return headers;
 }
 
@@ -45,10 +61,9 @@ async function proxy(request: NextRequest, pathSegments: string[]): Promise<Next
       cache: "no-store",
     });
 
-    const responseHeaders = new Headers(upstream.headers);
     return new NextResponse(upstream.body, {
       status: upstream.status,
-      headers: responseHeaders,
+      headers: buildResponseHeaders(upstream.headers),
     });
   } catch {
     return NextResponse.json(
