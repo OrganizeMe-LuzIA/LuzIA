@@ -62,7 +62,7 @@ export const relatoriosApi = {
       questionarioId?: string;
       orgId?: string;
       setorId?: string;
-      tipo?: "organizacional" | "setorial";
+      tipo?: "organizacional" | "setorial" | "individual";
       limit?: number;
     } = {},
   ): Promise<RelatorioResumo[]> {

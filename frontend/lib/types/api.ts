@@ -217,7 +217,8 @@ export interface GerarRelatorioRequest {
   idQuestionario: string;
   idOrganizacao: string;
   idSetor?: string;
-  tipo: "organizacional" | "setorial";
+  anonId?: string;
+  tipo: "organizacional" | "setorial" | "individual";
 }
 
 export interface GerarRelatorioResponse {

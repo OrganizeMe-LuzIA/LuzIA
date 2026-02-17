@@ -20,7 +20,8 @@ class GerarRelatorioRequest(BaseModel):
     idQuestionario: str
     idOrganizacao: str
     idSetor: Optional[str] = None
-    tipo: str # "organizacional" ou "setorial"
+    anonId: Optional[str] = None
+    tipo: str # "organizacional", "setorial" ou "individual"
 
 
 class ExportFormat(str, Enum):
@@ -97,36 +98,42 @@ async def gerar_relatorio(
 ) -> Dict[str, Any]:
     """
     Gera um relatório consolidado a partir dos diagnósticos existentes.
-    Agrega dados da organização ou setor especificado.
+    Suporta tipos: organizacional, setorial e individual.
     """
-    # 1. Buscar usuários do escopo (Org ou Setor)
-    u_repo = UsuariosRepo()
-    users = await u_repo.list_users_by_org(req.idOrganizacao, req.idSetor)
-    
-    if not users:
-        raise HTTPException(status_code=404, detail="Nenhum usuário encontrado para os filtros informados.")
-        
-    anon_ids = [u["anonId"] for u in users if "anonId" in u]
-    
-    if not anon_ids:
-        raise HTTPException(status_code=404, detail="Nenhum usuário com AnonID encontrado.")
-
-    # 2. Buscar Diagnósticos desses usuários
     d_repo = DiagnosticosRepo()
-    diagnosticos = await d_repo.find_by_anon_ids(anon_ids, req.idQuestionario)
-    
-    if not diagnosticos:
-        raise HTTPException(status_code=404, detail="Nenhum diagnóstico encontrado para gerar o relatório.")
 
-    # 3. Filtrar apenas o diagnóstico mais recente de cada usuário
-    # A query find_by_anon_ids retorna ordenado por dataAnalise desc
-    latest_diag_map = {}
-    for d in diagnosticos:
-        aid = d["anonId"]
-        if aid not in latest_diag_map:
-            latest_diag_map[aid] = d 
-            
-    clean_diags = list(latest_diag_map.values())
+    if req.tipo == "individual" and req.anonId:
+        # Relatório individual: buscar diagnósticos de um único usuário
+        diagnosticos = await d_repo.find_by_anon_ids([req.anonId], req.idQuestionario)
+        if not diagnosticos:
+            raise HTTPException(status_code=404, detail="Nenhum diagnóstico encontrado para este usuário.")
+        clean_diags = [diagnosticos[0]]
+    else:
+        # Relatório organizacional ou setorial
+        u_repo = UsuariosRepo()
+        users = await u_repo.list_users_by_org(req.idOrganizacao, req.idSetor)
+
+        if not users:
+            raise HTTPException(status_code=404, detail="Nenhum usuário encontrado para os filtros informados.")
+
+        anon_ids = [u["anonId"] for u in users if "anonId" in u]
+
+        if not anon_ids:
+            raise HTTPException(status_code=404, detail="Nenhum usuário com AnonID encontrado.")
+
+        diagnosticos = await d_repo.find_by_anon_ids(anon_ids, req.idQuestionario)
+
+        if not diagnosticos:
+            raise HTTPException(status_code=404, detail="Nenhum diagnóstico encontrado para gerar o relatório.")
+
+        # Filtrar apenas o diagnóstico mais recente de cada usuário
+        latest_diag_map = {}
+        for d in diagnosticos:
+            aid = d["anonId"]
+            if aid not in latest_diag_map:
+                latest_diag_map[aid] = d
+
+        clean_diags = list(latest_diag_map.values())
 
     # 4. Gerar Relatório usando Service
     service = RelatorioService()
