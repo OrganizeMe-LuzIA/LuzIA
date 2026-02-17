@@ -5,6 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
+from bson import ObjectId
 from app.models.base import Usuario
 from app.repositories.relatorios import RelatoriosRepo
 from app.repositories.usuarios import UsuariosRepo
@@ -45,7 +46,7 @@ def _count_dimensoes(relatorio: Dict[str, Any]) -> int:
 
 
 def _serialize_relatorio(relatorio_doc: Dict[str, Any], include_full_payload: bool) -> Dict[str, Any]:
-    encoded = jsonable_encoder(relatorio_doc)
+    encoded = jsonable_encoder(relatorio_doc, custom_encoder={ObjectId: str})
     result: Dict[str, Any] = {
         "id": _stringify_id(encoded.pop("_id", None)),
         "idQuestionario": _stringify_id(encoded.get("idQuestionario")),
