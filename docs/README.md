@@ -1,6 +1,6 @@
 # Índice da Documentação LuzIA
 
-> **Última atualização:** 2026-02-16
+> **Última atualização:** 2026-02-17
 
 ---
 

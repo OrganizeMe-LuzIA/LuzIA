@@ -128,4 +128,4 @@ O Celery retorna `task_id` que pode ser usado para rastreamento:
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

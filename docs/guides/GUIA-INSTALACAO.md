@@ -67,4 +67,4 @@ curl http://localhost:8000/health
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

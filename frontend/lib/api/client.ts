@@ -1,9 +1,14 @@
 import { ApiErrorPayload } from "@/lib/types/api";
 import { clearStoredSession, notifySessionExpired } from "@/lib/auth/session";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
-  "http://localhost:8000/api/v1";
+const configuredApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
+const useApiProxy = process.env.NEXT_PUBLIC_USE_API_PROXY !== "false";
+
+const API_BASE_URL = useApiProxy
+  ? "/api/proxy"
+  : configuredApiBaseUrl || "http://localhost:8000/api/v1";
+
+type QueryParams = Record<string, string | number | undefined | null>;
 
 const DEFAULT_GET_CACHE_TTL_MS = 15_000;
 
@@ -30,14 +35,25 @@ export class ApiError extends Error {
 interface RequestOptions extends Omit<RequestInit, "body"> {
   token?: string;
   body?: BodyInit | object;
-  query?: Record<string, string | number | undefined | null>;
+  query?: QueryParams;
   useCache?: boolean;
   cacheTtlMs?: number;
 }
 
-function buildUrl(path: string, query?: RequestOptions["query"]): string {
+function resolveBaseUrl(baseUrl: string): string {
+  if (baseUrl.startsWith("http://") || baseUrl.startsWith("https://")) {
+    return baseUrl;
+  }
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}${baseUrl}`;
+  }
+  return `http://localhost:3000${baseUrl}`;
+}
+
+export function resolveApiUrl(path: string, query?: QueryParams): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = new URL(`${API_BASE_URL}${normalizedPath}`);
+  const absoluteApiBase = resolveBaseUrl(API_BASE_URL);
+  const url = new URL(`${absoluteApiBase}${normalizedPath}`);
 
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
@@ -119,7 +135,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     resolvedHeaders.set("Authorization", `Bearer ${token}`);
   }
 
-  const requestUrl = buildUrl(path, query);
+  const requestUrl = resolveApiUrl(path, query);
   const shouldUseCache = normalizedMethod === "GET" && useCache && cacheTtlMs > 0;
   const hasAbortSignal = Boolean(signal);
   const cacheKey = shouldUseCache ? buildCacheKey(normalizedMethod, requestUrl, token) : "";

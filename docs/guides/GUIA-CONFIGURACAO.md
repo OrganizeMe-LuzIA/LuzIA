@@ -131,4 +131,4 @@ O backend funciona sem Redis (cache desativado automaticamente).
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

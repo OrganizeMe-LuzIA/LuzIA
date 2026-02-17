@@ -11,22 +11,46 @@ A camada de repositórios implementa o **Repository Pattern**, desacoplando a l�
 ### Estrutura de Arquivos
 
 ```
-backend/app/repositories/
-├── __init__.py          # Exports centralizados
-├── organizacoes.py      # Gerenciamento de organizações
-├── setores.py           # Gerenciamento de setores
-├── usuarios.py          # Gerenciamento de usuários
-├── questionarios.py     # Questionários e perguntas
-├── respostas.py         # Respostas aos questionários
-├── diagnosticos.py      # Diagnósticos individuais
-└── relatorios.py        # Relatórios consolidados
+backend/src/app/repositories/
+├── __init__.py              # Exports centralizados
+├── base_repository.py       # Repositório base com CRUD genérico
+├── organizacoes.py          # Gerenciamento de organizações
+├── setores.py               # Gerenciamento de setores
+├── usuarios.py              # Gerenciamento de usuários
+├── questionarios.py         # Questionários
+├── perguntas.py             # Perguntas dos questionários
+├── respostas.py             # Respostas aos questionários
+├── diagnosticos.py          # Diagnósticos individuais
+└── relatorios.py            # Relatórios consolidados
 ```
 
 ---
 
 ## 2. Padrões Implementados
 
-### 2.1 Tratamento de Erros
+### 2.1 Repositório Base
+
+```python
+class BaseRepository:
+    def __init__(self, collection_name: str):
+        self.collection = db[collection_name]
+
+    async def get_by_id(self, id: str) -> Optional[Dict]:
+        return await self.collection.find_one({"_id": ObjectId(id)})
+
+    async def create(self, data: Dict) -> str:
+        result = await self.collection.insert_one(data)
+        return str(result.inserted_id)
+
+    async def update(self, id: str, data: Dict) -> bool:
+        result = await self.collection.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": data}
+        )
+        return result.modified_count > 0
+```
+
+### 2.2 Tratamento de Erros
 
 Todos os métodos que recebem IDs externos tratam `bson.errors.InvalidId` para evitar exceções não controladas:
 
@@ -44,7 +68,7 @@ async def get_organization(self, org_id: str) -> Optional[Dict[str, Any]]:
 
 **Comportamento:** Em caso de ID inválido, o método retorna `None` (para buscas) ou `False` (para operações de modificação), permitindo que a camada de serviço trate adequadamente.
 
-### 2.2 Logging Padronizado
+### 2.3 Logging Padronizado
 
 Cada repositório utiliza um logger próprio para rastreabilidade:
 
@@ -57,7 +81,7 @@ logger = logging.getLogger(__name__)
 - `INFO`: Criação de novos documentos
 - `WARNING`: IDs inválidos ou operações que falharam silenciosamente
 
-### 2.3 Conversão Automática de ObjectId
+### 2.4 Conversão Automática de ObjectId
 
 O MongoDB utiliza `ObjectId` como identificador primário. Os repositórios convertem strings automaticamente:
 
@@ -68,30 +92,13 @@ def _ensure_object_id(self, data: Dict[str, Any], field: str) -> None:
         data[field] = ObjectId(data[field])
 ```
 
-### 2.4 Docstrings no Formato Google
-
-Todos os métodos públicos possuem documentação completa:
-
-```python
-async def create_organization(self, org_data: Dict[str, Any]) -> str:
-    """
-    Cria uma nova organização no banco de dados.
-
-    Args:
-        org_data: Dicionário contendo 'cnpj' e 'nome'.
-
-    Returns:
-        O ID da organização criada como string.
-    """
-```
-
 ---
 
 ## 3. Repositórios Implementados
 
 ### 3.1 OrganizacoesRepo
 
-**Arquivo:** `organizacoes.py`  
+**Arquivo:** `organizacoes.py`
 **Coleção:** `organizacoes`
 
 | Método | Descrição |
@@ -107,7 +114,7 @@ async def create_organization(self, org_data: Dict[str, Any]) -> str:
 
 ### 3.2 SetoresRepo
 
-**Arquivo:** `setores.py`  
+**Arquivo:** `setores.py`
 **Coleção:** `setores`
 
 | Método | Descrição |
@@ -124,13 +131,14 @@ async def create_organization(self, org_data: Dict[str, Any]) -> str:
 
 ### 3.3 UsuariosRepo
 
-**Arquivo:** `usuarios.py`  
+**Arquivo:** `usuarios.py`
 **Coleção:** `usuarios`
 
 | Método | Descrição |
 |--------|-----------|
 | `find_by_phone(phone)` | Busca por telefone |
 | `find_by_anon_id(anon_id)` | Busca por ID anônimo |
+| `find_by_email(email)` | Busca por email |
 | `create_user(user_data)` | Cria novo usuário |
 | `update_chat_state(phone, state)` | Atualiza estado do bot em `metadata.chat_state` |
 | `update_status(phone, status)` | Atualiza status do usuário |
@@ -138,16 +146,18 @@ async def create_organization(self, org_data: Dict[str, Any]) -> str:
 | `list_users_by_org(org_id, setor_id)` | Lista usuários por organização/setor |
 | `delete_user(phone)` | Remove usuário |
 
-**Campos automáticos na criação:**
-- `dataCadastro`: Data atual
-- `status`: `"aguardando_confirmacao"`
-- `respondido`: `False`
+**Status válidos na criação:**
+- `"não iniciado"` — status inicial (padrão)
+- `"em andamento"` — questionário em curso
+- `"finalizado"` — questionário concluído
+
+> **Nota:** O campo `anonId` é um UUID gerado automaticamente no momento do cadastro. Ele garante rastreabilidade técnica sem expor o número de telefone.
 
 ---
 
 ### 3.4 QuestionariosRepo e PerguntasRepo
 
-**Arquivo:** `questionarios.py`  
+**Arquivo:** `questionarios.py` / `perguntas.py`
 **Coleções:** `questionarios` e `perguntas`
 
 #### QuestionariosRepo
@@ -170,7 +180,7 @@ async def create_organization(self, org_data: Dict[str, Any]) -> str:
 
 ### 3.5 RespostasRepo
 
-**Arquivo:** `respostas.py`  
+**Arquivo:** `respostas.py`
 **Coleção:** `respostas`
 
 | Método | Descrição |
@@ -198,7 +208,7 @@ await db["respostas"].update_one(
 
 ### 3.6 DiagnosticosRepo
 
-**Arquivo:** `diagnosticos.py`  
+**Arquivo:** `diagnosticos.py`
 **Coleção:** `diagnosticos`
 
 | Método | Descrição |
@@ -215,7 +225,7 @@ await db["respostas"].update_one(
 
 ### 3.7 RelatoriosRepo
 
-**Arquivo:** `relatorios.py`  
+**Arquivo:** `relatorios.py`
 **Coleção:** `relatorios`
 
 | Método | Descrição |
@@ -257,12 +267,12 @@ class OrganizacaoService:
     async def criar_organizacao_com_setores(self, dados_org, lista_setores):
         # Cria a organização
         org_id = await self.org_repo.create_organization(dados_org)
-        
+
         # Cria os setores vinculados
         for setor in lista_setores:
             setor["idOrganizacao"] = org_id
             await self.setor_repo.create_sector(setor)
-        
+
         return org_id
 ```
 
@@ -276,7 +286,7 @@ class OrganizacaoService:
 | SetoresRepo | `setores` | `idOrganizacao`, `nome` |
 | UsuariosRepo | `usuarios` | `telefone`, `idOrganizacao`, `anonId`, `status` |
 | QuestionariosRepo | `questionarios` | `nome`, `versao`, `ativo` |
-| PerguntasRepo | `perguntas` | `idQuestionario`, `idPergunta`, `texto`, `tipo`, `escala` |
+| PerguntasRepo | `perguntas` | `idQuestionario`, `idPergunta`, `texto`, `tipoEscala` |
 | RespostasRepo | `respostas` | `anonId`, `idQuestionario`, `respostas` |
 | DiagnosticosRepo | `diagnosticos` | `anonId`, `idQuestionario`, `resultadoGlobal`, `dataAnalise` |
 | RelatoriosRepo | `relatorios` | `idQuestionario`, `tipoRelatorio`, `dataGeracao` |
@@ -286,13 +296,13 @@ class OrganizacaoService:
 ## 6. Notas Importantes
 
 ### Anonimização (LGPD)
-- O campo `anonId` é gerado via hash SHA-256 do telefone + salt
+- O campo `anonId` é um UUID v4 gerado automaticamente no cadastro do usuário
 - As coleções `respostas`, `diagnosticos` e `relatorios` utilizam `anonId` em vez do telefone
 - A associação `telefone ↔ anonId` existe apenas na coleção `usuarios`
 
 ### Performance
-- Índices recomendados estão definidos em `mongo/init_final.js`
-- Os métodos `to_list()` possuem limite padrão de 100-1000 documentos
+- Índices recomendados estão definidos em `backend/mongo/init_final.js`
+- Os métodos `to_list()` possuem limite padrão de 100–1000 documentos
 
 ### Concorrência
 - Todas as operações são assíncronas (`async/await`)
@@ -309,7 +319,10 @@ class OrganizacaoService:
 | 2026-01-06 | Criação de `respostas.py` (extraído de `usuarios.py`) |
 | 2026-01-06 | Separação de `PerguntasRepo` de `QuestionariosRepo` |
 | 2026-01-06 | Atualização do `__init__.py` com exports centralizados |
+| 2026-02-17 | Correção de caminhos, status de usuário e descrição do `anonId` |
 
 ---
 
-> **Referência:** Para detalhes sobre o esquema do banco de dados, consulte `mongo/init_final.js` e `Guia-Implementacao-Backend.md`.
+> **Referência:** Para detalhes sobre o esquema do banco de dados, consulte [`docs/infra/DATABASE.md`](../infra/DATABASE.md).
+
+**Última Atualização:** 2026-02-17

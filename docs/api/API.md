@@ -227,4 +227,4 @@ As seguintes rotas também estão disponíveis sem o prefixo `/dashboard`:
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

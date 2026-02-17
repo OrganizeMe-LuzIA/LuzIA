@@ -296,4 +296,4 @@ Desenvolvido com ❤️ para facilitar avaliações de saúde mental no trabalho
 
 **Status do Projeto:** 🟢 Ativo e em desenvolvimento
 
-**Última Atualização:** 2026-02-15
+**Última Atualização:** 2026-02-17

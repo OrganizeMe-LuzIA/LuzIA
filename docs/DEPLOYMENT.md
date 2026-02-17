@@ -156,7 +156,7 @@ TWILIO_VALIDATE_SIGNATURE=false
 
 ```env
 REDIS_URL=redis://localhost:6379
-ACCESS_TOKEN_EXPIRE_MINUTES=120
+ACCESS_TOKEN_EXPIRE_MINUTES=11520
 ENVIRONMENT=development
 LOG_LEVEL=INFO
 CORS_ORIGINS=http://localhost:3000,http://localhost:8080
@@ -223,4 +223,4 @@ echo $SECRET_KEY
 
 ---
 
-**Última Atualização:** 2026-02-15
+**Última Atualização:** 2026-02-17

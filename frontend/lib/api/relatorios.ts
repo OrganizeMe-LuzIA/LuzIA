@@ -6,7 +6,7 @@ import {
   RelatorioExportResult,
   RelatorioResumo,
 } from "@/lib/types/api";
-import { API_BASE_URL, apiRequest } from "@/lib/api/client";
+import { apiRequest, resolveApiUrl } from "@/lib/api/client";
 
 const RELATORIOS_CACHE_TTL = {
   byId: 10_000,
@@ -84,7 +84,7 @@ export const relatoriosApi = {
     format: RelatorioExportFormat,
     token: string,
   ): Promise<RelatorioExportResult> {
-    const url = new URL(`${API_BASE_URL}/relatorios/${relatorioId}/export`);
+    const url = new URL(resolveApiUrl(`/relatorios/${relatorioId}/export`));
     url.searchParams.set("format", format);
 
     const response = await fetch(url.toString(), {

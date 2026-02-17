@@ -1,71 +1,87 @@
 # Guia de Testes — LuzIA Backend
 
-Este guia explica como utilizar e executar a nova infraestrutura de testes implementada para o MongoDB no backend do LuzIA.
+> **Voltar para:** [📚 Documentação](../README.md)
+
+---
 
 ## 1. Estrutura de Testes
 
-Os testes foram organizados utilizando o framework `pytest` e `pytest-asyncio` para suportar operações assíncronas com o MongoDB (`motor`).
-
-- **`tests/conftest.py`**: Contém as fixtures globais.
-  - `test_client`: Cliente HTTP assíncrono que inicializa o app FastAPI (acionando o ciclo de vida/lifespan).
-  - `test_db`: Fixture que cria um banco de dados dedicado para testes (ex: `LuzIA_test`) e o limpa após a execução.
-- **`tests/test_db.py`**: Testes básicos de conectividade e integridade do banco de dados.
-
-## 2. Preparação do Ambiente (WSL)
-
-Os testes foram configurados para rodar no ambiente **WSL (Ubuntu)**, conforme os padrões do projeto.
-
-### Instalação de Dependências
-Caso precise reinstalar as dependências de teste, execute no terminal do WSL:
-
-```bash
-python3 -m pip install pytest pytest-asyncio httpx motor pydantic-settings --user --break-system-packages
-```
-
-## 3. Como Executar os Testes
-
-Para executar os testes, siga os passos abaixo no terminal do WSL:
-
-1. Acesse o diretório do backend:
-   ```bash
-   cd /mnt/c/Users/ResTIC55/Desktop/LuzIA/LuzIA/backend
-   ```
-
-2. Execute o `pytest` garantindo que o `PYTHONPATH` inclua a pasta `app`:
-   ```bash
-   export PYTHONPATH=.
-   python3 -m pytest tests/test_db.py
-   ```
-
-### Opções Úteis do Pytest:
-- `-v`: Modo detalhado (mostra o nome de cada teste).
-- `-s`: Mostra as saídas de `print` no terminal.
-- `--db-name <nome>`: (Opcional) Permite especificar um nome de banco diferente.
-
-## 4. Funcionamento Interno
-
-Os testes utilizam o hook de **lifespan** do FastAPI para garantir que a conexão com o MongoDB seja aberta e fechada corretamente. 
-
-> [!IMPORTANT]
-> A fixture `test_db` cria automaticamente um banco de dados temporário e o remove ao final dos testes para garantir que o banco de produção (`LuzIA`) não seja afetado.
-
-## 5. Testes de Serviços
-
-A partir da versão 2.1.0, foram adicionados testes unitários completos para os serviços principais do sistema.
-
-### Estrutura de Testes de Serviços
+Os testes utilizam `pytest` e `pytest-asyncio` para suportar operações assíncronas com o MongoDB via `motor`.
 
 ```
 backend/tests/
 ├── conftest.py                              # Fixtures compartilhadas
+│   ├── test_client                          # Cliente HTTP para testar a API FastAPI
+│   └── test_db                              # Banco de dados temporário (LuzIA_test)
 ├── services/
-│   ├── test_copsoq_scoring_service.py      # Testes do COPSOQ II
-│   ├── test_diagnostico_service.py         # Testes de diagnósticos
-│   └── test_relatorio_service.py           # Testes de relatórios
-└── integration/                             # Testes de integração
+│   ├── test_copsoq_scoring_service.py       # COPSOQScoringService (~95% cobertura)
+│   ├── test_diagnostico_service.py          # DiagnosticoService (~90% cobertura)
+│   └── test_relatorio_service.py           # RelatorioService (~88% cobertura)
+├── integration/
+│   ├── test_copsoq_v3_migration.py
+│   ├── test_diagnosticos_integration.py
+│   ├── test_organizacoes_integration.py
+│   ├── test_questionarios_integration.py
+│   ├── test_repositories_integration.py
+│   └── test_respostas_integration.py
+└── unit/                                    # Testes unitários
 ```
 
-### COPSOQScoringService (95% cobertura)
+**Sobre as fixtures:**
+- `test_client` — Inicializa o app FastAPI (com ciclo de vida/lifespan) e retorna um cliente HTTP assíncrono
+- `test_db` — Cria banco `LuzIA_test`, executa os testes, e remove o banco ao final para não afetar o banco de produção
+
+---
+
+## 2. Instalação de Dependências
+
+```bash
+cd backend
+pip install -r requirements/dev.txt
+```
+
+Ou individualmente:
+
+```bash
+pip install pytest pytest-asyncio pytest-cov httpx motor pydantic-settings
+```
+
+---
+
+## 3. Como Executar os Testes
+
+```bash
+# Acesse o diretório do backend
+cd backend
+
+# Configure o PYTHONPATH
+export PYTHONPATH=src   # Linux/Mac
+# set PYTHONPATH=src    # Windows (cmd)
+
+# Execute todos os testes
+python -m pytest tests/ -v
+
+# Com cobertura
+python -m pytest tests/ --cov=src/app --cov-report=html --cov-report=term-missing
+```
+
+### Opções Úteis do Pytest
+
+| Flag | Descrição |
+|------|-----------|
+| `-v` | Modo detalhado (mostra nome de cada teste) |
+| `-s` | Mostra saídas de `print` no terminal |
+| `-x` | Para na primeira falha |
+| `--cov` | Relatório de cobertura |
+| `--cov-report=html` | Relatório HTML em `htmlcov/` |
+
+---
+
+## 4. Testes de Serviços
+
+Desde a versão 2.1.0, os serviços principais possuem testes unitários com alta cobertura.
+
+### COPSOQScoringService (~95% cobertura)
 
 **Arquivo:** `backend/tests/services/test_copsoq_scoring_service.py`
 
@@ -76,14 +92,11 @@ backend/tests/
 - Agregação por domínios COPSOQ II
 - Edge cases para dados incompletos
 
-**Executar:**
 ```bash
-cd backend
-export PYTHONPATH=.
-python3 -m pytest tests/services/test_copsoq_scoring_service.py -v
+python -m pytest tests/services/test_copsoq_scoring_service.py -v
 ```
 
-### DiagnosticoService (90% cobertura)
+### DiagnosticoService (~90% cobertura)
 
 **Arquivo:** `backend/tests/services/test_diagnostico_service.py`
 
@@ -94,12 +107,11 @@ python3 -m pytest tests/services/test_copsoq_scoring_service.py -v
 - Validação de entrada
 - Casos com dados parciais
 
-**Executar:**
 ```bash
-python3 -m pytest tests/services/test_diagnostico_service.py -v
+python -m pytest tests/services/test_diagnostico_service.py -v
 ```
 
-### RelatorioService (88% cobertura)
+### RelatorioService (~88% cobertura)
 
 **Arquivo:** `backend/tests/services/test_relatorio_service.py`
 
@@ -110,29 +122,49 @@ python3 -m pytest tests/services/test_diagnostico_service.py -v
 - Geração de insights e recomendações
 - Agregação por domínios
 
-**Executar:**
 ```bash
-python3 -m pytest tests/services/test_relatorio_service.py -v
+python -m pytest tests/services/test_relatorio_service.py -v
 ```
 
-### Executar Todos os Testes
+---
+
+## 5. Testes de Integração
+
+Os testes de integração requerem MongoDB em execução (local ou Docker):
+
+```bash
+# Via Docker (recomendado)
+docker-compose up -d mongo
+
+# Execute os testes de integração
+python -m pytest tests/integration/ -v
+```
+
+---
+
+## 6. Executar Todos os Testes
 
 ```bash
 # Todos os testes com cobertura
-python3 -m pytest tests/ -v --cov=src/app --cov-report=html
+python -m pytest tests/ -v --cov=src/app --cov-report=html
 
 # Apenas testes de serviços
-python3 -m pytest tests/services/ -v
+python -m pytest tests/services/ -v
 
 # Apenas testes de integração
-python3 -m pytest tests/integration/ -v
+python -m pytest tests/integration/ -v
+
+# Teste específico
+python -m pytest tests/services/test_copsoq_scoring_service.py::test_classificacao_tercis -v
 ```
 
-## 6. Script de Automação
+---
 
-**Novo script:** `backend/scripts/run_migrations_and_tests.sh`
+## 7. Script de Automação
 
-Este script automatiza a criação de índices MongoDB e execução de testes:
+**Script:** `backend/scripts/run_migrations_and_tests.sh`
+
+Automatiza a criação de índices MongoDB e a execução de testes:
 
 ```bash
 bash backend/scripts/run_migrations_and_tests.sh
@@ -144,7 +176,14 @@ bash backend/scripts/run_migrations_and_tests.sh
 3. Executa testes de serviços com cobertura
 4. Valida integridade do banco
 
-## 7. Próximos Passos
-- Adicionar novos arquivos de teste em `tests/` seguindo o padrão de nomenclatura `test_*.py`.
-- Implementar testes de integração para cada um dos repositórios (`repositories/`).
-- Mockar serviços externos (como Twilio) para testes unitários puros.
+---
+
+## 8. Próximos Passos
+
+- Adicionar novos arquivos de teste em `tests/` seguindo o padrão de nomenclatura `test_*.py`
+- Implementar testes de integração para cada repositório (`repositories/`)
+- Mockar serviços externos (como Twilio) para testes unitários puros
+
+---
+
+**Última Atualização:** 2026-02-17

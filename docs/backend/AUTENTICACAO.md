@@ -118,4 +118,4 @@ async def check_rate_limit(identifier: str) -> bool:
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

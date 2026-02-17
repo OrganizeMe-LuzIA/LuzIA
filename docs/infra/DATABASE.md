@@ -267,4 +267,4 @@ O schema é validado em runtime via Pydantic. Atualizações de schema são apli
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

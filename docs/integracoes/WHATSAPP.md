@@ -169,4 +169,4 @@ Em produção, ative `TWILIO_VALIDATE_SIGNATURE=true` para validar que as requis
 
 ---
 
-**Última Atualização:** 2026-02-15
+**Última Atualização:** 2026-02-17

@@ -138,4 +138,4 @@ O backend é projetado para funcionar **sem Redis**:
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

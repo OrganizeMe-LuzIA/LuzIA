@@ -1,138 +1,96 @@
 # Lógica de Funcionamento do Sistema
+
 ## Visão Geral
 
-O sistema tem como objetivo aplicar questionários psicossociais (ex.: COPSOQ II) de forma anônima, coletar respostas, gerar diagnósticos individuais e consolidar relatórios organizacionais, respeitando a privacidade dos participantes e fornecendo indicadores confiáveis para tomada de decisão.
+O sistema tem como objetivo aplicar questionários psicossociais (COPSOQ II) de forma anônima, coletar respostas, gerar diagnósticos individuais e consolidar relatórios organizacionais. Todo o fluxo é orientado a **anonimato**, **segregação por organização/setor** e **processamento confiável de dados**, evitando exposição de informações pessoais sensíveis.
 
-Todo o fluxo é orientado a anonimato, segregação por organização e setor e processamento posterior dos dados, evitando exposição de informações pessoais sensíveis.
+---
 
-###  Gestão de Usuários e Anonimato
+## 1. Gestão de Usuários e Anonimato
 
-Os participantes são registrados na collection usuarios, vinculados a:
+Os participantes são registrados na collection `usuarios`, vinculados a uma organização e a um setor. Cada usuário recebe um `anonId` (UUID gerado automaticamente), que passa a ser a **única referência** utilizada em respostas, diagnósticos e análises.
 
-#### Uma organização
+**Regra de negócio crítica:** Nenhuma resposta ou diagnóstico utiliza identificadores pessoais (telefone, email, etc.). O `anonId` garante rastreabilidade técnica sem quebrar o anonimato.
 
-#### Um setor
+---
 
-#### Cada usuário recebe um anonId, que passa a ser a única referência utilizada em respostas, diagnósticos e análises.
+## 2. Organizações e Estrutura
 
-##  Regra de negócio importante:
-Nenhuma resposta ou diagnóstico utiliza identificadores pessoais (telefone, email, etc.). O anonId garante rastreabilidade técnica sem quebrar o anonimato.
+A collection `organizacoes` representa empresas ou instituições que aplicam os questionários. Cada organização:
 
-##  Organizações e Estrutura
+- Possui múltiplos setores e usuários;
+- Pode gerar relatórios consolidados;
+- Serve como unidade principal para análises estratégicas.
 
-### A collection organizacoes representa empresas ou instituições que aplicam os questionários.
+Os **setores** (`setores`) organizam os colaboradores por área, departamento ou unidade. O nome do setor é único por organização.
 
-#### Cada organização:
+---
 
-Possui múltiplos usuários;
+## 3. Questionários e Estrutura Psicossocial
 
-Pode gerar relatórios consolidados;
+Os instrumentos de avaliação são definidos na collection `questionarios`. Cada questionário:
 
-Serve como unidade principal para análises estratégicas.
+- Possui versão, idioma e código único (`COPSOQ_CURTA_BR`, `COPSOQ_MEDIA_PT`);
+- É composto por domínios e dimensões psicossociais;
+- Pode ser ativado ou desativado conforme a necessidade.
 
-### 📋 Questionários e Estrutura Psicossocial
+As perguntas associadas ficam na collection `perguntas`, organizadas por:
 
-Os instrumentos de avaliação são definidos na collection questionarios.
+- Domínio e dimensão;
+- Ordem de aplicação;
+- Tipo de escala (frequência, intensidade, satisfação, etc.);
+- Sinal de risco ou proteção;
+- Indicação de item invertido.
 
-#### Cada questionário:
+**Regra de negócio:** A estrutura do questionário define como as respostas serão interpretadas no diagnóstico — especialmente o `sinal` (risco/proteção) e `itemInvertido`.
 
-Possui versão, idioma e código único;
+---
 
-É composto por domínios e dimensões psicossociais;
+## 4. Coleta de Respostas
 
-Pode ser ativado ou desativado conforme a necessidade;
+As respostas dos usuários são armazenadas na collection `respostas`, vinculadas apenas ao `anonId`.
 
-As perguntas associadas ficam na collection perguntas, organizadas por:
+**Regras de negócio:**
+- Cada usuário pode ter **uma única resposta por questionário** (upsert)
+- Respostas posteriores sobrescrevem as anteriores
+- O fluxo pelo bot WhatsApp garante a ordem correta das perguntas
 
- - Domínio;
+---
 
- - Dimensão;
+## 5. Geração de Diagnósticos
 
- - Ordem de aplicação;
-
- - Tipo de escala (frequência, intensidade, etc.);
-
- - Indicação de risco ou proteção.
-
-###  Regra de negócio:
-A estrutura do questionário define como as respostas serão interpretadas posteriormente no diagnóstico.
-
-####  Coleta de Respostas
-
-As respostas dos usuários são armazenadas na collection respostas.
-
-##### Fluxo conceitual:
-
-O usuário responde o questionário;
-
-As respostas são vinculadas apenas ao anonId;
-
-Cada usuário pode responder uma única vez por questionário.
-
-####  Validação de negócio:
-O sistema impede múltiplas respostas do mesmo usuário para o mesmo questionário, garantindo integridade estatística.
-
-####  Geração de Diagnósticos
-
-Após a submissão das respostas, o sistema gera um diagnóstico individual, armazenado na collection diagnosticos.
+Após a submissão das respostas, o sistema gera um **diagnóstico individual** assíncrono (via Celery), armazenado na collection `diagnosticos`.
 
 O diagnóstico inclui:
 
- - Pontuação global;
+- Pontuação global e classificação geral (favorável/intermediário/risco);
+- Pontuação por domínio e dimensão (com tercil e sinal);
+- Quantidade de itens respondidos por dimensão.
 
- - Classificação geral (ex.: baixo, intermediário, alto risco);
+**Lógica central (COPSOQScoringService):** As pontuações consideram tipo de escala, itens invertidos, sinal de risco ou proteção, e quantidade válida de respostas. Os limites de tercis são `≤2.33` (favorável), `2.33-3.67` (intermediário) e `≥3.67` (risco).
 
- - Pontuação por domínio e dimensão;
+---
 
- - Quantidade de itens respondidos.
+## 6. Relatórios Organizacionais
 
-###  Lógica central:
-
-As pontuações consideram:
-
- - Tipo de escala;
-
- - Itens invertidos;
-
- - Sinal de risco ou proteção;
-
- - Quantidade válida de respostas.
-
-####  Relatórios Organizacionais
-
-Os dados individuais são consolidados na collection relatorios, com foco organizacional, nunca individual.
+Os dados individuais são consolidados na collection `relatorios`, com foco organizacional — **nunca individual**.
 
 Os relatórios apresentam:
 
- - Indicadores globais de risco;
+- Indicadores globais de risco (Média de Risco Global);
+- Índice de Proteção (0–100%);
+- Número de respondentes;
+- Análises por domínio e dimensão com distribuição de tercis;
+- Recomendações contextualizadas para dimensões em risco.
 
- - Índices de proteção;
+**Regra de negócio crítica:** Relatórios não expõem diagnósticos individuais, apenas métricas agregadas, preservando o anonimato dos colaboradores.
 
- - Número de respondentes;
+---
 
- - Análises por domínio e dimensão.
+## 7. Benefícios do Modelo
 
-## Recomendações gerais:
-
-###  Regra de negócio crítica:
-Relatórios não expõem diagnósticos individuais, apenas métricas agregadas, preservando o anonimato dos colaboradores.
-
-####  Evolução e Consistência de Dados
-
-O sistema permite evolução do modelo de dados sem impacto direto nos usuários;
-
-Alterações de estrutura são validadas em tempo de execução;
-
-Versões de questionários garantem comparabilidade histórica;
-
-Dados antigos permanecem íntegros mesmo com ajustes futuros.
-
-###  Benefícios do Modelo de Negócio
-
- - Privacidade e anonimato garantidos;
-
- - Escalabilidade para múltiplas organizações;
-
- - Clareza entre dado bruto, diagnóstico e relatório;
-
- - Base sólida para decisões estratégicas em saúde ocupacional.
+- Privacidade e anonimato garantidos via `anonId`
+- Escalabilidade para múltiplas organizações
+- Clareza entre dado bruto, diagnóstico e relatório
+- Base sólida para decisões estratégicas em saúde ocupacional
+- Conformidade com LGPD

@@ -14,8 +14,9 @@ O LuzIA possui **implementação completa e validada** do COPSOQ II (Copenhagen 
 
 ### Funcionalidades
 
-- **Classificação por Tercis** - Categorização científica (favorável/intermediário/risco)  
--**Dimensões de Proteção vs Risco** - Interpretação diferenciada conforme metodologia  
+- **Classificação por Tercis** - Categorização científica (favorável/intermediário/risco)
+- **Dimensões de Proteção vs Risco** - Interpretação diferenciada conforme metodologia
+
 - **Diagnósticos Individuais** - Análise personalizada com insights acionáveis  
 - **Relatórios Organizacionais** - Agregação por domínios e dimensões  
 - **Índice de Proteção** - Métrica de saúde organizacional (0-100%)  

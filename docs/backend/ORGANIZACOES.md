@@ -153,4 +153,4 @@ O processo filtra apenas o diagnóstico **mais recente** de cada usuário para e
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

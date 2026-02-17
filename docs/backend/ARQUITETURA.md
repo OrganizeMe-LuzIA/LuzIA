@@ -435,4 +435,4 @@ logger = logging.getLogger(__name__)
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17

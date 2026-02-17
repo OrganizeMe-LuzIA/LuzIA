@@ -2,7 +2,7 @@
 
 O projeto LuzIA tem como objetivo principal automatizar e facilitar a realização de avaliações psicossociais no ambiente de trabalho, utilizando um canal amplamente acessível: o WhatsApp.
 
-A proposta do sistema é tornar o processo de aplicação de questionários mais ágil, escalável e acessível, ampliando a participação dos colaboradores e reduzindo o tempo necessário para coleta e análise das informações. Para isso, o LuzIA viabiliza a aplicação de questionários consolidados, como o **CoPsoQ II** (versões curta brasileira e média portuguesa) e o DASS-21, utilizados na avaliação de riscos psicossociais.
+A proposta do sistema é tornar o processo de aplicação de questionários mais ágil, escalável e acessível, ampliando a participação dos colaboradores e reduzindo o tempo necessário para coleta e análise das informações. Para isso, o LuzIA viabiliza a aplicação do questionário **COPSOQ II** (Copenhagen Psychosocial Questionnaire) nas versões curta brasileira e média portuguesa, metodologia científica reconhecida internacionalmente para avaliação de riscos psicossociais.
 
 ### Implementação COPSOQ II
 

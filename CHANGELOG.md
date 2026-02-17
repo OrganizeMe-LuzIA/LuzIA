@@ -10,10 +10,27 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Não Lançado]
 
 ### Planejado
-- Dashboard frontend interativo
+- Rate limiting com Redis (hook já implementado em `core/security.py`)
+- Exportação PDF de relatórios via WeasyPrint
 - Análise temporal de relatórios
 - Benchmarking setorial
-- Exportação PDF de relatórios
+- OTP via Twilio Verify para autenticação de colaboradores
+
+---
+
+## [2.1.3] - 2026-02-17
+
+### Documentação
+- **Auditoria completa e atualização minuciosa da documentação** — todos os arquivos revisados e alinhados com o código real
+  - **GUIA-REPOSITORIES.md**: Corrigido caminho dos repositórios (`backend/app/` → `backend/src/app/`), status inicial do usuário (`"aguardando_confirmacao"` → `"não iniciado"`), descrição do `anonId` (SHA-256 → UUID v4), adicionado `base_repository.py` na estrutura
+  - **GUIA-DATA-ACCESS.md**: Corrigidos caminhos de todos os repositórios, adicionados `PerguntasRepo` e `RespostasRepo` separados, atualizado diagrama de relacionamentos
+  - **DEPLOYMENT.md**: Corrigido `ACCESS_TOKEN_EXPIRE_MINUTES=120` → `11520` (8 dias) na seção de variáveis opcionais
+  - **SERVICOS.md**: Corrigido link quebrado para `STATUS_IMPLEMENTACAO_COPSOQ.md` (caminho correto: `../questionaries/`)
+  - **MELHORIAS.md**: Reescrito completamente — removido conteúdo obsoleto de jan/2026, adicionado backlog atualizado com status real de implementação
+  - **CONTRIBUTING.md**: Expandido com tabela de prefixos de commit, instruções de linting/coverage, seções de frontend, criação de endpoints e atualização de documentação
+  - **visao-geral/objetivo.md**: Removida menção ao DASS-21 (não implementado); texto alinhado com o escopo real do projeto
+  - **visao-geral/funcionalidades.md**: Corrigido erro de formatação em lista de funcionalidades COPSOQ II
+  - Atualização de data "Última Atualização" em 13 arquivos de documentação (2026-02-16/15 → 2026-02-17)
 
 ---
 

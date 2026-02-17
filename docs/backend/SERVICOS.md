@@ -565,9 +565,9 @@ graph LR
 - [🏛️ Arquitetura do Backend](ARQUITETURA.md)
 - [🗄️ Modelos de Dados](MODELOS.md)
 - [✅ COPSOQ II - Guia Completo](../guides/GUIA-COPSOQ-II.md)
-- [📊 Status Implementação COPSOQ](../STATUS_IMPLEMENTACAO_COPSOQ.md)
+- [📊 Status Implementação COPSOQ](../questionaries/STATUS_IMPLEMENTACAO_COPSOQ.md)
 - [🧪 Guia de Testes](../guides/GUIA-TESTES.md)
 
 ---
 
-**Última Atualização:** 2026-02-16
+**Última Atualização:** 2026-02-17
