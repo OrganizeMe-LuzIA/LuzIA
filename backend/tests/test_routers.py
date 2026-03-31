@@ -21,6 +21,7 @@ def test_routes_protected_unauthorized():
         # ("/api/v1/organizacoes/", "GET"), # Admin only
         ("/api/v1/questionarios/", "GET"), # Active user
         ("/api/v1/diagnosticos/me", "GET"), # Active user
+        ("/api/v1/dashboard/integracoes/twilio/saldo", "GET"), # Admin only
     ]
     
     for endpoint, method in protected_endpoints:

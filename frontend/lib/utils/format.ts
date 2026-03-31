@@ -6,6 +6,19 @@ export function formatPercent(value: number): string {
   return `${value.toFixed(0)}%`;
 }
 
+export function formatCurrency(value: number, currency = "USD"): string {
+  try {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    return `${value.toFixed(2)} ${currency}`;
+  }
+}
+
 export function formatDateTime(value?: string | null): string {
   if (!value) {
     return "-";

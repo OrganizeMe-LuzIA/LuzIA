@@ -10,6 +10,7 @@ import {
   FileText,
   TrendingUp,
   Users,
+  Wallet,
 } from "lucide-react";
 import { KPICard } from "@/components/ui/KPICard";
 import { AlertCard } from "@/components/ui/AlertCard";
@@ -20,8 +21,8 @@ import { RefreshingIndicator } from "@/components/shared/RefreshingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { useDashboardFilters } from "@/context/FiltersContext";
 import { dashboardApi } from "@/lib/api";
-import { QuestionarioMetricas } from "@/lib/types/api";
-import { formatDateTime, formatNumber, formatPercent } from "@/lib/utils/format";
+import { QuestionarioMetricas, TwilioSaldo } from "@/lib/types/api";
+import { formatCurrency, formatDateTime, formatNumber, formatPercent } from "@/lib/utils/format";
 import { useAsyncData } from "@/lib/utils/useAsyncData";
 import { usePollingRefetch } from "@/lib/utils/usePollingRefetch";
 
@@ -62,6 +63,44 @@ function isAbortError(error: unknown): boolean {
   return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
 }
 
+function formatTwilioSaldoValue(twilioSaldo?: TwilioSaldo | null): string {
+  if (!twilioSaldo) {
+    return "Indisponível";
+  }
+
+  if (!twilioSaldo.configurado) {
+    return "Não configurado";
+  }
+
+  if (!twilioSaldo.disponivel || !twilioSaldo.saldo) {
+    return "Indisponível";
+  }
+
+  const parsed = Number(twilioSaldo.saldo);
+  if (Number.isFinite(parsed)) {
+    return formatCurrency(parsed, twilioSaldo.moeda || "USD");
+  }
+
+  return twilioSaldo.moeda ? `${twilioSaldo.saldo} ${twilioSaldo.moeda}` : twilioSaldo.saldo;
+}
+
+function getTwilioSaldoDescricao(twilioSaldo?: TwilioSaldo | null): string {
+  if (!twilioSaldo) {
+    return "Não foi possível carregar o saldo agora.";
+  }
+
+  if (!twilioSaldo.configurado) {
+    return "Configure TWILIO_ACCOUNT_SID e TWILIO_AUTH_TOKEN no backend.";
+  }
+
+  if (twilioSaldo.disponivel) {
+    const moeda = twilioSaldo.moeda ? `Moeda: ${twilioSaldo.moeda}. ` : "";
+    return `${moeda}Consulta em ${formatDateTime(twilioSaldo.ultima_atualizacao)}.`;
+  }
+
+  return twilioSaldo.erro || "Saldo indisponível no momento.";
+}
+
 export default function DashboardPage() {
   const { token } = useAuth();
   const { filters } = useDashboardFilters();
@@ -73,12 +112,18 @@ export default function DashboardPage() {
       throw new Error("Sessão inválida. Faça login novamente.");
     }
 
-    const [overview, setores] = await Promise.all([
+    const [overview, setores, twilioSaldo] = await Promise.all([
       dashboardApi.getOverview(token, { signal }),
       dashboardApi.listSetores(token, filters.orgId || undefined, { signal }),
+      dashboardApi.getTwilioSaldo(token, { signal }).catch((error) => {
+        if (signal?.aborted || isAbortError(error)) {
+          throw error;
+        }
+        return null;
+      }),
     ]);
 
-    return { overview, setores };
+    return { overview, setores, twilioSaldo };
   }, [token, filters.orgId]);
 
   const { data, loading, refreshing, error, refetch } = useAsyncData(loader, [loader]);
@@ -219,6 +264,23 @@ export default function DashboardPage() {
   }
 
   const { overview } = data;
+  const twilioSaldo = data.twilioSaldo;
+  const twilioSaldoDisponivel = Boolean(twilioSaldo?.disponivel);
+  const twilioSaldoNaoConfigurado = twilioSaldo?.configurado === false;
+  const twilioSaldoValue = formatTwilioSaldoValue(twilioSaldo);
+  const twilioSaldoDescricao = getTwilioSaldoDescricao(twilioSaldo);
+  const twilioSaldoValueClassName = twilioSaldoDisponivel
+    ? "text-slate-900"
+    : twilioSaldoNaoConfigurado
+      ? "text-amber-700"
+      : "text-rose-700";
+  const twilioSaldoDescriptionClassName = twilioSaldoDisponivel
+    ? "text-slate-500"
+    : twilioSaldoNaoConfigurado
+      ? "text-amber-700"
+      : "text-rose-700";
+  const twilioSaldoIconClassName = twilioSaldoDisponivel ? "text-sky-600" : "text-slate-500";
+  const twilioSaldoIconBgClassName = twilioSaldoDisponivel ? "bg-sky-50" : "bg-slate-100";
 
   return (
     <div className="space-y-6">
@@ -237,6 +299,18 @@ export default function DashboardPage() {
       </header>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <Card>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm text-slate-600">Saldo Twilio</p>
+              <p className={`mt-1 text-3xl font-semibold ${twilioSaldoValueClassName}`}>{twilioSaldoValue}</p>
+              <p className={`mt-2 text-sm ${twilioSaldoDescriptionClassName}`}>{twilioSaldoDescricao}</p>
+            </div>
+            <div className={`rounded-xl p-3 ${twilioSaldoIconBgClassName} ${twilioSaldoIconClassName}`}>
+              <Wallet className="h-6 w-6" />
+            </div>
+          </div>
+        </Card>
         {kpis.map((kpi) => (
           <KPICard key={kpi.title} title={kpi.title} value={kpi.value} icon={kpi.icon} />
         ))}

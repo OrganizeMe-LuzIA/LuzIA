@@ -7,6 +7,7 @@ import {
   QuestionarioStatus,
   SetorDashboard,
   SetorDetalhado,
+  TwilioSaldo,
   UsuarioAtivo,
 } from "@/lib/types/api";
 import { apiRequest } from "@/lib/api/client";
@@ -25,6 +26,7 @@ const DASHBOARD_CACHE_TTL = {
   usuarioProgresso: 15_000,
   questionariosStatus: 60_000,
   questionarioMetricas: 20_000,
+  twilioSaldo: 60_000,
 } as const;
 
 export const dashboardApi = {
@@ -121,6 +123,14 @@ export const dashboardApi = {
     return apiRequest<QuestionarioMetricas>(`/dashboard/questionarios/${questionarioId}/metricas`, {
       token,
       cacheTtlMs: DASHBOARD_CACHE_TTL.questionarioMetricas,
+      ...options,
+    });
+  },
+
+  getTwilioSaldo(token: string, options: DashboardRequestOptions = {}): Promise<TwilioSaldo> {
+    return apiRequest<TwilioSaldo>("/dashboard/integracoes/twilio/saldo", {
+      token,
+      cacheTtlMs: DASHBOARD_CACHE_TTL.twilioSaldo,
       ...options,
     });
   },

@@ -13,9 +13,11 @@ from app.models.dashboard import (
     QuestionarioStatus,
     SetorDashboard,
     SetorDetalhado,
+    TwilioSaldo,
     UsuarioAtivo,
 )
 from app.services.dashboard_service import DashboardService
+from app.services.twilio_account_service import TwilioAccountService
 
 router = APIRouter(prefix="/dashboard")
 # Legacy routes kept for backward compatibility with older frontend bundles.
@@ -178,3 +180,18 @@ async def dashboard_overview(
     _ = current_user
     service = DashboardService()
     return await service.get_overview()
+
+
+@router.get(
+    "/integracoes/twilio/saldo",
+    response_model=TwilioSaldo,
+    tags=["Dashboard"],
+    summary="Consulta saldo da conta Twilio",
+    description="Retorna o saldo atual da conta Twilio configurada para uso com WhatsApp.",
+)
+async def saldo_twilio(
+    current_user: Usuario = Depends(get_current_admin_user),
+) -> TwilioSaldo:
+    _ = current_user
+    service = TwilioAccountService()
+    return await service.get_balance()

@@ -46,6 +46,15 @@ export interface DashboardOverview {
   ultima_atualizacao: string;
 }
 
+export interface TwilioSaldo {
+  configurado: boolean;
+  disponivel: boolean;
+  saldo?: string | null;
+  moeda?: string | null;
+  erro?: string | null;
+  ultima_atualizacao: string;
+}
+
 export interface OrganizacaoDashboard {
   id: string;
   cnpj: string;

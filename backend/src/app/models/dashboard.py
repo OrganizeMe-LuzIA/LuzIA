@@ -133,3 +133,11 @@ class DashboardOverview(BaseModel):
     alertas: List[AlertaDashboard]
     ultima_atualizacao: datetime
 
+
+class TwilioSaldo(BaseModel):
+    configurado: bool
+    disponivel: bool
+    saldo: Optional[str] = None
+    moeda: Optional[str] = None
+    erro: Optional[str] = None
+    ultima_atualizacao: datetime
